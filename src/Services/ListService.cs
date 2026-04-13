@@ -79,47 +79,42 @@ public sealed partial class ListService : ListApi.ListApiBase
             counts[6]++;
         }
 
-        if (record.ComboFlag >= ComboFlags.AllPerfectPlus)
+        if (record.ComboFlag.HasFlag(ComboFlags.AllPerfectPlus))
         {
             counts[7]++;
         }
 
-        if (record.ComboFlag >= ComboFlags.AllPerfect)
+        if (record.ComboFlag.HasFlag(ComboFlags.AllPerfect))
         {
             counts[8]++;
         }
 
-        if (record.ComboFlag >= ComboFlags.FullComboPlus)
+        if (record.ComboFlag.HasFlag(ComboFlags.FullComboPlus))
         {
             counts[9]++;
         }
 
-        if (record.ComboFlag >= ComboFlags.FullCombo)
+        if (record.ComboFlag.HasFlag(ComboFlags.FullCombo))
         {
             counts[10]++;
         }
 
-        if (record.SyncFlag is SyncFlags.SyncPlay)
-        {
-            return;
-        }
-
-        if (record.SyncFlag >= SyncFlags.FullSyncDXPlus)
+        if (record.SyncFlag.HasFlag(SyncFlags.FullSyncDXPlus))
         {
             counts[11]++;
         }
 
-        if (record.SyncFlag >= SyncFlags.FullSyncDX)
+        if (record.SyncFlag.HasFlag(SyncFlags.FullSyncDX))
         {
             counts[12]++;
         }
 
-        if (record.SyncFlag >= SyncFlags.FullSyncPlus)
+        if (record.SyncFlag.HasFlag(SyncFlags.FullSyncPlus))
         {
             counts[13]++;
         }
 
-        if (record.SyncFlag >= SyncFlags.FullSync)
+        if (record.SyncFlag.HasFlag(SyncFlags.FullSync))
         {
             counts[14]++;
         }

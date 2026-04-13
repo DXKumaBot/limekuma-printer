@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Limekuma.Prober.DivingFish;
 
-public class DfResourceClient : DfClient
+public class DfResourceClient() : DfClient()
 {
     public async Task<List<Song>> GetSongsAsync(CancellationToken cancellationToken = default) =>
         await GetAsync<List<Song>>("/api/maimaidxprober/music_data", cancellationToken);

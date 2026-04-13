@@ -4,8 +4,8 @@ using System.Collections.Frozen;
 
 namespace Limekuma.ScoreFilter;
 
-[ScoreFilterTag("version")]
-public sealed class VersionScoreFilter : IScoreFilter
+[ScoreFilterTag("genre")]
+public sealed class GenreScoreFilter : IScoreFilter
 {
     public Func<CommonRecord, bool> GetFilter(string? condition)
     {
@@ -14,11 +14,11 @@ public sealed class VersionScoreFilter : IScoreFilter
             return _ => true;
         }
 
-        if (!ConstantMap.VersionMap.TryGetValue(condition, out FrozenSet<string>? version))
+        if (!ConstantMap.GenreMap.TryGetValue(condition, out FrozenSet<string>? genre))
         {
             return _ => true;
         }
 
-        return x => version.Contains(x.Chart.Song.Genre);
+        return x => genre.Contains(x.Chart.Song.Genre);
     }
 }

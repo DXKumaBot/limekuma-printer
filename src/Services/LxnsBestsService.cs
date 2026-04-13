@@ -86,9 +86,9 @@ public partial class BestsService
             TrophyText = "でらっくま",
             CourseRank = CommonCourseRank.Urakaiden,
             ClassRank = ClassRank.LEGEND,
-            IconId = 1,
-            PlateId = 1,
-            FrameId = 1
+            IconId = 101,
+            PlateId = 55103,
+            FrameId = 109101
         };
 
         await PrepareDataAsync(user, bestEver, bestCurrent);

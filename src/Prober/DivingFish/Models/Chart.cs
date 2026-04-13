@@ -11,6 +11,7 @@ public record Chart
     [JsonPropertyName("charter")]
     public required string Charter { get; set; }
 
+    [JsonIgnore]
     public Notes Notes => new()
     {
         Total = NotesNumber.Sum(),

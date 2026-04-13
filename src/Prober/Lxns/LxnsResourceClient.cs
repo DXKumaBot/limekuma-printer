@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Limekuma.Prober.Lxns;
 
-public class LxnsResourceClient : LxnsClient
+public class LxnsResourceClient() : LxnsClient()
 {
     private async Task<T> GetListAsync<T>(string type, string includeType, int? version = null, bool? include = null,
         CancellationToken cancellationToken = default)

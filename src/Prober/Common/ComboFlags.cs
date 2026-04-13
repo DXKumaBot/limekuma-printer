@@ -2,20 +2,25 @@ using System.Text.Json.Serialization;
 
 namespace Limekuma.Prober.Common;
 
+[Flags]
 [JsonConverter(typeof(JsonStringEnumConverter<ComboFlags>))]
 public enum ComboFlags
 {
-    None,
+    [JsonIgnore]
+    None = 0b0000_0000,
+
+    [JsonIgnore]
+    Plus = 0b0000_0001,
 
     [JsonStringEnumMemberName("fc")]
-    FullCombo,
+    FullCombo = 0b0000_0010,
 
     [JsonStringEnumMemberName("fcp")]
-    FullComboPlus,
+    FullComboPlus = FullCombo | Plus,
 
     [JsonStringEnumMemberName("ap")]
-    AllPerfect,
+    AllPerfect = 0b0000_0100,
 
     [JsonStringEnumMemberName("app")]
-    AllPerfectPlus
+    AllPerfectPlus = AllPerfect | Plus
 }

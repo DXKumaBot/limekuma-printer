@@ -4,6 +4,9 @@ namespace Limekuma.Prober.Lxns;
 
 public abstract class LxnsDataClient : LxnsClient
 {
+    protected LxnsDataClient(string name, string token) : base() =>
+        _httpClient.DefaultRequestHeaders.TryAddWithoutValidation(name, token);
+
     protected new async Task<T> GetAsync<T>(string path, CancellationToken cancellationToken = default)
     {
         Response<T> response = await base.GetAsync<Response<T>>(path, cancellationToken);

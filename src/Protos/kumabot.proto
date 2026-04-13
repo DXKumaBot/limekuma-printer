@@ -81,8 +81,8 @@ message ChartInfoRequest {
 
 message AchievementInfoRequest {
   string prober = 1;
-  string difficulty = 2;
-  string songId = 3;
+  string songId = 2;
+  string difficulty = 3;
 }
 
 message ImageResponse {

@@ -12,6 +12,6 @@ public sealed class ComboScoreFilter : IScoreFilter
             return _ => true;
         }
 
-        return x => x.ComboFlag >= comboFlag;
+        return x => x.ComboFlag.HasFlag(comboFlag);
     }
 }

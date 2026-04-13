@@ -3,11 +3,8 @@ using Limekuma.Prober.Lxns.Models;
 
 namespace Limekuma.Prober.Lxns;
 
-public class LxnsDeveloperClient : LxnsDataClient
+public class LxnsDeveloperClient(string token) : LxnsDataClient("Authorization", token)
 {
-    public LxnsDeveloperClient(string token) =>
-        _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", token);
-
     public async Task CreateOrUpdateAsync(Player player, CancellationToken cancellationToken = default) =>
         await PostAsync("/api/v0/maimai/player", player, cancellationToken);
 

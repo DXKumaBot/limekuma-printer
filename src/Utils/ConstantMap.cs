@@ -24,7 +24,7 @@ public static class ConstantMap
         (101, 0.224f, 15)
     ];
 
-    public static readonly FrozenDictionary<string, FrozenSet<string>> VersionMap =
+    public static readonly FrozenDictionary<string, FrozenSet<string>> GenreMap =
         new Dictionary<string, FrozenSet<string>>
         {
             ["真"] = ["maimai", "maimai PLUS"],
