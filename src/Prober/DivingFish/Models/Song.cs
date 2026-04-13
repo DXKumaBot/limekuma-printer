@@ -65,7 +65,7 @@ internal class Songs
 
     public static Song GetById(string id) => SharedSongs._songsById.TryGetValue(id, out Song? song)
         ? song
-        : throw new InvalidDataException();
+        : throw new InvalidDataException($"Song with ID {id} not found");
 
     public static explicit operator Songs(List<Song> songs) => new(songs);
 

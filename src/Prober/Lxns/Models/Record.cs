@@ -45,7 +45,7 @@ public record Record : SimpleRecord
         SongData songData = SongData.Shared;
         if (!songData.SongsById.TryGetValue(Id, out Song? song))
         {
-            throw new InvalidDataException();
+            throw new InvalidDataException($"Song with ID {Id} not found");
         }
 
         return (Type switch
