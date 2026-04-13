@@ -19,7 +19,7 @@ public record SongData
     public FrozenDictionary<int, Song> SongsById => field ??= Songs.ToFrozenDictionary(x => x.Id);
 
     public FrozenDictionary<int, Version> VersionsByGroup => field ??=
-        Versions.GroupBy(x => x.VersionNumber / 100).ToFrozenDictionary(x => x.Key, x => x.First());
+        Versions.GroupBy(x => x.VersionNumber).ToFrozenDictionary(x => x.Key, x => x.First());
 
     public static SongData Shared
     {

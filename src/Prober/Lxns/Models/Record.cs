@@ -75,13 +75,13 @@ public record Record : SimpleRecord
     {
         Chart chart = record.Chart;
         SongData songData = SongData.Shared;
-        int versionGroup = chart.Version / 100;
+        int versionGroup = chart.Version - (chart.Version % 500);
         if (!songData.VersionsByGroup.TryGetValue(versionGroup, out Version? version))
         {
-            throw new InvalidDataException();
+            throw new InvalidDataException($"Version group {versionGroup} not found");
         }
 
-        bool inCurrentGenre = songData.Versions[^1].VersionNumber / 100 == versionGroup;
+        bool inCurrentGenre = songData.Versions[^1].VersionNumber == versionGroup;
 
         return new()
         {
