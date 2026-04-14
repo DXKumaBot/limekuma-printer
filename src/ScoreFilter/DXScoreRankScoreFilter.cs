@@ -1,4 +1,5 @@
 using Limekuma.Prober.Common;
+using System.Text.Json;
 
 namespace Limekuma.ScoreFilter;
 
@@ -7,11 +8,17 @@ public sealed class DXScoreRankScoreFilter : IScoreFilter
 {
     public Func<CommonRecord, bool> GetFilter(string? condition)
     {
-        if (!int.TryParse(condition, out int dxScoreRank))
+        if (condition is null)
         {
             return _ => true;
         }
 
-        return x => x.DXScoreRank >= dxScoreRank;
+        List<int>? dxScoreRanks = JsonSerializer.Deserialize<List<int>>(condition);
+        if (dxScoreRanks is null)
+        {
+            return _ => true;
+        }
+
+        return x => dxScoreRanks.Contains(x.DXScoreRank);
     }
 }
