@@ -2,6 +2,7 @@ using Grpc.Core;
 using Limekuma.Prober.Common;
 using Limekuma.Utils;
 using System.Collections.Immutable;
+using System.Text.Json.Serialization;
 
 namespace Limekuma.Services;
 
@@ -50,4 +51,10 @@ public sealed partial class BestsService : BestsApi.BestsApiBase
 
         return (bestEver, bestCurrent, everTotal, currentTotal, user2p);
     }
+
+    public record SecondExtraInfo(
+        [property: JsonPropertyName("source")]
+        string Source,
+        [property: JsonPropertyName("user_info")]
+        Union<LxnsExtraInfo, DivingFishExtraInfo> UserInfo);
 }

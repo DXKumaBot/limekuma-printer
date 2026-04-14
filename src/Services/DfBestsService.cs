@@ -120,10 +120,19 @@ public partial class BestsService
             (bestEver, bestCurrent, everTotal, currentTotal, user2p) = await ProcessBestsByTagsAsync(requestTags,
                 request.Condition, records, async condition =>
                 {
-                    CoopExtraInfo extraInfo =
-                        ServiceExecutionHelper.DeserializeOrThrow<CoopExtraInfo>(condition, "Invalid arguments");
-                    return await PrepareDfRecordsForProcessAsync(request.Token, extraInfo.Qq, extraInfo.Frame,
-                        extraInfo.Plate, extraInfo.Icon);
+                    SecondExtraInfo extraInfo =
+                        ServiceExecutionHelper.DeserializeOrThrow<SecondExtraInfo>(condition, "Invalid arguments");
+                    if (extraInfo.Source is "lxns" && extraInfo.UserInfo.Value is LxnsExtraInfo lxnsInfo)
+                    {
+                        return await PrepareLxnsRecordsForProcessAsync(lxnsInfo.DevToken!, lxnsInfo.PersonalToken);
+                    }
+
+                    if (extraInfo.Source is "diving_fish" && extraInfo.UserInfo.Value is DivingFishExtraInfo dfInfo)
+                    {
+                        return await PrepareDfRecordsForProcessAsync(request.Token, dfInfo.QQ, dfInfo.Frame, dfInfo.Plate, dfInfo.Icon);
+                    }
+
+                    throw new RpcException(new(StatusCode.InvalidArgument, "Invalid arguments"));
                 });
         }
         else if (requestTags.Contains("common"))
@@ -146,9 +155,11 @@ public partial class BestsService
         await responseStream.WriteToResponseAsync(bestsImage);
     }
 
-    public record CoopExtraInfo(
+    public record DivingFishExtraInfo(
+        [property: JsonPropertyName("token")]
+        string? Token,
         [property: JsonPropertyName("qq")]
-        uint Qq,
+        uint QQ,
         [property: JsonPropertyName("frame")]
         int Frame,
         [property: JsonPropertyName("plate")]

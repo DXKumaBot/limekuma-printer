@@ -8,6 +8,7 @@ using Limekuma.Utils;
 using SixLabors.ImageSharp;
 using System.Collections.Frozen;
 using System.Collections.Immutable;
+using System.Text.Json.Serialization;
 
 namespace Limekuma.Services;
 
@@ -117,7 +118,22 @@ public partial class BestsService
             await ServiceHelper.PrepareUserDataAsync(user);
             (bestEver, bestCurrent, everTotal, currentTotal, user2p) = await ProcessBestsByTagsAsync(requestTags,
                 request.Condition, records,
-                async condition => await PrepareLxnsRecordsForProcessAsync(request.DevToken, condition));
+                async condition =>
+                {
+                    SecondExtraInfo extraInfo =
+                        ServiceExecutionHelper.DeserializeOrThrow<SecondExtraInfo>(condition, "Invalid arguments");
+                    if (extraInfo.Source is "lxns" && extraInfo.UserInfo.Value is LxnsExtraInfo lxnsInfo)
+                    {
+                        return await PrepareLxnsRecordsForProcessAsync(request.DevToken, lxnsInfo.PersonalToken);
+                    }
+
+                    if (extraInfo.Source is "diving_fish" && extraInfo.UserInfo.Value is DivingFishExtraInfo dfInfo)
+                    {
+                        return await PrepareDfRecordsForProcessAsync(dfInfo.Token!, dfInfo.QQ, dfInfo.Frame, dfInfo.Plate, dfInfo.Icon);
+                    }
+
+                    throw new RpcException(new(StatusCode.InvalidArgument, "Invalid arguments"));
+                });
         }
         else if (requestTags.Contains("common"))
         {
@@ -138,4 +154,10 @@ public partial class BestsService
 
         await responseStream.WriteToResponseAsync(bestsImage);
     }
+
+    public record LxnsExtraInfo(
+        [property: JsonPropertyName("dev_token")]
+        string? DevToken,
+        [property: JsonPropertyName("personal_token")]
+        string PersonalToken);
 }
