@@ -48,12 +48,14 @@ public record Record : SimpleRecord
             throw new InvalidDataException($"Song with ID {Id} not found");
         }
 
-        return (Type switch
+        int index = (int)Difficulty;
+        return Type switch
         {
-            SongTypes.Standard => song.Charts.Standard,
-            SongTypes.DX => song.Charts.DX,
+            SongTypes.Standard => song.Charts.Standard[index],
+            SongTypes.DX => song.Charts.DX[index],
+            SongTypes.Utage => song.Charts.Utage![index],
             _ => throw new InvalidDataException()
-        })[(int)Difficulty];
+        };
     })).Value;
 
     public int TotalDXScore => (_totalDXScore ??= new(() => Chart.Notes!.Total * 3)).Value;

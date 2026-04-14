@@ -1,6 +1,7 @@
 using Grpc.Core;
 using Limekuma.Prober.Common;
 using Limekuma.Prober.Lxns;
+using Limekuma.Prober.Lxns.Enums;
 using Limekuma.Prober.Lxns.Models;
 using Limekuma.Render;
 using Limekuma.Utils;
@@ -21,7 +22,7 @@ public partial class BestsService
 
         Player player = await playerTask;
         List<Record> records = await recordsTask;
-        return (player, [.. records.Select(x => (CommonRecord)x)]);
+        return (player, [.. records.Where(x => x.Type is not SongTypes.Utage && SongData.Shared.SongsById.ContainsKey(x.Id)).Select(x => x)]);
     }
 
     private static async Task<(CommonUser, ImmutableArray<CommonRecord>, ImmutableArray<CommonRecord>, int, int)>

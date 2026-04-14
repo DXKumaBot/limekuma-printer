@@ -32,20 +32,14 @@ public record Song
     public required BasicInfo BasicInfo { get; init; }
 }
 
-internal class Songs
+internal class Songs(IEnumerable<Song> songs)
 {
-    private readonly DateTimeOffset _pullTime;
-    private readonly ImmutableArray<Song> _songs;
-    private readonly FrozenDictionary<string, Song> _songsById;
+    private readonly DateTimeOffset _pullTime = DateTimeOffset.Now;
+    private readonly ImmutableArray<Song> _songs = [.. songs];
 
-    private Songs(IEnumerable<Song> songs)
-    {
-        _pullTime = DateTimeOffset.Now;
-        _songs = [.. songs];
-        _songsById = songs.ToFrozenDictionary(x => x.Id);
-    }
+    public FrozenDictionary<string, Song> SongsById => field ??= Shared.ToFrozenDictionary(x => x.Id);
 
-    private static Songs SharedSongs
+    public static Songs SharedSongs
     {
         get
         {
@@ -62,10 +56,6 @@ internal class Songs
     }
 
     public static ImmutableArray<Song> Shared => SharedSongs;
-
-    public static Song GetById(string id) => SharedSongs._songsById.TryGetValue(id, out Song? song)
-        ? song
-        : throw new InvalidDataException($"Song with ID {id} not found");
 
     public static explicit operator Songs(List<Song> songs) => new(songs);
 

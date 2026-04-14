@@ -1,5 +1,6 @@
 using Grpc.Core;
 using Limekuma.Prober.Common;
+using Limekuma.Prober.Lxns.Enums;
 using Limekuma.Prober.Lxns.Models;
 using Limekuma.Render;
 using Limekuma.Utils;
@@ -20,7 +21,7 @@ public partial class ListService
         await Task.WhenAll(playerTask, sourceRecordsTask);
 
         CommonUser player = await playerTask;
-        IEnumerable<CommonRecord> sourceRecords = (await sourceRecordsTask).Select(x => (CommonRecord)x);
+        IEnumerable<CommonRecord> sourceRecords = (await sourceRecordsTask).Where(x => x.Type is not SongTypes.Utage && SongData.Shared.SongsById.ContainsKey(x.Id)).Select(x => (CommonRecord)x);
         (ImmutableArray<CommonRecord> cRecords, bool mayMask) =
             BuildListRecords(request.Tags, request.Condition, sourceRecords);
 

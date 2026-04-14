@@ -17,7 +17,7 @@ internal static class ScoreFilterHelper
         }
 
         IEnumerable<(IScoreFilter, bool)> selectedFilters =
-            tags.Select(tag => Filters.GetValueOrDefault(tag));
+            tags.Select(tag => Filters.GetValueOrDefault(tag)).Where(x => x.Item1 is not null);
         IEnumerable<Func<CommonRecord, bool>> predicates = selectedFilters.Select(x => x.Item1.GetFilter(condition));
         bool maskMutex = selectedFilters.Any(x => x.Item2);
 

@@ -20,7 +20,7 @@ public partial class ListService
         user.IconId = request.Icon;
 
         (ImmutableArray<CommonRecord> records, bool mayMask) = BuildListRecords(request.Tags, request.Condition,
-            player.Records.Select(x => (CommonRecord)x));
+            player.Records.Where(x => Songs.SharedSongs.SongsById.ContainsKey(x.Id.ToString())).Select(x => (CommonRecord)x));
 
         (ImmutableArray<int> counts, int startIndex, int endIndex) =
             await PrepareDataAsync(user, records, request.Page);

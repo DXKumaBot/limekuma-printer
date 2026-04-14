@@ -60,7 +60,16 @@ public class Record
 
     public string JacketUrl => $"https://maimai.diving-fish.com/covers/{Id}.png";
 
-    public Song Song => (_song ??= new(() => Songs.GetById(Id.ToString()))).Value;
+    public Song Song => (_song ??= new(() =>
+    {
+        Songs songData = Songs.SharedSongs;
+        if (!songData.SongsById.TryGetValue(Id.ToString(), out Song? song))
+        {
+            throw new InvalidDataException($"Song with ID {Id} not found");
+        }
+
+        return song;
+    })).Value;
 
     public int TotalDXScore => (_totalDXScore ??= new(() => Song.Charts[DifficultyIndex].Notes.Total * 3)).Value;
 

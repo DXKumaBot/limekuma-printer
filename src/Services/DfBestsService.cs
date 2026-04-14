@@ -23,7 +23,7 @@ public partial class BestsService
         user.FrameId = frame!.Value;
         user.PlateId = plate!.Value;
         user.IconId = icon!.Value;
-        return (user, [.. player.Records.Select(x => (CommonRecord)x)]);
+        return (user, [.. player.Records.Where(x => Songs.SharedSongs.SongsById.ContainsKey(x.Id.ToString())).Select(x => x)]);
     }
 
     private static async Task<(CommonUser, ImmutableArray<CommonRecord>, ImmutableArray<CommonRecord>, int, int)>
