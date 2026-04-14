@@ -23,7 +23,7 @@ public partial class BestsService
         user.FrameId = frame!.Value;
         user.PlateId = plate!.Value;
         user.IconId = icon!.Value;
-        return (user, [.. player.Records.Where(x => Songs.SharedSongs.SongsById.ContainsKey(x.Id.ToString())).Select(x => x)]);
+        return (user, [.. player.Records.AsParallel().Where(x => Songs.SharedSongs.SongsById.ContainsKey(x.Id.ToString())).Select(x => x)]);
     }
 
     private static async Task<(CommonUser, ImmutableArray<CommonRecord>, ImmutableArray<CommonRecord>, int, int)>
@@ -38,11 +38,11 @@ public partial class BestsService
         user.IconId = icon!.Value;
 
         ImmutableArray<CommonRecord> bestEver =
-            [.. player.Bests.Ever.Select(x => (CommonRecord)x).SortRecordForBests()];
+            [.. player.Bests.Ever.AsParallel().Select(x => (CommonRecord)x).SortRecordForBests()];
         int everTotal = bestEver.Sum(x => x.DXRating);
 
         ImmutableArray<CommonRecord> bestCurrent =
-            [.. player.Bests.Current.Select(x => (CommonRecord)x).SortRecordForBests()];
+            [.. player.Bests.Current.AsParallel().Select(x => (CommonRecord)x).SortRecordForBests()];
         int currentTotal = bestCurrent.Sum(x => x.DXRating);
 
         await PrepareDataAsync(user, bestEver, bestCurrent);
@@ -61,7 +61,7 @@ public partial class BestsService
             }
 
             int chartCount = Math.Min(song.Charts.Count, Math.Min(song.LevelValues.Count, song.Levels.Count));
-            return Enumerable.Range(0, chartCount).Select(i => (CommonRecord)new Record
+            return Enumerable.Range(0, chartCount).AsParallel().Select(i => (CommonRecord)new Record
             {
                 Achievements = 101,
                 ComboFlag = ComboFlags.AllPerfectPlus,

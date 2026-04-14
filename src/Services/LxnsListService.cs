@@ -21,7 +21,7 @@ public partial class ListService
         await Task.WhenAll(playerTask, sourceRecordsTask);
 
         CommonUser player = await playerTask;
-        IEnumerable<CommonRecord> sourceRecords = (await sourceRecordsTask).Where(x => x.Type is not SongTypes.Utage && SongData.Shared.SongsById.ContainsKey(x.Id)).Select(x => (CommonRecord)x);
+        IEnumerable<CommonRecord> sourceRecords = (await sourceRecordsTask).AsParallel().Where(x => x.Type is not SongTypes.Utage && SongData.Shared.SongsById.ContainsKey(x.Id)).Select(x => (CommonRecord)x);
         (ImmutableArray<CommonRecord> cRecords, bool mayMask) =
             BuildListRecords(request.Tags, request.Condition, sourceRecords);
 
