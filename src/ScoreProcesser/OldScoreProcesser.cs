@@ -17,8 +17,8 @@ public sealed class OldScoreProcesser : IScoreProcesser
 
         ParallelQuery<CommonRecord> projectedRecords = records.AsParallel().Select(record =>
         {
-            (_, _, float oldCoefficient) = ConstantMap.GetRatingFactors(record.Rank);
-            int rating = (int)(record.Achievements * (record.Achievements > 100.5 ? 100.5 : record.Achievements) *
+            (_, _, float oldCoefficient) = ConstantMap.ResolveRankAndCoefficient(record.Achievements);
+            int rating = (int)(record.Chart.LevelValue * (record.Achievements > 100.5 ? 100.5 : record.Achievements) *
                                oldCoefficient);
             return (CommonRecord)new()
             {

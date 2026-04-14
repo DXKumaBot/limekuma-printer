@@ -45,7 +45,8 @@ public partial class BestsService
             [.. player.Bests.Current.AsParallel().Select(x => (CommonRecord)x).SortRecordForBests()];
         int currentTotal = bestCurrent.Sum(x => x.DXRating);
 
-        await PrepareDataAsync(user, bestEver, bestCurrent);
+        await ServiceHelper.PrepareUserDataAsync(user);
+        await PrepareDataAsync(bestEver, bestCurrent);
 
         return (user, bestEver, bestCurrent, everTotal, currentTotal);
     }
@@ -95,7 +96,9 @@ public partial class BestsService
             FrameId = 109101
         };
 
-        await PrepareDataAsync(user, bestEver, bestCurrent);
+        await ServiceHelper.PrepareUserDataAsync(user);
+        await PrepareDataAsync(bestEver, bestCurrent);
+
         return (user, bestEver, bestCurrent, everTotal, currentTotal);
     }
 
@@ -113,6 +116,7 @@ public partial class BestsService
         {
             (user, ImmutableArray<CommonRecord> records) = await PrepareDfRecordsForProcessAsync(request.Token,
                 request.Qq, request.Frame, request.Plate, request.Icon);
+            await ServiceHelper.PrepareUserDataAsync(user);
             (bestEver, bestCurrent, everTotal, currentTotal, user2p) = await ProcessBestsByTagsAsync(requestTags,
                 request.Condition, records, async condition =>
                 {

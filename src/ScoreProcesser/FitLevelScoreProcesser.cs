@@ -26,7 +26,7 @@ public sealed class FitLevelScoreProcesser : IScoreProcesser
                 fitLevel = chartState.FitLevel;
             }
 
-            (_, float coefficient, _) = ConstantMap.GetRatingFactors(record.Rank);
+            (_, float coefficient, _) = ConstantMap.ResolveRankAndCoefficient(record.Achievements);
             int rating = (int)(fitLevel * (record.Achievements > 100.5 ? 100.5 : record.Achievements) * coefficient);
             float level = (int)(fitLevel * 100) / 100f;
             return (CommonRecord)new()

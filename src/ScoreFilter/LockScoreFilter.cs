@@ -12,7 +12,7 @@ public sealed class LockScoreFilter : IScoreFilter
                           (x.Chart.Notes.Slide * 3) + (x.Chart.Notes.Break * 5)) * 5;
         float minScore = Math.Min((1 - ((sumScore - 1) / sumScore)) * 100,
             x.Chart.Notes.Break > 0 ? 1f / x.Chart.Notes.Break / 2 : 101);
-        (float minAcc, _, _) = ConstantMap.GetRatingFactors(x.Rank);
+        float minAcc = ConstantMap.GetRatingMinAchievement(x.Rank);
         float maxAcc = minAcc + minScore;
         return x.Achievements >= minAcc && x.Achievements < maxAcc;
     };

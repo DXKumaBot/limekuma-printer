@@ -7,9 +7,7 @@ namespace Limekuma.Services;
 
 public sealed partial class BestsService : BestsApi.BestsApiBase
 {
-    private static async Task PrepareDataAsync(CommonUser user, IReadOnlyList<CommonRecord> bestsEver,
-        IReadOnlyList<CommonRecord> bestsCurrent) => await Task.WhenAll(
-        ServiceHelper.PrepareUserDataAsync(user),
+    private static async Task PrepareDataAsync(IReadOnlyList<CommonRecord> bestsEver, IReadOnlyList<CommonRecord> bestsCurrent) => await Task.WhenAll(
         ServiceHelper.PrepareRecordDataAsync(bestsEver),
         ServiceHelper.PrepareRecordDataAsync(bestsCurrent));
 
@@ -47,6 +45,9 @@ public sealed partial class BestsService : BestsApi.BestsApiBase
 
         int everTotal = bestEver.Sum(x => x.DXRating);
         int currentTotal = bestCurrent.Sum(x => x.DXRating);
+
+        await PrepareDataAsync(bestEver, bestCurrent);
+
         return (bestEver, bestCurrent, everTotal, currentTotal, user2p);
     }
 }

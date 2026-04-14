@@ -49,7 +49,9 @@ public partial class BestsService
         ImmutableArray<CommonRecord> bestEver = [.. bests.Ever.AsParallel().Select(x => (CommonRecord)x).SortRecordForBests()];
         ImmutableArray<CommonRecord> bestCurrent =
             [.. bests.Current.AsParallel().Select(x => (CommonRecord)x).SortRecordForBests()];
-        await PrepareDataAsync(user, bestEver, bestCurrent);
+
+        await ServiceHelper.PrepareUserDataAsync(user);
+        await PrepareDataAsync(bestEver, bestCurrent);
 
         return (user, bestEver, bestCurrent, bests.EverTotal, bests.CurrentTotal);
     }
@@ -92,7 +94,9 @@ public partial class BestsService
             FrameId = 109101
         };
 
-        await PrepareDataAsync(user, bestEver, bestCurrent);
+        await ServiceHelper.PrepareUserDataAsync(user);
+        await PrepareDataAsync(bestEver, bestCurrent);
+
         return (user, bestEver, bestCurrent, everTotal, currentTotal);
     }
 
@@ -110,6 +114,7 @@ public partial class BestsService
         {
             (user, ImmutableArray<CommonRecord> records) =
                 await PrepareLxnsRecordsForProcessAsync(request.DevToken, request.PersonalToken);
+            await ServiceHelper.PrepareUserDataAsync(user);
             (bestEver, bestCurrent, everTotal, currentTotal, user2p) = await ProcessBestsByTagsAsync(requestTags,
                 request.Condition, records,
                 async condition => await PrepareLxnsRecordsForProcessAsync(request.DevToken, condition));
