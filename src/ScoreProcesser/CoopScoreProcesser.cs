@@ -19,6 +19,6 @@ public sealed class CoopScoreProcesser : IScoreProcesser
             x.ExtraInfo = 1;
             return x;
         })).DistinctBy(x => (x.Chart.Song.Id, x.Chart.Difficulty));
-        return records.SplitTopBestsByQuota(35, 15);
+        return records.SortRecordForBests().SplitTopBestsByQuota(35, 15);
     }
 }

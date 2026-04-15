@@ -29,7 +29,7 @@ public sealed class FitLevelScoreProcesser : IScoreProcesser
             (_, decimal coefficient, _) = ConstantMap.ResolveRankAndCoefficient(record.Achievements);
             int rating = (int)(fitLevel * (record.Achievements > 100.5m ? 100.5m : record.Achievements) * coefficient);
             decimal level = (int)(fitLevel * 100) / 100m;
-            return (CommonRecord)new()
+            return new CommonRecord()
             {
                 Achievements = record.Achievements,
                 DXRating = rating,
@@ -47,9 +47,9 @@ public sealed class FitLevelScoreProcesser : IScoreProcesser
                 DXScoreRank = record.DXScoreRank,
                 Rank = record.Rank,
                 SyncFlag = record.SyncFlag,
-                ExtraInfo = fitLevel
+                ExtraInfo = record.Chart.LevelValue
             };
         });
-        return projectedRecords.SplitTopBestsByQuota(35, 15);
+        return projectedRecords.SortRecordForBests().SplitTopBestsByQuota(35, 15);
     }
 }

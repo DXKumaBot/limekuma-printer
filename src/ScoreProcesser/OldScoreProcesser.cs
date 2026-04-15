@@ -20,7 +20,7 @@ public sealed class OldScoreProcesser : IScoreProcesser
             (_, _, decimal oldCoefficient) = ConstantMap.ResolveRankAndCoefficient(record.Achievements);
             int rating = (int)(record.Chart.LevelValue * (record.Achievements > 100.5m ? 100.5m : record.Achievements) *
                                oldCoefficient);
-            return (CommonRecord)new()
+            return new CommonRecord()
             {
                 Achievements = record.Achievements,
                 DXRating = rating,
@@ -32,6 +32,6 @@ public sealed class OldScoreProcesser : IScoreProcesser
                 SyncFlag = record.SyncFlag
             };
         });
-        return projectedRecords.SplitTopBestsByQuota(25, 15);
+        return projectedRecords.SortRecordForBests().SplitTopBestsByQuota(25, 15);
     }
 }

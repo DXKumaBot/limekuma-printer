@@ -79,7 +79,7 @@ public partial class BestsService
                 SyncFlag = SyncFlags.FullSyncDXPlus
             }));
         (ImmutableArray<CommonRecord> bestEver, ImmutableArray<CommonRecord> bestCurrent) =
-            allRecords.SplitTopBestsByQuota(35, 15);
+            allRecords.SortRecordForBests().SplitTopBestsByQuota(35, 15);
         int everTotal = bestEver.Sum(x => x.DXRating);
         int currentTotal = bestCurrent.Sum(x => x.DXRating);
         CommonUser user = new()

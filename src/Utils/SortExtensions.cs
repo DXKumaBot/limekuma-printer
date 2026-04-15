@@ -16,11 +16,10 @@ internal static class SortExtensions
         internal (ImmutableArray<CommonRecord> Ever, ImmutableArray<CommonRecord> Current) SplitTopBestsByQuota(
             int everQuota, int currentQuota)
         {
-            IOrderedEnumerable<CommonRecord> sorted = records.SortRecordForBests();
             ImmutableArray<CommonRecord> ever =
-                [.. sorted.Where(record => !record.Chart.Song.InCurrentGenre).Take(everQuota)];
+                [.. records.Where(record => !record.Chart.Song.InCurrentGenre).Take(everQuota)];
             ImmutableArray<CommonRecord> current =
-                [.. sorted.Where(record => record.Chart.Song.InCurrentGenre).Take(currentQuota)];
+                [.. records.Where(record => record.Chart.Song.InCurrentGenre).Take(currentQuota)];
             return (ever, current);
         }
     }

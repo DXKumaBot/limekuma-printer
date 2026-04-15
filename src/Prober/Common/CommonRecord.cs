@@ -18,5 +18,5 @@ public record CommonRecord
 
     public required int DXRating { get; init; }
 
-    public decimal ExtraInfo { get; internal set; }
+    public decimal? ExtraInfo { get; internal set; }
 }

@@ -12,7 +12,7 @@ public sealed class StealScoreProcesser : IScoreProcesser
         IReadOnlyList<CommonRecord> records2p)
     {
         (ImmutableArray<CommonRecord> baseEver, ImmutableArray<CommonRecord> baseCurrent) =
-            records1p.SplitTopBestsByQuota(35, 15);
+            records1p.SortRecordForBests().SplitTopBestsByQuota(35, 15);
         int everMin = baseEver.IsDefaultOrEmpty ? 0 : baseEver[^1].DXRating;
         int currentMin = baseCurrent.IsDefaultOrEmpty ? 0 : baseCurrent[^1].DXRating;
 

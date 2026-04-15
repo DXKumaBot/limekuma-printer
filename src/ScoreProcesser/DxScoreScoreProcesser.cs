@@ -21,7 +21,7 @@ public sealed class DxScoreScoreProcesser : IScoreProcesser
             (Ranks rank, decimal coefficient, _) = ConstantMap.ResolveRankAndCoefficient(achievements);
 
             int rating = (int)(record.Chart.LevelValue * achievements * coefficient);
-            return (CommonRecord)new()
+            return new CommonRecord()
             {
                 Achievements = achievements,
                 DXRating = rating,
@@ -33,6 +33,6 @@ public sealed class DxScoreScoreProcesser : IScoreProcesser
                 SyncFlag = record.SyncFlag
             };
         });
-        return projectedRecords.SplitTopBestsByQuota(35, 15);
+        return projectedRecords.SortRecordForBests().SplitTopBestsByQuota(35, 15);
     }
 }
