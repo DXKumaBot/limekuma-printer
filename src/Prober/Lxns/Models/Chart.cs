@@ -16,7 +16,7 @@ public record Chart
     public required string Level { get; init; }
 
     [JsonPropertyName("level_value")]
-    public required double LevelValue { get; init; }
+    public required decimal LevelValue { get; init; }
 
     [JsonPropertyName("note_designer")]
     public required string Charter { get; init; }

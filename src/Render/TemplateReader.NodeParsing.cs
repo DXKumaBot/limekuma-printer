@@ -121,7 +121,7 @@ public sealed partial class TemplateReader
     {
         bool pass = await EvaluateRequiredExpressionAsAsync<bool>(GetRequiredAttributeValue(element, "rule"), scope);
         ImmutableArray<Node> children = pass ? await ParseChildrenAsync(element, scope) : [];
-        return new LayerNode(1f, children, null);
+        return new LayerNode(1, children, null);
     }
 
     private Task<Node> ParseElseIfNodeAsync(XElement element, object? scope) => throw new InvalidOperationException(
@@ -148,13 +148,13 @@ public sealed partial class TemplateReader
                 sequentialChildren.AddRange(child);
             }
 
-            return new LayerNode(1f, sequentialChildren, null);
+            return new LayerNode(1, sequentialChildren, null);
         }
 
         IEnumerable<Task<ImmutableArray<Node>>> parseTasks = items.Select((item, index) =>
             ParseChildrenAsync(element, MergeScope(scope, varName, item, indexName, index)));
         IEnumerable<Node> children = (await Task.WhenAll(parseTasks)).SelectMany(x => x);
-        return new LayerNode(1f, children, null);
+        return new LayerNode(1, children, null);
     }
 
     private async Task<Node> ParseIncludeNodeAsync(XElement element, object? scope)
@@ -329,7 +329,7 @@ public sealed partial class TemplateReader
             break;
         }
 
-        return (new LayerNode(1f, selectedChildren, null), cursor - 1);
+        return (new LayerNode(1, selectedChildren, null), cursor - 1);
     }
 
     private async Task<IEnumerable<object>> EvaluateCollectionAsync(string expression, object? scope)
@@ -378,7 +378,7 @@ public sealed partial class TemplateReader
                 $"is too large. Max allowed loop count is {int.MaxValue}");
         }
 
-        int count = decimal.ToInt32(numericValue);
+        int count = (int)numericValue;
         return Enumerable.Range(0, count).Select(static value => (object)value);
     }
 

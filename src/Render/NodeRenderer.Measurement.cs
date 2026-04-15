@@ -111,7 +111,7 @@ public static partial class NodeRenderer
         }
 
         int columns = Math.Max(1, grid.Columns);
-        int rows = (int)Math.Ceiling(flowChildren.Count / (double)columns);
+        int rows = (int)Math.Ceiling(flowChildren.Count / (float)columns);
         Size[] sizes = new Size[flowChildren.Count];
         Parallel.For(0, flowChildren.Count,
             i => { sizes[i] = Measure(flowChildren[i], assets, measurer, measurementCache); });

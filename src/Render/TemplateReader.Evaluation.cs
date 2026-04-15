@@ -215,6 +215,13 @@ public sealed partial class TemplateReader
             return true;
         }
 
+        if (targetType == typeof(decimal) && decimal.TryParse(Convert.ToString(value, CultureInfo.InvariantCulture),
+                NumberStyles.Float, CultureInfo.InvariantCulture, out decimal decimalValue))
+        {
+            converted = decimalValue;
+            return true;
+        }
+
         if (targetType == typeof(float) && float.TryParse(Convert.ToString(value, CultureInfo.InvariantCulture),
                 NumberStyles.Float, CultureInfo.InvariantCulture, out float floatValue))
         {

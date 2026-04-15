@@ -10,7 +10,7 @@ public class CommonChart
 
     public required string Level { get; init; }
 
-    public required double LevelValue { get; init; }
+    public required decimal LevelValue { get; init; }
 
     public required Notes Notes { get; init; }
 }

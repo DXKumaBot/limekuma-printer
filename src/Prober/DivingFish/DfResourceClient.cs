@@ -40,8 +40,8 @@ public class DfResourceClient : DfClient
         return response.VerList;
     }
 
-    public async Task<Dictionary<int, double>> GetHotSongsAsync(CancellationToken cancellationToken = default) =>
-        await GetAsync<Dictionary<int, double>>("/api/maimaidxprober/hot_music", cancellationToken);
+    public async Task<Dictionary<int, decimal>> GetHotSongsAsync(CancellationToken cancellationToken = default) =>
+        await GetAsync<Dictionary<int, decimal>>("/api/maimaidxprober/hot_music", cancellationToken);
 
     public async Task<Dictionary<int, VoteResult>> GetVoteResultAsync(CancellationToken cancellationToken = default) =>
         await GetAsync<Dictionary<int, VoteResult>>("/api/maimaidxprober/vote_result", cancellationToken);

@@ -14,13 +14,13 @@ public class Record
     private Lazy<int>? _totalDXScore;
 
     [JsonPropertyName("achievements")]
-    public required double Achievements { get; init; }
+    public required decimal Achievements { get; init; }
 
     [JsonPropertyName("cid")]
     public int? ChartId { get; init; }
 
     [JsonPropertyName("ds")]
-    public required double LevelValue { get; init; }
+    public required decimal LevelValue { get; init; }
 
     [JsonPropertyName("dxScore")]
     public required int DXScore { get; init; }
@@ -73,12 +73,12 @@ public class Record
 
     public int TotalDXScore => (_totalDXScore ??= new(() => Song.Charts[DifficultyIndex].Notes.Total * 3)).Value;
 
-    public int DXScoreRank => (_dxScoreRank ??= new(() => ((double)DXScore / TotalDXScore) switch
+    public int DXScoreRank => (_dxScoreRank ??= new(() => ((decimal)DXScore / TotalDXScore) switch
     {
-        < 0.9 => 1,
-        < 0.93 => 2,
-        < 0.95 => 3,
-        < 0.97 => 4,
+        < 0.9m => 1,
+        < 0.93m => 2,
+        < 0.95m => 3,
+        < 0.97m => 4,
         <= 1 => 5,
         _ => throw new InvalidDataException()
     })).Value;

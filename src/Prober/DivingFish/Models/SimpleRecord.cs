@@ -8,7 +8,7 @@ namespace Limekuma.Prober.DivingFish.Models;
 public class SimpleRecord
 {
     [JsonPropertyName("achievements")]
-    public required double Achievements { get; init; }
+    public required decimal Achievements { get; init; }
 
     [JsonPropertyName("fc")]
     public required Union<ComboFlags, string> ComboFlag { get; init; }

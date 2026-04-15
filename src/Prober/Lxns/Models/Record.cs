@@ -8,12 +8,12 @@ public record Record : SimpleRecord
 {
     private Lazy<Chart>? _chart;
 
-    private Lazy<double>? _levelValue;
+    private Lazy<decimal>? _levelValue;
 
     private Lazy<int>? _totalDXScore;
 
     [JsonPropertyName("achievements")]
-    public required double Achievements { get; init; }
+    public required decimal Achievements { get; init; }
 
     [JsonPropertyName("dx_score")]
     public required int DXScore { get; init; }
@@ -22,7 +22,7 @@ public record Record : SimpleRecord
     public required int DXScoreRank { get; init; }
 
     [JsonPropertyName("dx_rating")]
-    public double? DXRating { get; init; }
+    public decimal? DXRating { get; init; }
 
     [JsonPropertyName("rate")]
     public new Ranks? Rank { get; init; }
@@ -60,7 +60,7 @@ public record Record : SimpleRecord
 
     public int TotalDXScore => (_totalDXScore ??= new(() => Chart.Notes!.Total * 3)).Value;
 
-    public double LevelValue => (_levelValue ??= new(() => Chart.LevelValue)).Value;
+    public decimal LevelValue => (_levelValue ??= new(() => Chart.LevelValue)).Value;
 
     private static CommonDifficulties MapDifficulty(Difficulties difficulty) => difficulty switch
     {

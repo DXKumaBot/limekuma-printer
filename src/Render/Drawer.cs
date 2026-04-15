@@ -60,7 +60,7 @@ public sealed class Drawer
         ImmutableArray<int> counts, int totalCount, int startIndex, string condition, bool mayMask, string prober,
         IEnumerable<string> tags, string xmlPath)
     {
-        int totalPages = (int)Math.Ceiling((double)totalCount / 55);
+        int totalPages = (int)Math.Ceiling(totalCount / 55m);
         Dictionary<string, object?> scope = new(StringComparer.OrdinalIgnoreCase)
         {
             ["userInfo"] = user,

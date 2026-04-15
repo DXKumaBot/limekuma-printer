@@ -68,7 +68,7 @@ public partial class BestsService
                 ComboFlag = ComboFlags.AllPerfectPlus,
                 Difficulty = song.Type is SongTypes.Utage ? Difficulties.Utage : (Difficulties)(i + 1),
                 DifficultyIndex = i,
-                DXRating = (int)(song.LevelValues[i] * 22.512),
+                DXRating = (int)(song.LevelValues[i] * 22.512m),
                 DXScore = song.Charts[i].Notes.Total * 3,
                 Id = id,
                 Level = song.Levels[i],

@@ -5,11 +5,11 @@ namespace Limekuma.Prober.DivingFish.Models;
 public record LevelState
 {
     [JsonPropertyName("achievements")]
-    public required double AverageAchievements { get; init; }
+    public required decimal AverageAchievements { get; init; }
 
     [JsonPropertyName("dist")]
-    public required List<double> RankDistribution { get; init; }
+    public required List<decimal> RankDistribution { get; init; }
 
     [JsonPropertyName("fc_dist")]
-    public required List<double> ComboDistribution { get; init; }
+    public required List<decimal> ComboDistribution { get; init; }
 }

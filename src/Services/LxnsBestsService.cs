@@ -74,7 +74,7 @@ public partial class BestsService
                 Title = song.Title,
                 Type = chart.Type,
                 ComboFlag = ComboFlags.AllPerfectPlus,
-                DXRating = (int)(chart.LevelValue * 22.512),
+                DXRating = (int)(chart.LevelValue * 22.512m),
                 Rank = Ranks.SSSPlus,
                 SyncFlag = SyncFlags.FullSyncDXPlus
             }));

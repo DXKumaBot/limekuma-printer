@@ -19,16 +19,16 @@ public sealed class FitLevelScoreProcesser : IScoreProcesser
 
         ParallelQuery<CommonRecord> projectedRecords = records.AsParallel().Select(record =>
         {
-            double fitLevel = record.Chart.LevelValue;
+            decimal fitLevel = record.Chart.LevelValue;
             if (Status.Shared.TryGetChartState(record.Chart.Song.Id, (int)record.Chart.Difficulty - 1,
                     out ChartState chartState))
             {
                 fitLevel = chartState.FitLevel;
             }
 
-            (_, float coefficient, _) = ConstantMap.ResolveRankAndCoefficient(record.Achievements);
-            int rating = (int)(fitLevel * (record.Achievements > 100.5 ? 100.5 : record.Achievements) * coefficient);
-            float level = (int)(fitLevel * 100) / 100f;
+            (_, decimal coefficient, _) = ConstantMap.ResolveRankAndCoefficient(record.Achievements);
+            int rating = (int)(fitLevel * (record.Achievements > 100.5m ? 100.5m : record.Achievements) * coefficient);
+            decimal level = (int)(fitLevel * 100) / 100m;
             return (CommonRecord)new()
             {
                 Achievements = record.Achievements,
@@ -47,7 +47,7 @@ public sealed class FitLevelScoreProcesser : IScoreProcesser
                 DXScoreRank = record.DXScoreRank,
                 Rank = record.Rank,
                 SyncFlag = record.SyncFlag,
-                ExtraInfo = (float)fitLevel
+                ExtraInfo = fitLevel
             };
         });
         return projectedRecords.SplitTopBestsByQuota(35, 15);

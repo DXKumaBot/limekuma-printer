@@ -10,7 +10,7 @@ public record CommonRecord
 
     public required Ranks Rank { get; init; }
 
-    public required double Achievements { get; init; }
+    public required decimal Achievements { get; init; }
 
     public required int DXScore { get; init; }
 
@@ -18,5 +18,5 @@ public record CommonRecord
 
     public required int DXRating { get; init; }
 
-    public float ExtraInfo { get; internal set; }
+    public decimal ExtraInfo { get; internal set; }
 }

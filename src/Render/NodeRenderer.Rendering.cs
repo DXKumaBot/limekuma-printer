@@ -150,15 +150,15 @@ public static partial class NodeRenderer
                 int itemMain = isRow ? size.Width : size.Height;
                 int step = itemMain + betweenWhole;
                 gapError += betweenFraction;
-                if (gapError >= 1f)
+                if (gapError >= 1)
                 {
                     step++;
-                    gapError -= 1f;
+                    gapError -= 1;
                 }
-                else if (gapError <= -1f)
+                else if (gapError <= -1)
                 {
                     step--;
-                    gapError += 1f;
+                    gapError += 1;
                 }
 
                 mainCursor += step;
@@ -171,15 +171,15 @@ public static partial class NodeRenderer
 
             int lineStep = lineCross + runSpacingWhole;
             runError += runSpacingFraction;
-            if (runError >= 1f)
+            if (runError >= 1)
             {
                 lineStep++;
-                runError -= 1f;
+                runError -= 1;
             }
-            else if (runError <= -1f)
+            else if (runError <= -1)
             {
                 lineStep--;
-                runError += 1f;
+                runError += 1;
             }
 
             crossCursor += lineStep;
@@ -197,7 +197,7 @@ public static partial class NodeRenderer
         }
 
         int columns = Math.Max(1, grid.Columns);
-        int rows = (int)Math.Ceiling(flowChildren.Count / (double)columns);
+        int rows = (int)Math.Ceiling(flowChildren.Count / (float)columns);
         Size[] sizes = new Size[flowChildren.Count];
         Parallel.For(0, flowChildren.Count,
             i => { sizes[i] = Measure(flowChildren[i], assets, measurer, measurementCache); });
@@ -318,7 +318,7 @@ public static partial class NodeRenderer
 
     private static Color ApplyOpacity(Color color, float opacity)
     {
-        float clampedOpacity = Math.Clamp(opacity, 0f, 1f);
+        float clampedOpacity = Math.Clamp(opacity, 0, 1);
         Rgba32 rgba = color.ToPixel<Rgba32>();
         byte alpha = (byte)Math.Round(rgba.A * clampedOpacity);
         return Color.FromPixel(new Rgba32(rgba.R, rgba.G, rgba.B, alpha));

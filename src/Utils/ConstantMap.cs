@@ -5,8 +5,8 @@ namespace Limekuma.Utils;
 
 public static class ConstantMap
 {
-    private static readonly FrozenDictionary<Ranks, float> RatingFactors =
-        new Dictionary<Ranks, float>
+    private static readonly FrozenDictionary<Ranks, decimal> RatingFactors =
+        new Dictionary<Ranks, decimal>
         {
             [Ranks.D] = 0,
             [Ranks.C] = 50,
@@ -19,10 +19,10 @@ public static class ConstantMap
             [Ranks.S] = 97,
             [Ranks.SPlus] = 98,
             [Ranks.SS] = 99,
-            [Ranks.SSPlus] = 99.5f,
+            [Ranks.SSPlus] = 99.5m,
             [Ranks.SSS] = 100,
-            [Ranks.SSSPlus] = 100.5f,
-            [(Ranks)14] = 100.5f
+            [Ranks.SSSPlus] = 100.5m,
+            [(Ranks)14] = 100.5m
         }.ToFrozenDictionary();
 
     public static readonly FrozenDictionary<string, FrozenSet<string>> GenreMap =
@@ -108,33 +108,33 @@ public static class ConstantMap
             ]
         }.ToFrozenDictionary();
 
-    public static float GetRatingMinAchievement(Ranks rank) => RatingFactors[rank];
+    public static decimal GetRatingMinAchievement(Ranks rank) => RatingFactors[rank];
 
-    public static (Ranks, float, float) ResolveRankAndCoefficient(double achievements) => achievements switch
+    public static (Ranks, decimal, decimal) ResolveRankAndCoefficient(decimal achievements) => achievements switch
     {
         > 101 => throw new ArgumentOutOfRangeException(),
-        >= 100.5 => (Ranks.SSSPlus, 0.224f, 0.15f),
-        >= 100.4999 => (Ranks.SSS, 0.222f, 0.14f),
-        >= 100 => (Ranks.SSS, 0.216f, 0.14f),
-        >= 99.9999 => (Ranks.SSPlus, 0.214f, 0.135f),
-        >= 99.5f => (Ranks.SSPlus, 0.211f, 0.13f),
-        >= 99 => (Ranks.SS, 0.208f, 0.12f),
-        >= 98.9999 => (Ranks.SPlus, 0.206f, 0.11f),
-        >= 98 => (Ranks.SPlus, 0.203f, 0.11f),
-        >= 97 => (Ranks.S, 0.2f, 0.1f),
-        >= 96.9999 => (Ranks.AAA, 0.176f, 0.094f),
-        >= 94 => (Ranks.AAA, 0.168f, 0.094f),
-        >= 90 => (Ranks.AA, 0.152f, 0.09f),
-        >= 80 => (Ranks.A, 0.136f, 0.08f),
-        >= 79.9999 => (Ranks.BBB, 0.128f, 0.08f),
-        >= 75 => (Ranks.BBB, 0.12f, 0.075f),
-        >= 70 => (Ranks.BB, 0.112f, 0.07f),
-        >= 60 => (Ranks.B, 0.096f, 0.06f),
-        >= 50 => (Ranks.C, 0.08f, 0.05f),
-        >= 40 => (Ranks.D, 0.064f, 0.04f),
-        >= 30 => (Ranks.D, 0.048f, 0.03f),
-        >= 20 => (Ranks.D, 0.032f, 0.02f),
-        >= 10 => (Ranks.D, 0.016f, 0.01f),
+        >= 100.5m => (Ranks.SSSPlus, 0.224m, 0.15m),
+        >= 100.4999m => (Ranks.SSS, 0.222m, 0.14m),
+        >= 100 => (Ranks.SSS, 0.216m, 0.14m),
+        >= 99.9999m => (Ranks.SSPlus, 0.214m, 0.135m),
+        >= 99.5m => (Ranks.SSPlus, 0.211m, 0.13m),
+        >= 99 => (Ranks.SS, 0.208m, 0.12m),
+        >= 98.9999m => (Ranks.SPlus, 0.206m, 0.11m),
+        >= 98 => (Ranks.SPlus, 0.203m, 0.11m),
+        >= 97 => (Ranks.S, 0.2m, 0.1m),
+        >= 96.9999m => (Ranks.AAA, 0.176m, 0.094m),
+        >= 94 => (Ranks.AAA, 0.168m, 0.094m),
+        >= 90 => (Ranks.AA, 0.152m, 0.09m),
+        >= 80 => (Ranks.A, 0.136m, 0.08m),
+        >= 79.9999m => (Ranks.BBB, 0.128m, 0.08m),
+        >= 75 => (Ranks.BBB, 0.12m, 0.075m),
+        >= 70 => (Ranks.BB, 0.112m, 0.07m),
+        >= 60 => (Ranks.B, 0.096m, 0.06m),
+        >= 50 => (Ranks.C, 0.08m, 0.05m),
+        >= 40 => (Ranks.D, 0.064m, 0.04m),
+        >= 30 => (Ranks.D, 0.048m, 0.03m),
+        >= 20 => (Ranks.D, 0.032m, 0.02m),
+        >= 10 => (Ranks.D, 0.016m, 0.01m),
         >= 0 => (Ranks.D, 0, 0),
         _ => throw new ArgumentOutOfRangeException()
     };

@@ -17,8 +17,8 @@ public sealed class DxScoreScoreProcesser : IScoreProcesser
 
         ParallelQuery<CommonRecord> projectedRecords = records.AsParallel().Select(record =>
         {
-            float achievements = (float)record.DXScore / record.Chart.TotalDXScore * 101;
-            (Ranks rank, float coefficient, _) = ConstantMap.ResolveRankAndCoefficient(achievements);
+            decimal achievements = (decimal)record.DXScore / record.Chart.TotalDXScore * 101;
+            (Ranks rank, decimal coefficient, _) = ConstantMap.ResolveRankAndCoefficient(achievements);
 
             int rating = (int)(record.Chart.LevelValue * achievements * coefficient);
             return (CommonRecord)new()

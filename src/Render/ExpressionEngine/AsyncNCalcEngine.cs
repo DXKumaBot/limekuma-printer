@@ -111,15 +111,15 @@ public sealed class AsyncNCalcEngine
                     return b;
                 }
 
-                if (double.TryParse(sv, NumberStyles.Float, CultureInfo.InvariantCulture, out double d))
+                if (decimal.TryParse(sv, NumberStyles.Float, CultureInfo.InvariantCulture, out decimal d))
                 {
-                    return Math.Abs(d) > 0.0000001;
+                    return Math.Abs(d) > 0.0000001m;
                 }
             }
 
             if (value is IConvertible convertible)
             {
-                return Math.Abs(convertible.ToDouble(CultureInfo.InvariantCulture)) > 0.0000001;
+                return Math.Abs(convertible.ToDecimal(CultureInfo.InvariantCulture)) > 0.0000001m;
             }
         }
 
@@ -157,9 +157,9 @@ public sealed class AsyncNCalcEngine
                     return bv;
                 }
 
-                if (double.TryParse(sv, out double dv))
+                if (decimal.TryParse(sv, out decimal dv))
                 {
-                    return Math.Abs(dv) > 0.0000001;
+                    return Math.Abs(dv) > 0.0000001m;
                 }
             }
 
@@ -168,8 +168,8 @@ public sealed class AsyncNCalcEngine
                 return false;
             }
 
-            double dvd = conv.ToDouble(CultureInfo.InvariantCulture);
-            return Math.Abs(dvd) > 0.0000001;
+            decimal dvd = conv.ToDecimal(CultureInfo.InvariantCulture);
+            return Math.Abs(dvd) > 0.0000001m;
         }
 
         if (!typeof(IConvertible).IsAssignableFrom(targetType))

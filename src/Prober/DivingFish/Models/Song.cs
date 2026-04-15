@@ -17,7 +17,7 @@ public record Song
     public required SongTypes Type { get; init; }
 
     [JsonPropertyName("ds")]
-    public required List<double> LevelValues { get; init; }
+    public required List<decimal> LevelValues { get; init; }
 
     [JsonPropertyName("level")]
     public required List<string> Levels { get; init; }
