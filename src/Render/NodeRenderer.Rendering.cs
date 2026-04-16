@@ -263,7 +263,7 @@ public static partial class NodeRenderer
             img.Mutate(c => c.Resize(desired.Width, desired.Height, resamplerInstance));
         }
 
-        if (Math.Abs(scale - 1) > 0.0000001)
+        if (Math.Abs(scale - 1) > 0.0000001f)
         {
             int width = Math.Max(1, (int)Math.Round(img.Width * scale));
             int height = Math.Max(1, (int)Math.Round(img.Height * scale));

@@ -5,6 +5,8 @@ namespace Limekuma.Prober.DivingFish.Models;
 
 public record Chart
 {
+    private Lazy<Notes>? _notes;
+
     [JsonPropertyName("notes")]
     public required List<int> NotesNumber { get; set; }
 
@@ -12,7 +14,7 @@ public record Chart
     public required string Charter { get; set; }
 
     [JsonIgnore]
-    public Notes Notes => new()
+    public Notes Notes => (_notes ??= new(() => new()
     {
         Total = NotesNumber.Sum(),
         Tap = NotesNumber[0],
@@ -20,5 +22,5 @@ public record Chart
         Slide = NotesNumber[2],
         Touch = NotesNumber.Count > 4 ? NotesNumber[3] : 0,
         Break = NotesNumber.Count < 5 ? NotesNumber[3] : NotesNumber[4]
-    };
+    })).Value;
 }

@@ -75,6 +75,8 @@ public class Record
 
     public int DXScoreRank => (_dxScoreRank ??= new(() => ((decimal)DXScore / TotalDXScore) switch
     {
+        < 0 => throw new InvalidDataException(),
+        < 0.85m => 0,
         < 0.9m => 1,
         < 0.93m => 2,
         < 0.95m => 3,
