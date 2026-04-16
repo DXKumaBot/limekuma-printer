@@ -66,7 +66,18 @@ public sealed class AsyncNCalcEngine
             args.Result = result;
         };
 
-        return await expression.EvaluateAsync();
+        object? value = await expression.EvaluateAsync();
+        if (value is double and 0)
+        {
+            value = Math.Abs((double)value);
+        }
+
+        if (value is float and 0)
+        {
+            value = Math.Abs((float)value);
+        }
+
+        return value;
     }
 
     private static void AddScopeParameters(AsyncExpression expression, Dictionary<string, object?> flattened)
