@@ -4,6 +4,8 @@ using Limekuma.Render.Nodes;
 using SixLabors.ImageSharp;
 using System.Collections;
 using System.Collections.Immutable;
+using System.Reflection;
+using System.Text;
 
 namespace Limekuma.Render;
 
@@ -31,6 +33,14 @@ public sealed class Drawer
         int currentMin = current.Count > 0 ? current[^1].DXRating : 0;
         bool mayMask = ever.Any(r => r.DXScore is 0 && (r.DXScoreRank > 0 || r.Rank > Ranks.A)) ||
                        current.Any(r => r.DXScore is 0 && (r.DXScoreRank > 0 || r.Rank > Ranks.A));
+        Version? version = Assembly.GetExecutingAssembly().GetName().Version;
+        StringBuilder sb = new();
+        for (int i = 0; i < version?.Build / 26; ++i)
+        {
+            sb.Append('Z');
+        }
+
+        sb.Append(Convert.ToChar('A' + version?.Build % 26));
         Dictionary<string, object?> scope = new(StringComparer.OrdinalIgnoreCase)
         {
             ["userInfo"] = user,
@@ -46,7 +56,9 @@ public sealed class Drawer
             ["everMax"] = everMax,
             ["everMin"] = everMin,
             ["currentMax"] = currentMax,
-            ["currentMin"] = currentMin
+            ["currentMin"] = currentMin,
+            ["now"] = DateTimeOffset.Now.ToString("yyy/M/d H:mmz"),
+            ["version"] = $"Ver.LI{version?.Major ?? 0}.{version?.Minor ?? 0}-{sb}"
         };
         return await DrawAsync(scope, xmlPath);
     }
@@ -61,6 +73,14 @@ public sealed class Drawer
         IEnumerable<string> tags, string xmlPath)
     {
         int totalPages = (int)Math.Ceiling(totalCount / 55m);
+        Version? version = Assembly.GetExecutingAssembly().GetName().Version;
+        StringBuilder sb = new();
+        for (int i = 0; i < version?.Build / 26; ++i)
+        {
+            sb.Append('Z');
+        }
+
+        sb.Append(Convert.ToChar('A' + version?.Build % 26));
         Dictionary<string, object?> scope = new(StringComparer.OrdinalIgnoreCase)
         {
             ["userInfo"] = user,
@@ -74,7 +94,9 @@ public sealed class Drawer
             ["condition"] = condition,
             ["proberName"] = prober,
             ["tags"] = tags,
-            ["mayMask"] = mayMask
+            ["mayMask"] = mayMask,
+            ["now"] = DateTimeOffset.Now.ToString("yyy/M/d H:mmz"),
+            ["version"] = $"Ver.LI{version?.Major ?? 0}.{version?.Minor ?? 0}-{sb}"
         };
         return await DrawAsync(scope, xmlPath);
     }
