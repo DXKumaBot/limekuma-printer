@@ -21,7 +21,7 @@ public sealed class DxScoreScoreProcesser : IScoreProcesser
             (Ranks rank, decimal coefficient, _) = ConstantMap.ResolveRankAndCoefficient(achievements);
 
             int rating = (int)(record.Chart.LevelValue * achievements * coefficient);
-            return new CommonRecord()
+            return new CommonRecord
             {
                 Achievements = achievements,
                 DXRating = rating,

@@ -8,7 +8,8 @@ namespace Limekuma.Services;
 
 public sealed partial class BestsService : BestsApi.BestsApiBase
 {
-    private static async Task PrepareDataAsync(IReadOnlyList<CommonRecord> bestsEver, IReadOnlyList<CommonRecord> bestsCurrent) => await Task.WhenAll(
+    private static async Task PrepareDataAsync(IReadOnlyList<CommonRecord> bestsEver,
+        IReadOnlyList<CommonRecord> bestsCurrent) => await Task.WhenAll(
         ServiceHelper.PrepareRecordDataAsync(bestsEver),
         ServiceHelper.PrepareRecordDataAsync(bestsCurrent));
 

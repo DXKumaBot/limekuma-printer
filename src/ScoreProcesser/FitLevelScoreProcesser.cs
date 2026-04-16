@@ -29,7 +29,7 @@ public sealed class FitLevelScoreProcesser : IScoreProcesser
             (_, decimal coefficient, _) = ConstantMap.ResolveRankAndCoefficient(record.Achievements);
             int rating = (int)(fitLevel * (record.Achievements > 100.5m ? 100.5m : record.Achievements) * coefficient);
             decimal level = (int)(fitLevel * 100) / 100m;
-            return new CommonRecord()
+            return new CommonRecord
             {
                 Achievements = record.Achievements,
                 DXRating = rating,

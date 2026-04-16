@@ -20,7 +20,7 @@ public sealed class OldScoreProcesser : IScoreProcesser
             (_, _, decimal oldCoefficient) = ConstantMap.ResolveRankAndCoefficient(record.Achievements);
             int rating = (int)(record.Chart.LevelValue * (record.Achievements > 100.5m ? 100.5m : record.Achievements) *
                                oldCoefficient);
-            return new CommonRecord()
+            return new CommonRecord
             {
                 Achievements = record.Achievements,
                 DXRating = rating,

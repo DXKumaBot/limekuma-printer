@@ -6,10 +6,12 @@ namespace Limekuma.Prober.Lxns;
 public abstract class LxnsClient
 {
     private static readonly HttpClientHandler SharedHandler = new();
+
     private static readonly JsonSerializerOptions SharedJsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
+
     private static readonly string? UserAgentVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
 
     protected HttpClient _httpClient;

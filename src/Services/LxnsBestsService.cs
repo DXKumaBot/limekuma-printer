@@ -23,7 +23,11 @@ public partial class BestsService
 
         Player player = await playerTask;
         List<Record> records = await recordsTask;
-        return (player, [.. records.AsParallel().Where(x => x.Type is not SongTypes.Utage && SongData.Shared.SongsById.ContainsKey(x.Id)).Select(x => x)]);
+        return (player,
+        [
+            .. records.AsParallel()
+                .Where(x => x.Type is not SongTypes.Utage && SongData.Shared.SongsById.ContainsKey(x.Id)).Select(x => x)
+        ]);
     }
 
     private static async Task<(CommonUser, ImmutableArray<CommonRecord>, ImmutableArray<CommonRecord>, int, int)>
@@ -47,7 +51,8 @@ public partial class BestsService
 
         CommonUser user = player;
 
-        ImmutableArray<CommonRecord> bestEver = [.. bests.Ever.AsParallel().Select(x => (CommonRecord)x).SortRecordForBests()];
+        ImmutableArray<CommonRecord> bestEver =
+            [.. bests.Ever.AsParallel().Select(x => (CommonRecord)x).SortRecordForBests()];
         ImmutableArray<CommonRecord> bestCurrent =
             [.. bests.Current.AsParallel().Select(x => (CommonRecord)x).SortRecordForBests()];
 
@@ -129,7 +134,8 @@ public partial class BestsService
 
                     if (extraInfo.Source is "diving_fish" && extraInfo.UserInfo.Value is DivingFishExtraInfo dfInfo)
                     {
-                        return await PrepareDfRecordsForProcessAsync(dfInfo.Token!, dfInfo.QQ, dfInfo.Frame, dfInfo.Plate, dfInfo.Icon);
+                        return await PrepareDfRecordsForProcessAsync(dfInfo.Token!, dfInfo.QQ, dfInfo.Frame,
+                            dfInfo.Plate, dfInfo.Icon);
                     }
 
                     throw new RpcException(new(StatusCode.InvalidArgument, "Invalid arguments"));

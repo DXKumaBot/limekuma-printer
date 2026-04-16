@@ -40,7 +40,7 @@ public sealed class Drawer
             sb.Append('Z');
         }
 
-        sb.Append(Convert.ToChar('A' + version?.Build % 26));
+        sb.Append(Convert.ToChar('A' + (version?.Build % 26)));
         Dictionary<string, object?> scope = new(StringComparer.OrdinalIgnoreCase)
         {
             ["userInfo"] = user,
@@ -80,7 +80,7 @@ public sealed class Drawer
             sb.Append('Z');
         }
 
-        sb.Append(Convert.ToChar('A' + version?.Build % 26));
+        sb.Append(Convert.ToChar('A' + (version?.Build % 26)));
         Dictionary<string, object?> scope = new(StringComparer.OrdinalIgnoreCase)
         {
             ["userInfo"] = user,

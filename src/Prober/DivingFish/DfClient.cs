@@ -12,10 +12,12 @@ public abstract class DfClient
     {
         CheckCertificateRevocationList = false
     };
+
     private static readonly JsonSerializerOptions SharedJsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
+
     private static readonly string? UserAgentVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
 
     protected HttpClient _httpClient;

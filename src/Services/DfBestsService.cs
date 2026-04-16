@@ -23,7 +23,11 @@ public partial class BestsService
         user.FrameId = frame!.Value;
         user.PlateId = plate!.Value;
         user.IconId = icon!.Value;
-        return (user, [.. player.Records.AsParallel().Where(x => Songs.SharedSongs.SongsById.ContainsKey(x.Id.ToString())).Select(x => x)]);
+        return (user,
+        [
+            .. player.Records.AsParallel().Where(x => Songs.SharedSongs.SongsById.ContainsKey(x.Id.ToString()))
+                .Select(x => x)
+        ]);
     }
 
     private static async Task<(CommonUser, ImmutableArray<CommonRecord>, ImmutableArray<CommonRecord>, int, int)>
@@ -129,7 +133,8 @@ public partial class BestsService
 
                     if (extraInfo.Source is "diving_fish" && extraInfo.UserInfo.Value is DivingFishExtraInfo dfInfo)
                     {
-                        return await PrepareDfRecordsForProcessAsync(request.Token, dfInfo.QQ, dfInfo.Frame, dfInfo.Plate, dfInfo.Icon);
+                        return await PrepareDfRecordsForProcessAsync(request.Token, dfInfo.QQ, dfInfo.Frame,
+                            dfInfo.Plate, dfInfo.Icon);
                     }
 
                     throw new RpcException(new(StatusCode.InvalidArgument, "Invalid arguments"));
