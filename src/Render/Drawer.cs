@@ -88,7 +88,7 @@ public sealed class Drawer
             ["pageNumber"] = page,
             ["totalPages"] = totalPages,
             ["rankCounts"] = counts[..7],
-            ["comboCounts"] = counts[7..^1],
+            ["comboCounts"] = counts[7..],
             ["totalCount"] = totalCount,
             ["startIndex"] = startIndex,
             ["condition"] = condition,
