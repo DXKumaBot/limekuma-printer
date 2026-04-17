@@ -30,9 +30,11 @@ public sealed partial class BestsService : BestsApi.BestsApiBase
 
         ParallelQuery<CommonRecord> bestEver;
         ParallelQuery<CommonRecord> bestCurrent;
+        records = records.Where(x => x.Chart.Difficulty is not CommonDifficulties.Utage);
         if (selectedProcesser.RequireSecondData)
         {
             (user2p, ParallelQuery<CommonRecord> records2p) = await secondDataProvider(condition);
+            records2p = records2p.Where(x => x.Chart.Difficulty is not CommonDifficulties.Utage);
             (bestEver, bestCurrent) = selectedProcesser.Processer.Process(records, records2p);
         }
         else
