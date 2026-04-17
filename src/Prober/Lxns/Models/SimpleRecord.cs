@@ -7,7 +7,15 @@ namespace Limekuma.Prober.Lxns.Models;
 public record SimpleRecord
 {
     [JsonPropertyName("id")]
-    public required int Id { get; init; }
+    public required int Id
+    {
+        get;
+        init
+        {
+            ArgumentOutOfRangeException.ThrowIfNegative(value);
+            field = value;
+        }
+    }
 
     [JsonPropertyName("song_name")]
     public required string Title { get; init; }

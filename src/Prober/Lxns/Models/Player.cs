@@ -82,7 +82,7 @@ public record Player
         CourseRank.Shinjudan => CommonCourseRank.Shinjudan,
         CourseRank.Shinkaiden => CommonCourseRank.Shinkaiden,
         CourseRank.Urakaiden => CommonCourseRank.Urakaiden,
-        _ => throw new InvalidDataException()
+        _ => throw new ArgumentOutOfRangeException()
     };
 
     public static implicit operator CommonUser(Player player) =>

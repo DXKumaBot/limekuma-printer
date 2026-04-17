@@ -9,8 +9,5 @@ public enum SongTypes
     Standard,
 
     [JsonStringEnumMemberName("DX")]
-    DX,
-
-    [JsonStringEnumMemberName("UTAGE")]
-    Utage
+    DX
 }

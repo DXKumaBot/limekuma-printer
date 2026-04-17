@@ -10,19 +10,54 @@ public record Record : SimpleRecord
 
     private Lazy<decimal>? _levelValue;
 
+    private Lazy<Song>? _song;
+
     private Lazy<int>? _totalDXScore;
 
     [JsonPropertyName("achievements")]
-    public required decimal Achievements { get; init; }
+    public required decimal Achievements
+    {
+        get;
+        init
+        {
+            ArgumentOutOfRangeException.ThrowIfNegative(value);
+            field = value;
+        }
+    }
 
     [JsonPropertyName("dx_score")]
-    public required int DXScore { get; init; }
+    public required int DXScore
+    {
+        get;
+        init
+        {
+            ArgumentOutOfRangeException.ThrowIfNegative(value);
+            field = value;
+        }
+    }
 
     [JsonPropertyName("dx_star")]
-    public required int DXScoreRank { get; init; }
+    public required int DXScoreRank
+    {
+        get;
+        init
+        {
+            ArgumentOutOfRangeException.ThrowIfNegative(value);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(value, 5);
+            field = value;
+        }
+    }
 
     [JsonPropertyName("dx_rating")]
-    public decimal? DXRating { get; init; }
+    public decimal? DXRating
+    {
+        get;
+        init
+        {
+            ArgumentOutOfRangeException.ThrowIfNegative(value ?? throw new ArgumentNullException());
+            field = value;
+        }
+    }
 
     [JsonPropertyName("rate")]
     public new Ranks? Rank { get; init; }
@@ -40,21 +75,26 @@ public record Record : SimpleRecord
 
     public string JacketUrl => $"https://assets2.lxns.net/maimai/jacket/{Id}.png";
 
-    public Chart Chart => (_chart ??= new(() =>
+    public Song Song => (_song ??= new(() =>
     {
         SongData songData = SongData.Shared;
         if (!songData.SongsById.TryGetValue(Id, out Song? song))
         {
-            throw new InvalidDataException($"Song with ID {Id} not found");
+            throw new KeyNotFoundException($"Song with ID {Id} not found");
         }
 
+        return song;
+    })).Value;
+
+    public Chart Chart => (_chart ??= new(() =>
+    {
         int index = (int)Difficulty;
         return Type switch
         {
-            SongTypes.Standard => song.Charts.Standard[index],
-            SongTypes.DX => song.Charts.DX[index],
-            SongTypes.Utage => song.Charts.Utage![index],
-            _ => throw new InvalidDataException()
+            SongTypes.Standard => Song.Charts.Standard[index],
+            SongTypes.DX => Song.Charts.DX[index],
+            SongTypes.Utage => Song.Charts.Utage![index],
+            _ => throw new ArgumentOutOfRangeException()
         };
     })).Value;
 
@@ -70,7 +110,7 @@ public record Record : SimpleRecord
         Difficulties.Expert => CommonDifficulties.Expert,
         Difficulties.Master => CommonDifficulties.Master,
         Difficulties.ReMaster => CommonDifficulties.ReMaster,
-        _ => throw new InvalidDataException()
+        _ => throw new ArgumentOutOfRangeException()
     };
 
     public static implicit operator CommonRecord(Record record)
@@ -80,11 +120,13 @@ public record Record : SimpleRecord
         int versionGroup = chart.Version - (chart.Version % 500);
         if (!songData.VersionsByGroup.TryGetValue(versionGroup, out Version? version))
         {
-            throw new InvalidDataException($"Version group {versionGroup} not found");
+            throw new KeyNotFoundException($"Version group {versionGroup} not found");
         }
 
         bool inCurrentGenre = songData.Versions[^1].VersionNumber == versionGroup;
 
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(record.Achievements, record.Type is SongTypes.Utage && ((UtageChart)record.Chart).IsBuddy ? 202 : 101);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(record.DXScore, record.TotalDXScore);
         return new()
         {
             Chart = new()

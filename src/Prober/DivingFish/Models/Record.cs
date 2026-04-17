@@ -1,3 +1,4 @@
+using Google.Protobuf.WellKnownTypes;
 using Limekuma.Prober.Common;
 using Limekuma.Prober.DivingFish.Enums;
 using Limekuma.Utils;
@@ -7,6 +8,8 @@ namespace Limekuma.Prober.DivingFish.Models;
 
 public class Record
 {
+    private Lazy<Chart>? _chart;
+
     private Lazy<int>? _dxScoreRank;
 
     private Lazy<Song>? _song;
@@ -14,16 +17,49 @@ public class Record
     private Lazy<int>? _totalDXScore;
 
     [JsonPropertyName("achievements")]
-    public required decimal Achievements { get; init; }
+    public required decimal Achievements
+    {
+        get;
+        init
+        {
+            ArgumentOutOfRangeException.ThrowIfNegative(value);
+            field = value;
+        }
+    }
 
     [JsonPropertyName("cid")]
-    public int? ChartId { get; init; }
+    public int? ChartId
+    {
+        get;
+        init
+        {
+            ArgumentOutOfRangeException.ThrowIfNegative(value ?? throw new ArgumentNullException());
+            field = value;
+        }
+    }
 
     [JsonPropertyName("ds")]
-    public required decimal LevelValue { get; init; }
+    public required decimal LevelValue
+    {
+        get;
+        init
+        {
+            ArgumentOutOfRangeException.ThrowIfNegative(value);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(value, 15);
+            field = value;
+        }
+    }
 
     [JsonPropertyName("dxScore")]
-    public required int DXScore { get; init; }
+    public required int DXScore
+    {
+        get;
+        init
+        {
+            ArgumentOutOfRangeException.ThrowIfNegative(value);
+            field = value;
+        }
+    }
 
     [JsonPropertyName("fc")]
     public required Union<ComboFlags, string> ComboFlag { get; init; }
@@ -35,19 +71,43 @@ public class Record
     public required string Level { get; init; }
 
     [JsonPropertyName("level_index")]
-    public required int DifficultyIndex { get; init; }
+    public required int DifficultyIndex
+    {
+        get;
+        init
+        {
+            ArgumentOutOfRangeException.ThrowIfNegative(value);
+            field = value;
+        }
+    }
 
     [JsonPropertyName("level_label")]
     public required Difficulties Difficulty { get; init; }
 
     [JsonPropertyName("ra")]
-    public required int DXRating { get; init; }
+    public required int DXRating
+    {
+        get;
+        init
+        {
+            ArgumentOutOfRangeException.ThrowIfNegative(value);
+            field = value;
+        }
+    }
 
     [JsonPropertyName("rate")]
     public required Ranks Rank { get; init; }
 
     [JsonPropertyName("song_id")]
-    public required int Id { get; init; }
+    public required int Id
+    {
+        get;
+        init
+        {
+            ArgumentOutOfRangeException.ThrowIfNegative(value);
+            field = value;
+        }
+    }
 
     [JsonPropertyName("title")]
     public required string Title { get; init; }
@@ -65,24 +125,25 @@ public class Record
         Songs songData = Songs.SharedSongs;
         if (!songData.SongsById.TryGetValue(Id.ToString(), out Song? song))
         {
-            throw new InvalidDataException($"Song with ID {Id} not found");
+            throw new KeyNotFoundException($"Song with ID {Id} not found");
         }
 
         return song;
     })).Value;
 
+    public Chart Chart => (_chart ??= new(() => Song.Charts[DifficultyIndex])).Value;
+
     public int TotalDXScore => (_totalDXScore ??= new(() => Song.Charts[DifficultyIndex].Notes.Total * 3)).Value;
 
     public int DXScoreRank => (_dxScoreRank ??= new(() => ((decimal)DXScore / TotalDXScore) switch
     {
-        < 0 => throw new InvalidDataException(),
         < 0.85m => 0,
         < 0.9m => 1,
         < 0.93m => 2,
         < 0.95m => 3,
         < 0.97m => 4,
         <= 1 => 5,
-        _ => throw new InvalidDataException()
+        _ => 0
     })).Value;
 
     private static CommonDifficulties MapDifficulty(Difficulties difficulty) => difficulty switch
@@ -94,15 +155,18 @@ public class Record
         Difficulties.Master => CommonDifficulties.Master,
         Difficulties.ReMaster => CommonDifficulties.ReMaster,
         Difficulties.Utage => CommonDifficulties.Utage,
-        _ => throw new InvalidDataException()
+        _ => throw new ArgumentOutOfRangeException()
     };
 
     public static implicit operator CommonRecord(Record record)
     {
         Song song = record.Song;
-        Chart chart = song.Charts[record.DifficultyIndex];
+        Chart chart = record.Chart;
         BasicInfo basicInfo = song.BasicInfo;
 
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(record.Achievements, (record.Difficulty is Difficulties.Utage && record.Song.Charts.Count > 1) ? 202 : 101);
+        // ArgumentOutOfRangeException.ThrowIfGreaterThan(record.DXScore, record.TotalDXScore);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(record.DifficultyIndex, record.Song.Charts.Count);
         return new()
         {
             Chart = new()
@@ -111,7 +175,7 @@ public class Record
                 {
                     Id = record.Id,
                     Title = record.Title,
-                    Type = (CommonSongTypes)record.Type,
+                    Type = record.Difficulty is Difficulties.Utage ? CommonSongTypes.Utage : (CommonSongTypes)record.Type,
                     Genre = basicInfo.Genre,
                     InCurrentGenre = basicInfo.InCurrentVersion,
                     AudioUrl = record.AudioUrl,
