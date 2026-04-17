@@ -7,5 +7,6 @@ public enum CommonDifficulties
     Advanced,
     Expert,
     Master,
-    ReMaster
+    ReMaster,
+    Utage
 }

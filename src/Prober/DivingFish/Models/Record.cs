@@ -93,6 +93,7 @@ public class Record
         Difficulties.Expert => CommonDifficulties.Expert,
         Difficulties.Master => CommonDifficulties.Master,
         Difficulties.ReMaster => CommonDifficulties.ReMaster,
+        Difficulties.Utage => CommonDifficulties.Utage,
         _ => throw new InvalidDataException()
     };
 

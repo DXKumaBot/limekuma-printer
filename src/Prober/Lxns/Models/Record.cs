@@ -99,7 +99,7 @@ public record Record : SimpleRecord
                     AudioUrl = record.AudioUrl,
                     JacketUrl = record.JacketUrl
                 },
-                Difficulty = MapDifficulty(record.Difficulty),
+                Difficulty = record.Type is SongTypes.Utage ? CommonDifficulties.Utage : MapDifficulty(record.Difficulty),
                 TotalDXScore = record.TotalDXScore,
                 Level = record.Level,
                 LevelValue = record.LevelValue,
