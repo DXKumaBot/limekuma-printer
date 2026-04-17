@@ -112,7 +112,8 @@ public static class ConstantMap
 
     public static (Ranks, decimal, decimal) ResolveRankAndCoefficient(decimal achievements) => achievements switch
     {
-        > 101 => throw new ArgumentOutOfRangeException(),
+        > 101 => throw new ArgumentOutOfRangeException(nameof(achievements), achievements,
+            "Achievements cannot exceed 101%"),
         >= 100.5m => (Ranks.SSSPlus, 0.224m, 0.15m),
         >= 100.4999m => (Ranks.SSS, 0.222m, 0.14m),
         >= 100 => (Ranks.SSS, 0.216m, 0.14m),
@@ -136,6 +137,7 @@ public static class ConstantMap
         >= 20 => (Ranks.D, 0.032m, 0.02m),
         >= 10 => (Ranks.D, 0.016m, 0.01m),
         >= 0 => (Ranks.D, 0, 0),
-        _ => throw new ArgumentOutOfRangeException()
+        _ => throw new ArgumentOutOfRangeException(nameof(achievements), achievements,
+            "Achievements must be a non-negative value")
     };
 }

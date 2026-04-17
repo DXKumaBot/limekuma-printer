@@ -123,7 +123,8 @@ public partial class BestsService
                 request.Condition, records, async condition =>
                 {
                     SecondExtraInfo extraInfo =
-                        ServiceExecutionHelper.DeserializeOrThrow<SecondExtraInfo>(condition, "Invalid arguments");
+                        ServiceExecutionHelper.DeserializeOrThrow<SecondExtraInfo>(condition,
+                            "Failed to deserialize extra info for processing bests");
                     if (extraInfo.Source is "lxns" && extraInfo.UserInfo.Value is LxnsExtraInfo lxnsInfo)
                     {
                         return await PrepareLxnsRecordsForProcessAsync(lxnsInfo.DevToken!, lxnsInfo.PersonalToken);
@@ -135,7 +136,7 @@ public partial class BestsService
                             dfInfo.Plate, dfInfo.Icon);
                     }
 
-                    throw new RpcException(new(StatusCode.InvalidArgument, "Invalid arguments"));
+                    throw new RpcException(new(StatusCode.InvalidArgument, "Invalid extra info for processing bests"));
                 });
         }
         else if (requestTags.Contains("common"))
@@ -149,7 +150,7 @@ public partial class BestsService
         }
         else
         {
-            throw new RpcException(new(StatusCode.InvalidArgument, "Invalid arguments"));
+            throw new RpcException(new(StatusCode.InvalidArgument, "Invalid tags for diving fish bests request"));
         }
 
         using Image bestsImage = await new Drawer().DrawBestsAsync(user, bestEver, bestCurrent, everTotal, currentTotal,

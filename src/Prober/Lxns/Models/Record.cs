@@ -54,7 +54,7 @@ public record Record : SimpleRecord
         get;
         init
         {
-            ArgumentOutOfRangeException.ThrowIfNegative(value ?? throw new ArgumentNullException());
+            ArgumentOutOfRangeException.ThrowIfNegative(value ?? throw new ArgumentNullException(nameof(value)));
             field = value;
         }
     }
@@ -110,7 +110,7 @@ public record Record : SimpleRecord
         Difficulties.Expert => CommonDifficulties.Expert,
         Difficulties.Master => CommonDifficulties.Master,
         Difficulties.ReMaster => CommonDifficulties.ReMaster,
-        _ => throw new ArgumentOutOfRangeException()
+        _ => throw new ArgumentOutOfRangeException(nameof(difficulty), difficulty, null)
     };
 
     public static implicit operator CommonRecord(Record record)

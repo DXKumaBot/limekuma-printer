@@ -154,7 +154,7 @@ public class Record
         Difficulties.Master => CommonDifficulties.Master,
         Difficulties.ReMaster => CommonDifficulties.ReMaster,
         Difficulties.Utage => CommonDifficulties.Utage,
-        _ => throw new ArgumentOutOfRangeException()
+        _ => throw new ArgumentOutOfRangeException(nameof(difficulty), difficulty, null)
     };
 
     public static implicit operator CommonRecord(Record record)
