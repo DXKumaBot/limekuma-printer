@@ -17,8 +17,12 @@ public sealed class CoopScoreProcesser : IScoreProcesser
         {
             x.ExtraInfo = 1;
             return x;
-        }));
-        records.DistinctBy(x => (x.Chart.Song.Id, x.Chart.Difficulty));
+        })).GroupBy(x => (x.Chart.Song.Id, x.Chart.Difficulty)).Select(group => group.Aggregate((best, current) =>
+            current.Achievements > best.Achievements ||
+            (current.Achievements == best.Achievements && current.ExtraInfo < best.ExtraInfo)
+                ? current
+                : best));
+
         return records.SortRecordForBests().SplitTopBestsByQuota(35, 15);
     }
 }
