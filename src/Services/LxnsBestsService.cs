@@ -151,7 +151,7 @@ public partial class BestsService
         }
 
         using Image bestsImage = await new Drawer().DrawBestsAsync(user, bestEver, bestCurrent, everTotal, currentTotal,
-            request.Condition, "lxns", requestTags);
+            request.Condition, "lxns", requestTags, user2p);
 
         await responseStream.WriteToResponseAsync(bestsImage);
     }
