@@ -14,7 +14,7 @@ public sealed partial class ListService : ListApi.ListApiBase
         bool mayMask = ServiceExecutionHelper.HasMaskedScores(records);
         ServiceExecutionHelper.EnsurePermission(!(mayMask && maskMutex), "Mask enabled");
 
-        ImmutableArray<CommonRecord> filteredRecords = [.. records.Where(predicate).SortRecordForList()];
+        ImmutableArray<CommonRecord> filteredRecords = [.. records.AsParallel().Where(predicate).SortRecordForList()];
         return (filteredRecords, mayMask);
     }
 

@@ -10,15 +10,16 @@ public sealed class CoopScoreProcesser : IScoreProcesser
     public (ImmutableArray<CommonRecord>, ImmutableArray<CommonRecord>) Process(IReadOnlyList<CommonRecord> records1p,
         IReadOnlyList<CommonRecord> records2p)
     {
-        IEnumerable<CommonRecord> records = records1p.Select(x =>
+        ParallelQuery<CommonRecord> records = records1p.AsParallel().Select(x =>
         {
             x.ExtraInfo = 0;
             return x;
-        }).Union(records2p.Select(x =>
+        }).Union(records2p.AsParallel().Select(x =>
         {
             x.ExtraInfo = 1;
             return x;
-        })).DistinctBy(x => (x.Chart.Song.Id, x.Chart.Difficulty));
+        }));
+        records.DistinctBy(x => (x.Chart.Song.Id, x.Chart.Difficulty));
         return records.SortRecordForBests().SplitTopBestsByQuota(35, 15);
     }
 }

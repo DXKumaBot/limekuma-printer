@@ -8,5 +8,5 @@ namespace Limekuma.ScoreProcesser;
 public sealed class FilterScoreProcesser : IScoreProcesser
 {
     public (ImmutableArray<CommonRecord>, ImmutableArray<CommonRecord>) Process(IReadOnlyList<CommonRecord> records) =>
-        records.SortRecordForBests().SplitTopBestsByQuota(35, 15);
+        records.AsParallel().SortRecordForBests().SplitTopBestsByQuota(35, 15);
 }

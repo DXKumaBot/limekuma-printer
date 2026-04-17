@@ -41,7 +41,7 @@ public sealed partial class BestsService : BestsApi.BestsApiBase
                 ScoreFilterHelper.GetPredicateByTags(tags, condition);
             ServiceExecutionHelper.EnsurePermission(!(mayMask && maskMutex), "Mask enabled");
 
-            ImmutableArray<CommonRecord> filteredRecords = [.. records.Where(predicate).SortRecordForBests()];
+            ImmutableArray<CommonRecord> filteredRecords = [.. records.AsParallel().Where(predicate).SortRecordForBests()];
             (bestEver, bestCurrent) = selectedProcesser.Processer.Process(filteredRecords);
         }
 

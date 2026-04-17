@@ -5,12 +5,12 @@ namespace Limekuma.Utils;
 
 internal static class SortExtensions
 {
-    extension(IEnumerable<CommonRecord> records)
+    extension(ParallelQuery<CommonRecord> records)
     {
-        internal IOrderedEnumerable<CommonRecord> SortRecordForBests() => records.OrderByDescending(x => x.DXRating)
+        internal OrderedParallelQuery<CommonRecord> SortRecordForBests() => records.OrderByDescending(x => x.DXRating)
             .ThenByDescending(x => x.Chart.LevelValue).ThenByDescending(x => x.Achievements);
 
-        internal IOrderedEnumerable<CommonRecord> SortRecordForList() => records.OrderByDescending(x => x.Achievements)
+        internal OrderedParallelQuery<CommonRecord> SortRecordForList() => records.OrderByDescending(x => x.Achievements)
             .ThenByDescending(x => x.DXRating).ThenByDescending(x => x.Chart.LevelValue);
 
         internal (ImmutableArray<CommonRecord> Ever, ImmutableArray<CommonRecord> Current) SplitTopBestsByQuota(

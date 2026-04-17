@@ -12,7 +12,7 @@ public sealed class BestScoreProcesser : IScoreProcesser
         (ImmutableArray<CommonRecord>.Builder Ever, ImmutableArray<CommonRecord>.Builder Current) state = (
             ImmutableArray.CreateBuilder<CommonRecord>(35), ImmutableArray.CreateBuilder<CommonRecord>(15));
         (ImmutableArray<CommonRecord>.Builder Ever, ImmutableArray<CommonRecord>.Builder Current) rankedState = records
-            .SortRecordForBests().Aggregate(state, static (acc, record) =>
+            .AsParallel().SortRecordForBests().Aggregate(state, static (acc, record) =>
             {
                 if (acc.Ever.Count >= 35 && acc.Current.Count >= 15)
                 {

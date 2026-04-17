@@ -12,7 +12,7 @@ public sealed class StealScoreProcesser : IScoreProcesser
         IReadOnlyList<CommonRecord> records2p)
     {
         (ImmutableArray<CommonRecord> baseEver, ImmutableArray<CommonRecord> baseCurrent) =
-            records1p.SortRecordForBests().SplitTopBestsByQuota(35, 15);
+            records1p.AsParallel().SortRecordForBests().SplitTopBestsByQuota(35, 15);
         int everMin = baseEver.IsDefaultOrEmpty ? 0 : baseEver[^1].DXRating;
         int currentMin = baseCurrent.IsDefaultOrEmpty ? 0 : baseCurrent[^1].DXRating;
 
@@ -49,13 +49,13 @@ public sealed class StealScoreProcesser : IScoreProcesser
 
         ImmutableArray<CommonRecord> current =
         [
-            .. selectedRecords.Where(x => x.Chart.Song.InCurrentGenre).OrderByDescending(x => x.DXRating > currentMin)
+            .. selectedRecords.AsParallel().Where(x => x.Chart.Song.InCurrentGenre).OrderByDescending(x => x.DXRating > currentMin)
                 .ThenByDescending(x => x.DXRating - x.ExtraInfo).ThenByDescending(x => x.Chart.LevelValue)
                 .ThenByDescending(x => x.Achievements).Take(15)
         ];
         ImmutableArray<CommonRecord> ever =
         [
-            .. selectedRecords.Where(x => !x.Chart.Song.InCurrentGenre).OrderByDescending(x => x.DXRating > everMin)
+            .. selectedRecords.AsParallel().Where(x => !x.Chart.Song.InCurrentGenre).OrderByDescending(x => x.DXRating > everMin)
                 .ThenByDescending(x => x.DXRating - x.ExtraInfo).ThenByDescending(x => x.Chart.LevelValue)
                 .ThenByDescending(x => x.Achievements).Take(35)
         ];
