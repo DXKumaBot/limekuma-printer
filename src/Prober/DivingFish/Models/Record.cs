@@ -1,4 +1,3 @@
-using Google.Protobuf.WellKnownTypes;
 using Limekuma.Prober.Common;
 using Limekuma.Prober.DivingFish.Enums;
 using Limekuma.Utils;
@@ -164,7 +163,8 @@ public class Record
         Chart chart = record.Chart;
         BasicInfo basicInfo = song.BasicInfo;
 
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(record.Achievements, (record.Difficulty is Difficulties.Utage && record.Song.Charts.Count > 1) ? 202 : 101);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(record.Achievements,
+            (record.Difficulty is Difficulties.Utage && record.Song.Charts.Count > 1) ? 202 : 101);
         // ArgumentOutOfRangeException.ThrowIfGreaterThan(record.DXScore, record.TotalDXScore);
         ArgumentOutOfRangeException.ThrowIfGreaterThan(record.DifficultyIndex, record.Song.Charts.Count);
         return new()
@@ -175,7 +175,9 @@ public class Record
                 {
                     Id = record.Id,
                     Title = record.Title,
-                    Type = record.Difficulty is Difficulties.Utage ? CommonSongTypes.Utage : (CommonSongTypes)record.Type,
+                    Type = record.Difficulty is Difficulties.Utage
+                        ? CommonSongTypes.Utage
+                        : (CommonSongTypes)record.Type,
                     Genre = basicInfo.Genre,
                     InCurrentGenre = basicInfo.InCurrentVersion,
                     AudioUrl = record.AudioUrl,

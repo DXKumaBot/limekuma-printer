@@ -1,5 +1,6 @@
 using Grpc.Core;
 using Limekuma.Prober.Common;
+using Limekuma.Prober.DivingFish.Enums;
 using Limekuma.Prober.DivingFish.Models;
 using Limekuma.Render;
 using Limekuma.Utils;
@@ -22,7 +23,8 @@ public partial class ListService
         user.IconId = request.Icon;
 
         (ImmutableArray<CommonRecord> records, bool mayMask) = BuildListRecords(requestTags, request.Condition,
-            player.Records.AsParallel().Where(x => Songs.SharedSongs.SongsById.ContainsKey(x.Id.ToString()))
+            player.Records.AsParallel().Where(x =>
+                    x.Difficulty is not Difficulties.Utage && Songs.SharedSongs.SongsById.ContainsKey(x.Id.ToString()))
                 .Select(x => (CommonRecord)x));
 
         (ImmutableArray<int> counts, int startIndex, int endIndex) =

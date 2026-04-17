@@ -24,7 +24,8 @@ public partial class BestsService
         Player player = await playerTask;
         List<Record> records = await recordsTask;
         return (player, records.AsParallel()
-                .Where(x => x.Type is not SongTypes.Utage && SongData.Shared.SongsById.ContainsKey(x.Id)).Select(x => (CommonRecord)x));
+            .Where(x => x.Type is not SongTypes.Utage && SongData.Shared.SongsById.ContainsKey(x.Id))
+            .Select(x => (CommonRecord)x));
     }
 
     private static async Task<(CommonUser, ImmutableArray<CommonRecord>, ImmutableArray<CommonRecord>, int, int)>
@@ -48,8 +49,10 @@ public partial class BestsService
 
         CommonUser user = player;
 
-        ParallelQuery<CommonRecord> bestEver = bests.Ever.AsParallel().Select(x => (CommonRecord)x).SortRecordForBests();
-        ParallelQuery<CommonRecord> bestCurrent = bests.Current.AsParallel().Select(x => (CommonRecord)x).SortRecordForBests();
+        ParallelQuery<CommonRecord>
+            bestEver = bests.Ever.AsParallel().Select(x => (CommonRecord)x).SortRecordForBests();
+        ParallelQuery<CommonRecord> bestCurrent =
+            bests.Current.AsParallel().Select(x => (CommonRecord)x).SortRecordForBests();
 
         await ServiceHelper.PrepareUserDataAsync(user);
         await PrepareDataAsync(bestEver, bestCurrent);

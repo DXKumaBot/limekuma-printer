@@ -17,5 +17,6 @@ internal static class DfGatewayService
     }
 
     internal static Task<Player> GetPlayerAsync(uint qq) => ServiceExecutionHelper.ExecuteWithHttpMappingAsync(() =>
-        ResourceClient.GetPlayerAsync(qq), (HttpStatusCode.BadRequest, StatusCode.NotFound), (HttpStatusCode.Forbidden, StatusCode.PermissionDenied));
+            ResourceClient.GetPlayerAsync(qq), (HttpStatusCode.BadRequest, StatusCode.NotFound),
+        (HttpStatusCode.Forbidden, StatusCode.PermissionDenied));
 }

@@ -23,38 +23,39 @@ public sealed class StealScoreProcesser : IScoreProcesser
         ParallelQuery<CommonRecord> controlRecords = handleType ? records1p : records2p;
         FrozenDictionary<(int SongId, CommonDifficulties Difficulty), CommonRecord> controlLookup =
             controlRecords.ToFrozenDictionary(x => (x.Chart.Song.Id, x.Chart.Difficulty));
-        ParallelQuery<CommonRecord> selectedRecords = processRecords
-            .Where(processRecord => processRecord.Chart.Song.Type is not CommonSongTypes.Utage).Select(processRecord =>
+        ParallelQuery<CommonRecord> selectedRecords = processRecords.Select(processRecord =>
+        {
+            if (!controlLookup.TryGetValue((processRecord.Chart.Song.Id, processRecord.Chart.Difficulty),
+                    out CommonRecord? controlRecord))
             {
-                if (!controlLookup.TryGetValue((processRecord.Chart.Song.Id, processRecord.Chart.Difficulty),
-                        out CommonRecord? controlRecord))
-                {
-                    return null;
-                }
+                return null;
+            }
 
-                CommonRecord record = handleType ? processRecord : controlRecord;
-                CommonRecord anotherRecord = handleType ? controlRecord : processRecord;
-                CommonRecord selected = new()
-                {
-                    Achievements = record.Achievements,
-                    Chart = record.Chart,
-                    ComboFlag = record.ComboFlag,
-                    DXRating = record.DXRating,
-                    DXScore = record.DXScore,
-                    DXScoreRank = record.DXScoreRank,
-                    Rank = record.Rank,
-                    SyncFlag = record.SyncFlag,
-                    ExtraInfo = anotherRecord.DXRating
-                };
-                return selected;
-            }).OfType<CommonRecord>();
+            CommonRecord record = handleType ? processRecord : controlRecord;
+            CommonRecord anotherRecord = handleType ? controlRecord : processRecord;
+            CommonRecord selected = new()
+            {
+                Achievements = record.Achievements,
+                Chart = record.Chart,
+                ComboFlag = record.ComboFlag,
+                DXRating = record.DXRating,
+                DXScore = record.DXScore,
+                DXScoreRank = record.DXScoreRank,
+                Rank = record.Rank,
+                SyncFlag = record.SyncFlag,
+                ExtraInfo = anotherRecord.DXRating
+            };
+            return selected;
+        }).OfType<CommonRecord>();
 
-        ParallelQuery<CommonRecord> current = selectedRecords.Where(x => x.Chart.Song.InCurrentGenre).OrderByDescending(x => x.DXRating > currentMin)
-                .ThenByDescending(x => x.DXRating - x.ExtraInfo).ThenByDescending(x => x.Chart.LevelValue)
-                .ThenByDescending(x => x.Achievements).Take(15);
-        ParallelQuery<CommonRecord> ever = selectedRecords.Where(x => !x.Chart.Song.InCurrentGenre).OrderByDescending(x => x.DXRating > everMin)
-                .ThenByDescending(x => x.DXRating - x.ExtraInfo).ThenByDescending(x => x.Chart.LevelValue)
-                .ThenByDescending(x => x.Achievements).Take(35);
+        ParallelQuery<CommonRecord> current = selectedRecords.Where(x => x.Chart.Song.InCurrentGenre)
+            .OrderByDescending(x => x.DXRating > currentMin)
+            .ThenByDescending(x => x.DXRating - x.ExtraInfo).ThenByDescending(x => x.Chart.LevelValue)
+            .ThenByDescending(x => x.Achievements).Take(15);
+        ParallelQuery<CommonRecord> ever = selectedRecords.Where(x => !x.Chart.Song.InCurrentGenre)
+            .OrderByDescending(x => x.DXRating > everMin)
+            .ThenByDescending(x => x.DXRating - x.ExtraInfo).ThenByDescending(x => x.Chart.LevelValue)
+            .ThenByDescending(x => x.Achievements).Take(35);
 
         return (ever, current);
     }

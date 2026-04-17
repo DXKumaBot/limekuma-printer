@@ -9,7 +9,7 @@ namespace Limekuma.Services;
 public sealed partial class BestsService : BestsApi.BestsApiBase
 {
     private static async Task PrepareDataAsync(IEnumerable<CommonRecord> bestsEver,
-         IEnumerable<CommonRecord> bestsCurrent) => await Task.WhenAll(
+        IEnumerable<CommonRecord> bestsCurrent) => await Task.WhenAll(
         ServiceHelper.PrepareRecordDataAsync(bestsEver),
         ServiceHelper.PrepareRecordDataAsync(bestsCurrent));
 
@@ -30,11 +30,9 @@ public sealed partial class BestsService : BestsApi.BestsApiBase
 
         ParallelQuery<CommonRecord> bestEver;
         ParallelQuery<CommonRecord> bestCurrent;
-        records = records.Where(x => x.Chart.Difficulty is not CommonDifficulties.Utage);
         if (selectedProcesser.RequireSecondData)
         {
             (user2p, ParallelQuery<CommonRecord> records2p) = await secondDataProvider(condition);
-            records2p = records2p.Where(x => x.Chart.Difficulty is not CommonDifficulties.Utage);
             (bestEver, bestCurrent) = selectedProcesser.Processer.Process(records, records2p);
         }
         else

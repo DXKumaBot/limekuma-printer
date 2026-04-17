@@ -9,14 +9,17 @@ internal static class SortExtensions
         internal OrderedParallelQuery<CommonRecord> SortRecordForBests() => records.OrderByDescending(x => x.DXRating)
             .ThenByDescending(x => x.Chart.LevelValue).ThenByDescending(x => x.Achievements);
 
-        internal OrderedParallelQuery<CommonRecord> SortRecordForList() => records.OrderByDescending(x => x.Achievements)
+        internal OrderedParallelQuery<CommonRecord> SortRecordForList() => records
+            .OrderByDescending(x => x.Achievements)
             .ThenByDescending(x => x.DXRating).ThenByDescending(x => x.Chart.LevelValue);
 
         internal (ParallelQuery<CommonRecord> Ever, ParallelQuery<CommonRecord> Current) SplitTopBestsByQuota(
             int everQuota, int currentQuota)
         {
-            ParallelQuery<CommonRecord> ever = records.Where(record => !record.Chart.Song.InCurrentGenre).Take(everQuota);
-            ParallelQuery<CommonRecord> current = records.Where(record => record.Chart.Song.InCurrentGenre).Take(currentQuota);
+            ParallelQuery<CommonRecord> ever = records.Where(record => !record.Chart.Song.InCurrentGenre)
+                .Take(everQuota);
+            ParallelQuery<CommonRecord> current =
+                records.Where(record => record.Chart.Song.InCurrentGenre).Take(currentQuota);
             return (ever, current);
         }
     }

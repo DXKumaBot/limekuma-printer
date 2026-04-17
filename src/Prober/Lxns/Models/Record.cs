@@ -125,7 +125,8 @@ public record Record : SimpleRecord
 
         bool inCurrentGenre = songData.Versions[^1].VersionNumber == versionGroup;
 
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(record.Achievements, record.Type is SongTypes.Utage && ((UtageChart)record.Chart).IsBuddy ? 202 : 101);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(record.Achievements,
+            record.Type is SongTypes.Utage && ((UtageChart)record.Chart).IsBuddy ? 202 : 101);
         ArgumentOutOfRangeException.ThrowIfGreaterThan(record.DXScore, record.TotalDXScore);
         return new()
         {
@@ -141,7 +142,9 @@ public record Record : SimpleRecord
                     AudioUrl = record.AudioUrl,
                     JacketUrl = record.JacketUrl
                 },
-                Difficulty = record.Type is SongTypes.Utage ? CommonDifficulties.Utage : MapDifficulty(record.Difficulty),
+                Difficulty = record.Type is SongTypes.Utage
+                    ? CommonDifficulties.Utage
+                    : MapDifficulty(record.Difficulty),
                 TotalDXScore = record.TotalDXScore,
                 Level = record.Level,
                 LevelValue = record.LevelValue,

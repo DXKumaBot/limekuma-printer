@@ -23,8 +23,9 @@ public partial class BestsService
         user.FrameId = frame!.Value;
         user.PlateId = plate!.Value;
         user.IconId = icon!.Value;
-        return (user, player.Records.AsParallel().Where(x => Songs.SharedSongs.SongsById.ContainsKey(x.Id.ToString()))
-                .Select(x => (CommonRecord)x));
+        return (user, player.Records.AsParallel().Where(x =>
+                x.Difficulty is not Difficulties.Utage && Songs.SharedSongs.SongsById.ContainsKey(x.Id.ToString()))
+            .Select(x => (CommonRecord)x));
     }
 
     private static async Task<(CommonUser, ImmutableArray<CommonRecord>, ImmutableArray<CommonRecord>, int, int)>
@@ -38,10 +39,12 @@ public partial class BestsService
         user.PlateId = plate!.Value;
         user.IconId = icon!.Value;
 
-        ParallelQuery<CommonRecord> bestEver = player.Bests.Ever.AsParallel().Select(x => (CommonRecord)x).SortRecordForBests();
+        ParallelQuery<CommonRecord> bestEver =
+            player.Bests.Ever.AsParallel().Select(x => (CommonRecord)x).SortRecordForBests();
         int everTotal = bestEver.Sum(x => x.DXRating);
 
-        ParallelQuery<CommonRecord> bestCurrent = player.Bests.Current.AsParallel().Select(x => (CommonRecord)x).SortRecordForBests();
+        ParallelQuery<CommonRecord> bestCurrent =
+            player.Bests.Current.AsParallel().Select(x => (CommonRecord)x).SortRecordForBests();
         int currentTotal = bestCurrent.Sum(x => x.DXRating);
 
         await ServiceHelper.PrepareUserDataAsync(user);
