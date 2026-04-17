@@ -4,6 +4,7 @@ using Limekuma.Prober.DivingFish.Models;
 using Limekuma.Render;
 using Limekuma.Utils;
 using SixLabors.ImageSharp;
+using System.Collections.Frozen;
 using System.Collections.Immutable;
 
 namespace Limekuma.Services;
@@ -13,13 +14,14 @@ public partial class ListService
     public override async Task GetFromDivingFish(DivingFishListRequest request,
         IServerStreamWriter<ImageResponse> responseStream, ServerCallContext context)
     {
+        FrozenSet<string> requestTags = request.Tags.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
         PlayerData player = await DfGatewayService.GetPlayerDataAsync(request.Token, request.Qq);
 
         CommonUser user = player;
         user.PlateId = request.Plate;
         user.IconId = request.Icon;
 
-        (ImmutableArray<CommonRecord> records, bool mayMask) = BuildListRecords(request.Tags, request.Condition,
+        (ImmutableArray<CommonRecord> records, bool mayMask) = BuildListRecords(requestTags, request.Condition,
             player.Records.AsParallel().Where(x => Songs.SharedSongs.SongsById.ContainsKey(x.Id.ToString()))
                 .Select(x => (CommonRecord)x));
 

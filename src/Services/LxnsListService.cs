@@ -5,6 +5,7 @@ using Limekuma.Prober.Lxns.Models;
 using Limekuma.Render;
 using Limekuma.Utils;
 using SixLabors.ImageSharp;
+using System.Collections.Frozen;
 using System.Collections.Immutable;
 
 namespace Limekuma.Services;
@@ -14,6 +15,7 @@ public partial class ListService
     public override async Task GetFromLxns(LxnsListRequest request, IServerStreamWriter<ImageResponse> responseStream,
         ServerCallContext context)
     {
+        FrozenSet<string> requestTags = request.Tags.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
         Task<Player> playerTask =
             LxnsGatewayService.GetPlayerByPersonalTokenAsync(request.DevToken, request.PersonalToken);
         Task<List<Record>> sourceRecordsTask =
@@ -21,11 +23,11 @@ public partial class ListService
         await Task.WhenAll(playerTask, sourceRecordsTask);
 
         CommonUser player = await playerTask;
-        IEnumerable<CommonRecord> sourceRecords = (await sourceRecordsTask).AsParallel()
+        ParallelQuery<CommonRecord> sourceRecords = (await sourceRecordsTask).AsParallel()
             .Where(x => x.Type is not SongTypes.Utage && SongData.Shared.SongsById.ContainsKey(x.Id))
             .Select(x => (CommonRecord)x);
         (ImmutableArray<CommonRecord> cRecords, bool mayMask) =
-            BuildListRecords(request.Tags, request.Condition, sourceRecords);
+            BuildListRecords(requestTags, request.Condition, sourceRecords);
 
         (ImmutableArray<int> counts, int startIndex, int endIndex) =
             await PrepareDataAsync(player, cRecords, request.Page);

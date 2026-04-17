@@ -7,15 +7,15 @@ namespace Limekuma.Services;
 
 public sealed partial class ListService : ListApi.ListApiBase
 {
-    private static (ImmutableArray<CommonRecord> Records, bool MayMask) BuildListRecords(IReadOnlyList<string> tags,
-        string condition, IEnumerable<CommonRecord> records)
+    private static (ImmutableArray<CommonRecord> Records, bool MayMask) BuildListRecords(IReadOnlySet<string> tags,
+        string condition, ParallelQuery<CommonRecord> records)
     {
         (Func<CommonRecord, bool> predicate, bool maskMutex) = ScoreFilterHelper.GetPredicateByTags(tags, condition);
         bool mayMask = ServiceExecutionHelper.HasMaskedScores(records);
         ServiceExecutionHelper.EnsurePermission(!(mayMask && maskMutex), "Mask enabled");
 
-        ImmutableArray<CommonRecord> filteredRecords = [.. records.AsParallel().Where(predicate).SortRecordForList()];
-        return (filteredRecords, mayMask);
+        ParallelQuery<CommonRecord> filteredRecords = records.Where(predicate).SortRecordForList();
+        return ([.. filteredRecords], mayMask);
     }
 
     private static async Task<(ImmutableArray<int>, int, int)> PrepareDataAsync(CommonUser user,

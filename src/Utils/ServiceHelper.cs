@@ -18,7 +18,7 @@ internal static class ServiceHelper
         PrepareImageAsset("Plate", user.PlateId, user.PlateUrl),
         PrepareImageAsset("Frame", user.FrameId, user.FrameUrl));
 
-    internal static async Task PrepareRecordDataAsync(IReadOnlyList<CommonRecord> records) =>
+    internal static async Task PrepareRecordDataAsync(IEnumerable<CommonRecord> records) =>
         await Parallel.ForEachAsync(records, PrepareRecordParallelOptions,
             async (record, _) => await PrepareRecordDataAsync(record));
 

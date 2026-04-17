@@ -8,16 +8,16 @@ namespace Limekuma.Services;
 
 public sealed partial class BestsService : BestsApi.BestsApiBase
 {
-    private static async Task PrepareDataAsync(IReadOnlyList<CommonRecord> bestsEver,
-        IReadOnlyList<CommonRecord> bestsCurrent) => await Task.WhenAll(
+    private static async Task PrepareDataAsync(IEnumerable<CommonRecord> bestsEver,
+         IEnumerable<CommonRecord> bestsCurrent) => await Task.WhenAll(
         ServiceHelper.PrepareRecordDataAsync(bestsEver),
         ServiceHelper.PrepareRecordDataAsync(bestsCurrent));
 
     private static async
         Task<(ImmutableArray<CommonRecord> BestEver, ImmutableArray<CommonRecord> BestCurrent, int EverTotal, int
-            CurrentTotal, CommonUser?)> ProcessBestsByTagsAsync(IEnumerable<string> tags, string condition,
-            ImmutableArray<CommonRecord> records,
-            Func<string, Task<(CommonUser, ImmutableArray<CommonRecord>)>> secondDataProvider)
+            CurrentTotal, CommonUser?)> ProcessBestsByTagsAsync(IReadOnlySet<string> tags, string condition,
+            ParallelQuery<CommonRecord> records,
+            Func<string, Task<(CommonUser, ParallelQuery<CommonRecord>)>> secondDataProvider)
     {
         if (ScoreProcesserHelper.GetProcesserByTags(tags) is not { } selectedProcesser)
         {
@@ -28,11 +28,11 @@ public sealed partial class BestsService : BestsApi.BestsApiBase
         bool mayMask = ServiceExecutionHelper.HasMaskedScores(records);
         ServiceExecutionHelper.EnsurePermission(!(mayMask && selectedProcesser.MaskMutex), "Mask enabled");
 
-        ImmutableArray<CommonRecord> bestEver;
-        ImmutableArray<CommonRecord> bestCurrent;
+        ParallelQuery<CommonRecord> bestEver;
+        ParallelQuery<CommonRecord> bestCurrent;
         if (selectedProcesser.RequireSecondData)
         {
-            (user2p, ImmutableArray<CommonRecord> records2p) = await secondDataProvider(condition);
+            (user2p, ParallelQuery<CommonRecord> records2p) = await secondDataProvider(condition);
             (bestEver, bestCurrent) = selectedProcesser.Processer.Process(records, records2p);
         }
         else
@@ -41,7 +41,7 @@ public sealed partial class BestsService : BestsApi.BestsApiBase
                 ScoreFilterHelper.GetPredicateByTags(tags, condition);
             ServiceExecutionHelper.EnsurePermission(!(mayMask && maskMutex), "Mask enabled");
 
-            ImmutableArray<CommonRecord> filteredRecords = [.. records.AsParallel().Where(predicate).SortRecordForBests()];
+            ParallelQuery<CommonRecord> filteredRecords = records.Where(predicate).SortRecordForBests();
             (bestEver, bestCurrent) = selectedProcesser.Processer.Process(filteredRecords);
         }
 
@@ -50,7 +50,7 @@ public sealed partial class BestsService : BestsApi.BestsApiBase
 
         await PrepareDataAsync(bestEver, bestCurrent);
 
-        return (bestEver, bestCurrent, everTotal, currentTotal, user2p);
+        return ([.. bestEver], [.. bestCurrent], everTotal, currentTotal, user2p);
     }
 
     public record SecondExtraInfo(

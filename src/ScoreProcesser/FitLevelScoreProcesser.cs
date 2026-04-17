@@ -2,7 +2,6 @@ using Grpc.Core;
 using Limekuma.Prober.Common;
 using Limekuma.Prober.DivingFish.Models;
 using Limekuma.Utils;
-using System.Collections.Immutable;
 using Status = Limekuma.Prober.DivingFish.Models.Status;
 
 namespace Limekuma.ScoreProcesser;
@@ -10,14 +9,14 @@ namespace Limekuma.ScoreProcesser;
 [ScoreProcesserTag("fit_level", true)]
 public sealed class FitLevelScoreProcesser : IScoreProcesser
 {
-    public (ImmutableArray<CommonRecord>, ImmutableArray<CommonRecord>) Process(IReadOnlyList<CommonRecord> records)
+    public (ParallelQuery<CommonRecord>, ParallelQuery<CommonRecord>) Process(ParallelQuery<CommonRecord> records)
     {
         if (records.Any(r => r.DXScore is 0 && (r.DXScoreRank > 0 || r.Rank > Ranks.A)))
         {
             throw new RpcException(new(StatusCode.PermissionDenied, "Mask enabled"));
         }
 
-        ParallelQuery<CommonRecord> projectedRecords = records.AsParallel().Select(record =>
+        ParallelQuery<CommonRecord> projectedRecords = records.Select(record =>
         {
             decimal fitLevel = record.Chart.LevelValue;
             if (Status.Shared.TryGetChartState(record.Chart.Song.Id, (int)record.Chart.Difficulty - 1,

@@ -14,7 +14,7 @@ namespace Limekuma.Services;
 
 public partial class BestsService
 {
-    private static async Task<(CommonUser, ImmutableArray<CommonRecord>)> PrepareLxnsRecordsForProcessAsync(
+    private static async Task<(CommonUser, ParallelQuery<CommonRecord>)> PrepareLxnsRecordsForProcessAsync(
         string devToken, string personalToken)
     {
         Task<Player> playerTask = LxnsGatewayService.GetPlayerByPersonalTokenAsync(devToken, personalToken);
@@ -23,11 +23,8 @@ public partial class BestsService
 
         Player player = await playerTask;
         List<Record> records = await recordsTask;
-        return (player,
-        [
-            .. records.AsParallel()
-                .Where(x => x.Type is not SongTypes.Utage && SongData.Shared.SongsById.ContainsKey(x.Id)).Select(x => x)
-        ]);
+        return (player, records.AsParallel()
+                .Where(x => x.Type is not SongTypes.Utage && SongData.Shared.SongsById.ContainsKey(x.Id)).Select(x => (CommonRecord)x));
     }
 
     private static async Task<(CommonUser, ImmutableArray<CommonRecord>, ImmutableArray<CommonRecord>, int, int)>
@@ -51,15 +48,13 @@ public partial class BestsService
 
         CommonUser user = player;
 
-        ImmutableArray<CommonRecord> bestEver =
-            [.. bests.Ever.AsParallel().Select(x => (CommonRecord)x).SortRecordForBests()];
-        ImmutableArray<CommonRecord> bestCurrent =
-            [.. bests.Current.AsParallel().Select(x => (CommonRecord)x).SortRecordForBests()];
+        ParallelQuery<CommonRecord> bestEver = bests.Ever.AsParallel().Select(x => (CommonRecord)x).SortRecordForBests();
+        ParallelQuery<CommonRecord> bestCurrent = bests.Current.AsParallel().Select(x => (CommonRecord)x).SortRecordForBests();
 
         await ServiceHelper.PrepareUserDataAsync(user);
         await PrepareDataAsync(bestEver, bestCurrent);
 
-        return (user, bestEver, bestCurrent, bests.EverTotal, bests.CurrentTotal);
+        return (user, [.. bestEver], [.. bestCurrent], bests.EverTotal, bests.CurrentTotal);
     }
 
     private static async Task<(CommonUser, ImmutableArray<CommonRecord>, ImmutableArray<CommonRecord>, int, int)>
@@ -83,7 +78,7 @@ public partial class BestsService
                 Rank = Ranks.SSSPlus,
                 SyncFlag = SyncFlags.FullSyncDXPlus
             }));
-        (ImmutableArray<CommonRecord> bestEver, ImmutableArray<CommonRecord> bestCurrent) =
+        (ParallelQuery<CommonRecord> bestEver, ParallelQuery<CommonRecord> bestCurrent) =
             allRecords.SortRecordForBests().SplitTopBestsByQuota(35, 15);
         int everTotal = bestEver.Sum(x => x.DXRating);
         int currentTotal = bestCurrent.Sum(x => x.DXRating);
@@ -103,7 +98,7 @@ public partial class BestsService
         await ServiceHelper.PrepareUserDataAsync(user);
         await PrepareDataAsync(bestEver, bestCurrent);
 
-        return (user, bestEver, bestCurrent, everTotal, currentTotal);
+        return (user, [.. bestEver], [.. bestCurrent], everTotal, currentTotal);
     }
 
     public override async Task GetFromLxns(LxnsBestsRequest request, IServerStreamWriter<ImageResponse> responseStream,
@@ -118,7 +113,7 @@ public partial class BestsService
         int currentTotal;
         if (ScoreProcesserHelper.GetProcesserByTags(requestTags) is not null)
         {
-            (user, ImmutableArray<CommonRecord> records) =
+            (user, ParallelQuery<CommonRecord> records) =
                 await PrepareLxnsRecordsForProcessAsync(request.DevToken, request.PersonalToken);
             await ServiceHelper.PrepareUserDataAsync(user);
             (bestEver, bestCurrent, everTotal, currentTotal, user2p) = await ProcessBestsByTagsAsync(requestTags,

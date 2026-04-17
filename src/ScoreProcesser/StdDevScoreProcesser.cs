@@ -1,16 +1,15 @@
 using Limekuma.Prober.Common;
 using Limekuma.Prober.DivingFish.Models;
 using Limekuma.Utils;
-using System.Collections.Immutable;
 
 namespace Limekuma.ScoreProcesser;
 
 [ScoreProcesserTag("std_dev")]
 public sealed class StdDevScoreProcesser : IScoreProcesser
 {
-    public (ImmutableArray<CommonRecord>, ImmutableArray<CommonRecord>) Process(IReadOnlyList<CommonRecord> records)
+    public (ParallelQuery<CommonRecord>, ParallelQuery<CommonRecord>) Process(ParallelQuery<CommonRecord> records)
     {
-        ParallelQuery<CommonRecord> rankedRecords = records.AsParallel().Select(record =>
+        ParallelQuery<CommonRecord> rankedRecords = records.Select(record =>
             {
                 decimal stdDev = 0;
                 decimal fitLevel = record.Chart.LevelValue;

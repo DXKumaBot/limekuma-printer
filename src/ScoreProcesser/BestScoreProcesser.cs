@@ -7,12 +7,12 @@ namespace Limekuma.ScoreProcesser;
 [ScoreProcesserTag("best")]
 public sealed class BestScoreProcesser : IScoreProcesser
 {
-    public (ImmutableArray<CommonRecord>, ImmutableArray<CommonRecord>) Process(IReadOnlyList<CommonRecord> records)
+    public (ParallelQuery<CommonRecord>, ParallelQuery<CommonRecord>) Process(ParallelQuery<CommonRecord> records)
     {
         (ImmutableArray<CommonRecord>.Builder Ever, ImmutableArray<CommonRecord>.Builder Current) state = (
             ImmutableArray.CreateBuilder<CommonRecord>(35), ImmutableArray.CreateBuilder<CommonRecord>(15));
         (ImmutableArray<CommonRecord>.Builder Ever, ImmutableArray<CommonRecord>.Builder Current) rankedState = records
-            .AsParallel().SortRecordForBests().Aggregate(state, static (acc, record) =>
+            .SortRecordForBests().Aggregate(state, static (acc, record) =>
             {
                 if (acc.Ever.Count >= 35 && acc.Current.Count >= 15)
                 {
@@ -28,6 +28,6 @@ public sealed class BestScoreProcesser : IScoreProcesser
             });
         ImmutableArray<CommonRecord>.Builder ever = rankedState.Ever;
         ImmutableArray<CommonRecord>.Builder current = rankedState.Current;
-        return (ever.ToImmutable(), current.ToImmutable());
+        return (ever.ToImmutable().AsParallel(), current.ToImmutable().AsParallel());
     }
 }

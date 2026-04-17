@@ -1,20 +1,19 @@
 using Limekuma.Prober.Common;
 using Limekuma.Utils;
-using System.Collections.Immutable;
 
 namespace Limekuma.ScoreProcesser;
 
 [ScoreProcesserTag("coop", false, true)]
 public sealed class CoopScoreProcesser : IScoreProcesser
 {
-    public (ImmutableArray<CommonRecord>, ImmutableArray<CommonRecord>) Process(IReadOnlyList<CommonRecord> records1p,
-        IReadOnlyList<CommonRecord> records2p)
+    public (ParallelQuery<CommonRecord>, ParallelQuery<CommonRecord>) Process(ParallelQuery<CommonRecord> records1p,
+        ParallelQuery<CommonRecord> records2p)
     {
-        ParallelQuery<CommonRecord> records = records1p.AsParallel().Select(x =>
+        ParallelQuery<CommonRecord> records = records1p.Select(x =>
         {
             x.ExtraInfo = 0;
             return x;
-        }).Union(records2p.AsParallel().Select(x =>
+        }).Union(records2p.Select(x =>
         {
             x.ExtraInfo = 1;
             return x;

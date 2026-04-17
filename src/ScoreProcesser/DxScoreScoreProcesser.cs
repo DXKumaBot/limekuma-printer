@@ -1,21 +1,20 @@
 using Grpc.Core;
 using Limekuma.Prober.Common;
 using Limekuma.Utils;
-using System.Collections.Immutable;
 
 namespace Limekuma.ScoreProcesser;
 
 [ScoreProcesserTag("dx_score", true)]
 public sealed class DxScoreScoreProcesser : IScoreProcesser
 {
-    public (ImmutableArray<CommonRecord>, ImmutableArray<CommonRecord>) Process(IReadOnlyList<CommonRecord> records)
+    public (ParallelQuery<CommonRecord>, ParallelQuery<CommonRecord>) Process(ParallelQuery<CommonRecord> records)
     {
         if (records.Any(r => r.DXScore is 0 && (r.DXScoreRank > 0 || r.Rank > Ranks.A)))
         {
             throw new RpcException(new(StatusCode.PermissionDenied, "Mask enabled"));
         }
 
-        ParallelQuery<CommonRecord> projectedRecords = records.AsParallel().Select(record =>
+        ParallelQuery<CommonRecord> projectedRecords = records.Select(record =>
         {
             decimal achievements = (decimal)record.DXScore / record.Chart.TotalDXScore * 101;
             (Ranks rank, decimal coefficient, _) = ConstantMap.ResolveRankAndCoefficient(achievements);

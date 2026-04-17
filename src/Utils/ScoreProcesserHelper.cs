@@ -8,8 +8,8 @@ internal static class ScoreProcesserHelper
 {
     private static readonly FrozenDictionary<string, SelectedProcesser> Processers = BuildProcessers();
 
-    internal static SelectedProcesser? GetProcesserByTags(IEnumerable<string>? tags) => tags
-        ?.Select(tag => Processers.GetValueOrDefault(tag)).FirstOrDefault(processer => processer is not null);
+    internal static SelectedProcesser? GetProcesserByTags(IReadOnlySet<string> tags) => tags
+        .Select(tag => Processers.GetValueOrDefault(tag)).FirstOrDefault(processer => processer is not null);
 
     private static FrozenDictionary<string, SelectedProcesser> BuildProcessers() => typeof(IScoreProcesser).Assembly
         .GetTypes().Where(type =>

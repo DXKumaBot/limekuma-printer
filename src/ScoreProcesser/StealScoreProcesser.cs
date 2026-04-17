@@ -8,20 +8,22 @@ namespace Limekuma.ScoreProcesser;
 [ScoreProcesserTag("steal", false, true)]
 public sealed class StealScoreProcesser : IScoreProcesser
 {
-    public (ImmutableArray<CommonRecord>, ImmutableArray<CommonRecord>) Process(IReadOnlyList<CommonRecord> records1p,
-        IReadOnlyList<CommonRecord> records2p)
+    public (ParallelQuery<CommonRecord>, ParallelQuery<CommonRecord>) Process(ParallelQuery<CommonRecord> records1p,
+        ParallelQuery<CommonRecord> records2p)
     {
-        (ImmutableArray<CommonRecord> baseEver, ImmutableArray<CommonRecord> baseCurrent) =
-            records1p.AsParallel().SortRecordForBests().SplitTopBestsByQuota(35, 15);
+        (ParallelQuery<CommonRecord> iBaseEver, ParallelQuery<CommonRecord> iBaseCurrent) =
+            records1p.SortRecordForBests().SplitTopBestsByQuota(35, 15);
+        ImmutableArray<CommonRecord> baseEver = [.. iBaseEver];
+        ImmutableArray<CommonRecord> baseCurrent = [.. iBaseCurrent];
         int everMin = baseEver.IsDefaultOrEmpty ? 0 : baseEver[^1].DXRating;
         int currentMin = baseCurrent.IsDefaultOrEmpty ? 0 : baseCurrent[^1].DXRating;
 
-        bool handleType = records1p.Count > records2p.Count;
-        IReadOnlyList<CommonRecord> processRecords = handleType ? records2p : records1p;
-        IReadOnlyList<CommonRecord> controlRecords = handleType ? records1p : records2p;
+        bool handleType = records1p.Count() > records2p.Count();
+        ParallelQuery<CommonRecord> processRecords = handleType ? records2p : records1p;
+        ParallelQuery<CommonRecord> controlRecords = handleType ? records1p : records2p;
         FrozenDictionary<(int SongId, CommonDifficulties Difficulty), CommonRecord> controlLookup =
             controlRecords.ToFrozenDictionary(x => (x.Chart.Song.Id, x.Chart.Difficulty));
-        ParallelQuery<CommonRecord> selectedRecords = processRecords.AsParallel()
+        ParallelQuery<CommonRecord> selectedRecords = processRecords
             .Where(processRecord => processRecord.Chart.Song.Type is not CommonSongTypes.Utage).Select(processRecord =>
             {
                 if (!controlLookup.TryGetValue((processRecord.Chart.Song.Id, processRecord.Chart.Difficulty),
@@ -47,18 +49,12 @@ public sealed class StealScoreProcesser : IScoreProcesser
                 return selected;
             }).OfType<CommonRecord>();
 
-        ImmutableArray<CommonRecord> current =
-        [
-            .. selectedRecords.AsParallel().Where(x => x.Chart.Song.InCurrentGenre).OrderByDescending(x => x.DXRating > currentMin)
+        ParallelQuery<CommonRecord> current = selectedRecords.Where(x => x.Chart.Song.InCurrentGenre).OrderByDescending(x => x.DXRating > currentMin)
                 .ThenByDescending(x => x.DXRating - x.ExtraInfo).ThenByDescending(x => x.Chart.LevelValue)
-                .ThenByDescending(x => x.Achievements).Take(15)
-        ];
-        ImmutableArray<CommonRecord> ever =
-        [
-            .. selectedRecords.AsParallel().Where(x => !x.Chart.Song.InCurrentGenre).OrderByDescending(x => x.DXRating > everMin)
+                .ThenByDescending(x => x.Achievements).Take(15);
+        ParallelQuery<CommonRecord> ever = selectedRecords.Where(x => !x.Chart.Song.InCurrentGenre).OrderByDescending(x => x.DXRating > everMin)
                 .ThenByDescending(x => x.DXRating - x.ExtraInfo).ThenByDescending(x => x.Chart.LevelValue)
-                .ThenByDescending(x => x.Achievements).Take(35)
-        ];
+                .ThenByDescending(x => x.Achievements).Take(35);
 
         return (ever, current);
     }
