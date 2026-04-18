@@ -2,8 +2,8 @@ using System.Text.Json.Serialization;
 
 namespace Limekuma.Prober.Common;
 
-[JsonConverter(typeof(JsonStringEnumConverter<Ranks>))]
-public enum Ranks
+[JsonConverter(typeof(JsonStringEnumConverter<AchievementsRank>))]
+public enum AchievementsRank
 {
     [JsonStringEnumMemberName("d")]
     D,

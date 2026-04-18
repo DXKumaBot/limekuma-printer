@@ -7,7 +7,7 @@ namespace Limekuma.ScoreFilter;
 [ScoreFilterTag("genre")]
 public sealed class GenreScoreFilter : IScoreFilter
 {
-    public Func<CommonRecord, bool> GetFilter(string? condition)
+    public Func<Record, bool> GetFilter(string? condition)
     {
         if (string.IsNullOrWhiteSpace(condition))
         {

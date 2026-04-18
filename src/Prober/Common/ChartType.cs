@@ -1,6 +1,6 @@
 namespace Limekuma.Prober.Common;
 
-public enum CommonSongTypes
+public enum ChartType
 {
     Standard,
     DX,

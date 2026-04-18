@@ -1,16 +1,16 @@
-using Limekuma.Prober.Common;
 using Limekuma.Prober.Lxns.Enums;
 using System.Text.Json.Serialization;
+using CommonNotes = Limekuma.Prober.Common.Notes;
 
 namespace Limekuma.Prober.Lxns.Models;
 
 public record Chart
 {
     [JsonPropertyName("type")]
-    public required SongTypes Type { get; init; }
+    public required ChartType Type { get; init; }
 
     [JsonPropertyName("difficulty")]
-    public required Difficulties Difficulty { get; init; }
+    public required Difficulty Difficulty { get; init; }
 
     [JsonPropertyName("level")]
     public required string Level { get; init; }
@@ -19,11 +19,11 @@ public record Chart
     public required decimal LevelValue { get; init; }
 
     [JsonPropertyName("note_designer")]
-    public required string Charter { get; init; }
+    public required string CharterName { get; init; }
 
     [JsonPropertyName("version")]
     public required int Version { get; init; }
 
     [JsonPropertyName("notes")]
-    public Notes? Notes { get; init; }
+    public CommonNotes? Notes { get; init; }
 }

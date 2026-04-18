@@ -1,6 +1,6 @@
-using Limekuma.Prober.Common;
 using Limekuma.Prober.DivingFish.Models;
 using Limekuma.Utils;
+using CommonRecord = Limekuma.Prober.Common.Record;
 
 namespace Limekuma.ScoreProcesser;
 
@@ -14,7 +14,7 @@ public sealed class StdDevScoreProcesser : IScoreProcesser
                 decimal stdDev = 0;
                 decimal fitLevel = record.Chart.LevelValue;
                 if (Status.Shared.TryGetChartState(record.Chart.Song.Id, (int)record.Chart.Difficulty - 1,
-                        out ChartState? chartState))
+                        out ChartState chartState))
                 {
                     stdDev = chartState.StandardDeviation;
                     fitLevel = chartState.FitLevel;

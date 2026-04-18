@@ -27,5 +27,5 @@ public enum ClassRank
     SSS3,
     SSS2,
     SSS1,
-    LEGEND
+    Legend
 }

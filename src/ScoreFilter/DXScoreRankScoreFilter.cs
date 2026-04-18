@@ -6,7 +6,7 @@ namespace Limekuma.ScoreFilter;
 [ScoreFilterTag("dx_star")]
 public sealed class DXScoreRankScoreFilter : IScoreFilter
 {
-    public Func<CommonRecord, bool> GetFilter(string? condition)
+    public Func<Record, bool> GetFilter(string? condition)
     {
         if (condition is null)
         {

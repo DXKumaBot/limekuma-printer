@@ -3,8 +3,8 @@ using System.Text.Json.Serialization;
 namespace Limekuma.Prober.Common;
 
 [Flags]
-[JsonConverter(typeof(JsonStringEnumConverter<SyncFlags>))]
-public enum SyncFlags
+[JsonConverter(typeof(JsonStringEnumConverter<SyncFlag>))]
+public enum SyncFlag
 {
     [JsonIgnore]
     None = 0b0000_0000,

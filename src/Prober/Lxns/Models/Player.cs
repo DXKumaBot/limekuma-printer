@@ -1,6 +1,9 @@
-using Limekuma.Prober.Common;
 using Limekuma.Prober.Lxns.Enums;
 using System.Text.Json.Serialization;
+using CommonClassRankEnum = Limekuma.Prober.Common.ClassRank;
+using CommonCourseRankEnum = Limekuma.Prober.Common.CourseRank;
+using CommonPlayer = Limekuma.Prober.Common.User;
+using CommonTrophyColorEnum = Limekuma.Prober.Common.TrophyColor;
 
 namespace Limekuma.Prober.Lxns.Models;
 
@@ -13,7 +16,7 @@ public record Player
     public required string Name { get; set; }
 
     [JsonPropertyName("rating")]
-    public required int Rating { get; set; }
+    public required int DXRating { get; set; }
 
     [JsonPropertyName("friend_code")]
     public required long FriendCode { get; set; }
@@ -22,7 +25,7 @@ public record Player
     public required CourseRank CourseRank { get; set; }
 
     [JsonPropertyName("class_rank")]
-    public required ClassRank ClassRank { get; set; }
+    public required CommonClassRankEnum ClassRank { get; set; }
 
     [JsonPropertyName("star")]
     public required int Star { get; set; }
@@ -42,55 +45,40 @@ public record Player
     [JsonPropertyName("upload_time")]
     public DateTimeOffset? UploadTime { get; set; }
 
-    public int RatingLevel => Rating switch
+    private static CommonCourseRankEnum MapCourseRank(CourseRank courseRank) => courseRank switch
     {
-        < 1000 => 1,
-        < 2000 => 2,
-        < 4000 => 3,
-        < 7000 => 4,
-        < 10000 => 5,
-        < 12000 => 6,
-        < 13000 => 7,
-        < 14000 => 8,
-        < 14500 => 9,
-        < 15000 => 10,
-        > 14999 => 11
-    };
-
-    private static CommonCourseRank MapCourseRank(CourseRank courseRank) => courseRank switch
-    {
-        CourseRank.Shoshinsha => CommonCourseRank.Shoshinsha,
-        CourseRank.Shodan => CommonCourseRank.Shodan,
-        CourseRank.Nidan => CommonCourseRank.Nidan,
-        CourseRank.Sandan => CommonCourseRank.Sandan,
-        CourseRank.Yondan => CommonCourseRank.Yondan,
-        CourseRank.Godan => CommonCourseRank.Godan,
-        CourseRank.Rokudan => CommonCourseRank.Rokudan,
-        CourseRank.Shichidan => CommonCourseRank.Shichidan,
-        CourseRank.Hachidan => CommonCourseRank.Hachidan,
-        CourseRank.Kyudan => CommonCourseRank.Kyudan,
-        CourseRank.Judan => CommonCourseRank.Judan,
-        CourseRank.Shinshodan => CommonCourseRank.Shinshodan,
-        CourseRank.Shinnidan => CommonCourseRank.Shinnidan,
-        CourseRank.Shinsandan => CommonCourseRank.Shinsandan,
-        CourseRank.Shinyondan => CommonCourseRank.Shinyondan,
-        CourseRank.Shingodan => CommonCourseRank.Shingodan,
-        CourseRank.Shinrokudan => CommonCourseRank.Shinrokudan,
-        CourseRank.Shinshichidan => CommonCourseRank.Shinshichidan,
-        CourseRank.Shinhachidan => CommonCourseRank.Shinhachidan,
-        CourseRank.Shinkyudan => CommonCourseRank.Shinkyudan,
-        CourseRank.Shinjudan => CommonCourseRank.Shinjudan,
-        CourseRank.Shinkaiden => CommonCourseRank.Shinkaiden,
-        CourseRank.Urakaiden => CommonCourseRank.Urakaiden,
+        CourseRank.Shoshinsha => CommonCourseRankEnum.Shoshinsha,
+        CourseRank.Shodan => CommonCourseRankEnum.Shodan,
+        CourseRank.Nidan => CommonCourseRankEnum.Nidan,
+        CourseRank.Sandan => CommonCourseRankEnum.Sandan,
+        CourseRank.Yondan => CommonCourseRankEnum.Yondan,
+        CourseRank.Godan => CommonCourseRankEnum.Godan,
+        CourseRank.Rokudan => CommonCourseRankEnum.Rokudan,
+        CourseRank.Shichidan => CommonCourseRankEnum.Shichidan,
+        CourseRank.Hachidan => CommonCourseRankEnum.Hachidan,
+        CourseRank.Kyudan => CommonCourseRankEnum.Kyudan,
+        CourseRank.Judan => CommonCourseRankEnum.Judan,
+        CourseRank.Shinshodan => CommonCourseRankEnum.Shinshodan,
+        CourseRank.Shinnidan => CommonCourseRankEnum.Shinnidan,
+        CourseRank.Shinsandan => CommonCourseRankEnum.Shinsandan,
+        CourseRank.Shinyondan => CommonCourseRankEnum.Shinyondan,
+        CourseRank.Shingodan => CommonCourseRankEnum.Shingodan,
+        CourseRank.Shinrokudan => CommonCourseRankEnum.Shinrokudan,
+        CourseRank.Shinshichidan => CommonCourseRankEnum.Shinshichidan,
+        CourseRank.Shinhachidan => CommonCourseRankEnum.Shinhachidan,
+        CourseRank.Shinkyudan => CommonCourseRankEnum.Shinkyudan,
+        CourseRank.Shinjudan => CommonCourseRankEnum.Shinjudan,
+        CourseRank.Shinkaiden => CommonCourseRankEnum.Shinkaiden,
+        CourseRank.Urakaiden => CommonCourseRankEnum.Urakaiden,
         _ => throw new ArgumentOutOfRangeException(nameof(courseRank), courseRank, null)
     };
 
-    public static implicit operator CommonUser(Player player) =>
+    public static implicit operator CommonPlayer(Player player) =>
         new()
         {
             Name = player.Name,
-            Rating = player.Rating,
-            TrophyColor = player.Trophy?.Color ?? TrophyColor.Normal,
+            DXRating = player.DXRating,
+            TrophyColor = player.Trophy?.Color ?? CommonTrophyColorEnum.Normal,
             TrophyText = player.Trophy?.Name ?? "なかよしmai友～！",
             ClassRank = player.ClassRank,
             CourseRank = MapCourseRank(player.CourseRank),
@@ -99,11 +87,11 @@ public record Player
             PlateId = player.NamePlate?.Id ?? 458001
         };
 
-    public async Task<Record> GetBestAsync(int id, Difficulties difficulty, SongTypes type,
+    public async Task<Record> GetBestAsync(int id, Difficulty difficulty, ChartType type,
         CancellationToken cancellationToken = default) =>
         await Client!.GetBestAsync(FriendCode, id, difficulty, type, cancellationToken);
 
-    public async Task<Record> GetBestAsync(string title, Difficulties difficulty, SongTypes type,
+    public async Task<Record> GetBestAsync(string title, Difficulty difficulty, ChartType type,
         CancellationToken cancellationToken = default) =>
         await Client!.GetBestAsync(FriendCode, title, difficulty, type, cancellationToken);
 
@@ -113,11 +101,11 @@ public record Player
     public async Task<Bests> GetAllPerfectBestsAsync(CancellationToken cancellationToken = default) =>
         await Client!.GetAllPerfectBestsAsync(FriendCode, cancellationToken);
 
-    public async Task<List<Record>> GetRecordsAsync(int id, SongTypes type,
+    public async Task<List<Record>> GetRecordsAsync(int id, ChartType type,
         CancellationToken cancellationToken = default) =>
         await Client!.GetRecordsAsync(FriendCode, id, type, cancellationToken);
 
-    public async Task<List<Record>> GetRecordsAsync(string title, SongTypes type,
+    public async Task<List<Record>> GetRecordsAsync(string title, ChartType type,
         CancellationToken cancellationToken = default) =>
         await Client!.GetRecordsAsync(FriendCode, title, type, cancellationToken);
 
@@ -137,7 +125,7 @@ public record Player
         CancellationToken cancellationToken = default) =>
         await Client!.GetDXRatingTrendAsync(FriendCode, version, cancellationToken);
 
-    public async Task<List<Record>> GetHistoryAsync(int id, SongTypes type, Difficulties difficulty,
+    public async Task<List<Record>> GetHistoryAsync(int id, ChartType type, Difficulty difficulty,
         CancellationToken cancellationToken = default) =>
         await Client!.GetHistoryAsync(FriendCode, id, type, difficulty, cancellationToken);
 

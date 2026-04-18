@@ -1,8 +1,9 @@
 using Grpc.Core;
-using Limekuma.Prober.Common;
 using Limekuma.Prober.DivingFish.Models;
 using Limekuma.Utils;
-using Status = Limekuma.Prober.DivingFish.Models.Status;
+using CommonAchievementsRankEnum = Limekuma.Prober.Common.AchievementsRank;
+using CommonRecord = Limekuma.Prober.Common.Record;
+using DFStatus = Limekuma.Prober.DivingFish.Models.Status;
 
 namespace Limekuma.ScoreProcesser;
 
@@ -11,7 +12,7 @@ public sealed class FitLevelScoreProcesser : IScoreProcesser
 {
     public (ParallelQuery<CommonRecord>, ParallelQuery<CommonRecord>) Process(ParallelQuery<CommonRecord> records)
     {
-        if (records.Any(r => r.DXScore is 0 && (r.DXScoreRank > 0 || r.Rank > Ranks.A)))
+        if (records.Any(r => r.DXScore is 0 && (r.DXScoreRank > 0 || r.Rank > CommonAchievementsRankEnum.A)))
         {
             throw new RpcException(new(StatusCode.PermissionDenied, "Mask enabled"));
         }
@@ -19,7 +20,7 @@ public sealed class FitLevelScoreProcesser : IScoreProcesser
         ParallelQuery<CommonRecord> projectedRecords = records.Select(record =>
         {
             decimal fitLevel = record.Chart.LevelValue;
-            if (Status.Shared.TryGetChartState(record.Chart.Song.Id, (int)record.Chart.Difficulty - 1,
+            if (DFStatus.Shared.TryGetChartState(record.Chart.Song.Id, (int)record.Chart.Difficulty - 1,
                     out ChartState chartState))
             {
                 fitLevel = chartState.FitLevel;

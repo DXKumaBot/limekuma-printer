@@ -7,11 +7,11 @@ namespace Limekuma.ScoreProcesser;
 [ScoreProcesserTag("best")]
 public sealed class BestScoreProcesser : IScoreProcesser
 {
-    public (ParallelQuery<CommonRecord>, ParallelQuery<CommonRecord>) Process(ParallelQuery<CommonRecord> records)
+    public (ParallelQuery<Record>, ParallelQuery<Record>) Process(ParallelQuery<Record> records)
     {
-        (ImmutableArray<CommonRecord>.Builder Ever, ImmutableArray<CommonRecord>.Builder Current) state = (
-            ImmutableArray.CreateBuilder<CommonRecord>(35), ImmutableArray.CreateBuilder<CommonRecord>(15));
-        (ImmutableArray<CommonRecord>.Builder Ever, ImmutableArray<CommonRecord>.Builder Current) rankedState = records
+        (ImmutableArray<Record>.Builder Ever, ImmutableArray<Record>.Builder Current) state = (
+            ImmutableArray.CreateBuilder<Record>(35), ImmutableArray.CreateBuilder<Record>(15));
+        (ImmutableArray<Record>.Builder Ever, ImmutableArray<Record>.Builder Current) rankedState = records
             .SortRecordForBests().Aggregate(state, static (acc, record) =>
             {
                 if (acc.Ever.Count >= 35 && acc.Current.Count >= 15)
@@ -26,8 +26,8 @@ public sealed class BestScoreProcesser : IScoreProcesser
                 }).Add(record);
                 return acc;
             });
-        ImmutableArray<CommonRecord>.Builder ever = rankedState.Ever;
-        ImmutableArray<CommonRecord>.Builder current = rankedState.Current;
+        ImmutableArray<Record>.Builder ever = rankedState.Ever;
+        ImmutableArray<Record>.Builder current = rankedState.Current;
         return (ever.ToImmutable().AsParallel(), current.ToImmutable().AsParallel());
     }
 }

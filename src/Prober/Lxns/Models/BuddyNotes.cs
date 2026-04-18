@@ -1,13 +1,13 @@
-using Limekuma.Prober.Common;
 using System.Text.Json.Serialization;
+using CommonNotes = Limekuma.Prober.Common.Notes;
 
 namespace Limekuma.Prober.Lxns.Models;
 
 public record BuddyNotes
 {
     [JsonPropertyName("left")]
-    public required Notes Player1 { get; init; }
+    public required CommonNotes Player1 { get; init; }
 
     [JsonPropertyName("right")]
-    public required Notes Player2 { get; init; }
+    public required CommonNotes Player2 { get; init; }
 }

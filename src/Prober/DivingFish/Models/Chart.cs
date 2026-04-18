@@ -1,20 +1,20 @@
-using Limekuma.Prober.Common;
 using System.Text.Json.Serialization;
+using CommonNotes = Limekuma.Prober.Common.Notes;
 
 namespace Limekuma.Prober.DivingFish.Models;
 
 public record Chart
 {
-    private Lazy<Notes>? _notes;
+    private Lazy<CommonNotes>? _notes;
 
     [JsonPropertyName("notes")]
     public required List<int> NotesNumber { get; set; }
 
     [JsonPropertyName("charter")]
-    public required string Charter { get; set; }
+    public required string CharterName { get; set; }
 
     [JsonIgnore]
-    public Notes Notes => (_notes ??= new(() => new()
+    public CommonNotes Notes => (_notes ??= new(() => new()
     {
         Total = NotesNumber.Sum(),
         Tap = NotesNumber[0],

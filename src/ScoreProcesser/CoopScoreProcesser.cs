@@ -6,10 +6,10 @@ namespace Limekuma.ScoreProcesser;
 [ScoreProcesserTag("coop", false, true)]
 public sealed class CoopScoreProcesser : IScoreProcesser
 {
-    public (ParallelQuery<CommonRecord>, ParallelQuery<CommonRecord>) Process(ParallelQuery<CommonRecord> records1p,
-        ParallelQuery<CommonRecord> records2p)
+    public (ParallelQuery<Record>, ParallelQuery<Record>) Process(ParallelQuery<Record> records1p,
+        ParallelQuery<Record> records2p)
     {
-        ParallelQuery<CommonRecord> records = records1p.Select(x =>
+        ParallelQuery<Record> records = records1p.Select(x =>
         {
             x.ExtraInfo = 0;
             return x;

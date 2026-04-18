@@ -1,6 +1,6 @@
 namespace Limekuma.Prober.Common;
 
-public enum CommonCourseRank
+public enum CourseRank
 {
     Shoshinsha,
     Shodan,

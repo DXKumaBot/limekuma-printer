@@ -1,7 +1,12 @@
-using Limekuma.Prober.Common;
 using Limekuma.Prober.DivingFish.Enums;
 using Limekuma.Utils;
 using System.Text.Json.Serialization;
+using CommonComboFlagEnum = Limekuma.Prober.Common.ComboFlag;
+using CommonDifficultyEnum = Limekuma.Prober.Common.Difficulty;
+using CommonAchievementsRankEnum = Limekuma.Prober.Common.AchievementsRank;
+using CommonRecord = Limekuma.Prober.Common.Record;
+using CommonChartTypeEnum = Limekuma.Prober.Common.ChartType;
+using CommonSyncFlagEnum = Limekuma.Prober.Common.SyncFlag;
 
 namespace Limekuma.Prober.DivingFish.Models;
 
@@ -61,10 +66,10 @@ public class Record
     }
 
     [JsonPropertyName("fc")]
-    public required Union<ComboFlags, string> ComboFlag { get; init; }
+    public required Union<CommonComboFlagEnum, string> ComboFlag { get; init; }
 
     [JsonPropertyName("fs")]
-    public required Union<SyncFlags, string> SyncFlag { get; init; }
+    public required Union<CommonSyncFlagEnum, string> SyncFlag { get; init; }
 
     [JsonPropertyName("level")]
     public required string Level { get; init; }
@@ -81,7 +86,7 @@ public class Record
     }
 
     [JsonPropertyName("level_label")]
-    public required Difficulties Difficulty { get; init; }
+    public required Difficulty Difficulty { get; init; }
 
     [JsonPropertyName("ra")]
     public required int DXRating
@@ -95,7 +100,7 @@ public class Record
     }
 
     [JsonPropertyName("rate")]
-    public required Ranks Rank { get; init; }
+    public required CommonAchievementsRankEnum Rank { get; init; }
 
     [JsonPropertyName("song_id")]
     public required int Id
@@ -112,7 +117,7 @@ public class Record
     public required string Title { get; init; }
 
     [JsonPropertyName("type")]
-    public required SongTypes Type { get; init; }
+    public required ChartType Type { get; init; }
 
     public string AudioUrl =>
         $"https://assets2.lxns.net/maimai/music/{(Id is > 10000 and < 100000 ? Id % 10000 : Id)}.mp3";
@@ -145,15 +150,15 @@ public class Record
         _ => 0
     })).Value;
 
-    private static CommonDifficulties MapDifficulty(Difficulties difficulty) => difficulty switch
+    private static CommonDifficultyEnum MapDifficulty(Difficulty difficulty) => difficulty switch
     {
-        Difficulties.Dummy => CommonDifficulties.Dummy,
-        Difficulties.Basic => CommonDifficulties.Basic,
-        Difficulties.Advanced => CommonDifficulties.Advanced,
-        Difficulties.Expert => CommonDifficulties.Expert,
-        Difficulties.Master => CommonDifficulties.Master,
-        Difficulties.ReMaster => CommonDifficulties.ReMaster,
-        Difficulties.Utage => CommonDifficulties.Utage,
+        Difficulty.Dummy => CommonDifficultyEnum.Dummy,
+        Difficulty.Basic => CommonDifficultyEnum.Basic,
+        Difficulty.Advanced => CommonDifficultyEnum.Advanced,
+        Difficulty.Expert => CommonDifficultyEnum.Expert,
+        Difficulty.Master => CommonDifficultyEnum.Master,
+        Difficulty.ReMaster => CommonDifficultyEnum.ReMaster,
+        Difficulty.Utage => CommonDifficultyEnum.Utage,
         _ => throw new ArgumentOutOfRangeException(nameof(difficulty), difficulty, null)
     };
 
@@ -164,7 +169,7 @@ public class Record
         BasicInfo basicInfo = song.BasicInfo;
 
         ArgumentOutOfRangeException.ThrowIfGreaterThan(record.Achievements,
-            (record.Difficulty is Difficulties.Utage && record.Song.Charts.Count > 1) ? 202 : 101);
+            (record.Difficulty is Difficulty.Utage && record.Song.Charts.Count > 1) ? 202 : 101);
         // ArgumentOutOfRangeException.ThrowIfGreaterThan(record.DXScore, record.TotalDXScore);
         ArgumentOutOfRangeException.ThrowIfGreaterThan(record.DifficultyIndex, record.Song.Charts.Count);
         return new()
@@ -175,9 +180,9 @@ public class Record
                 {
                     Id = record.Id,
                     Title = record.Title,
-                    Type = record.Difficulty is Difficulties.Utage
-                        ? CommonSongTypes.Utage
-                        : (CommonSongTypes)record.Type,
+                    Type = record.Difficulty is Difficulty.Utage
+                        ? CommonChartTypeEnum.Utage
+                        : (CommonChartTypeEnum)record.Type,
                     Genre = basicInfo.Genre,
                     InCurrentGenre = basicInfo.InCurrentVersion,
                     AudioUrl = record.AudioUrl,

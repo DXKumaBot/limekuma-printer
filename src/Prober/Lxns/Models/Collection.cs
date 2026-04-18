@@ -1,5 +1,5 @@
-using Limekuma.Prober.Common;
 using System.Text.Json.Serialization;
+using CommonTrophyColorEnum = Limekuma.Prober.Common.TrophyColor;
 
 namespace Limekuma.Prober.Lxns.Models;
 
@@ -21,7 +21,7 @@ public record Collection
 public record Trophy : Collection
 {
     [JsonPropertyName("color")]
-    public required TrophyColor Color { get; init; }
+    public required CommonTrophyColorEnum Color { get; init; }
 }
 
 public record Icon : Collection

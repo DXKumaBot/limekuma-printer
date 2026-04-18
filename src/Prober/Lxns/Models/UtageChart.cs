@@ -1,6 +1,6 @@
-using Limekuma.Prober.Common;
 using Limekuma.Utils;
 using System.Text.Json.Serialization;
+using CommonNotes = Limekuma.Prober.Common.Notes;
 
 namespace Limekuma.Prober.Lxns.Models;
 
@@ -16,5 +16,5 @@ public record UtageChart : Chart
     public required bool IsBuddy { get; init; }
 
     [JsonPropertyName("notes")]
-    public new Union<Notes, BuddyNotes>? Notes { get; init; }
+    public new Union<CommonNotes, BuddyNotes>? Notes { get; init; }
 }

@@ -1,14 +1,14 @@
 namespace Limekuma.Prober.Common;
 
-public record CommonRecord
+public record Record
 {
-    public required CommonChart Chart { get; init; }
+    public required Chart Chart { get; init; }
 
-    public required ComboFlags ComboFlag { get; init; }
+    public required ComboFlag ComboFlag { get; init; }
 
-    public required SyncFlags SyncFlag { get; init; }
+    public required SyncFlag SyncFlag { get; init; }
 
-    public required Ranks Rank { get; init; }
+    public required AchievementsRank Rank { get; init; }
 
     public required decimal Achievements { get; init; }
 

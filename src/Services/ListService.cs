@@ -7,19 +7,19 @@ namespace Limekuma.Services;
 
 public sealed partial class ListService : ListApi.ListApiBase
 {
-    private static (ImmutableArray<CommonRecord> Records, bool MayMask) BuildListRecords(IReadOnlySet<string> tags,
-        string condition, ParallelQuery<CommonRecord> records)
+    private static (ImmutableArray<Record> Records, bool MayMask) BuildListRecords(IReadOnlySet<string> tags,
+        string condition, ParallelQuery<Record> records)
     {
-        (Func<CommonRecord, bool> predicate, bool maskMutex) = ScoreFilterHelper.GetPredicateByTags(tags, condition);
+        (Func<Record, bool> predicate, bool maskMutex) = ScoreFilterHelper.GetPredicateByTags(tags, condition);
         bool mayMask = ServiceExecutionHelper.HasMaskedScores(records);
         ServiceExecutionHelper.EnsurePermission(!(mayMask && maskMutex), "Mask enabled");
 
-        ParallelQuery<CommonRecord> filteredRecords = records.Where(predicate).SortRecordForList();
+        ParallelQuery<Record> filteredRecords = records.Where(predicate).SortRecordForList();
         return ([.. filteredRecords], mayMask);
     }
 
-    private static async Task<(ImmutableArray<int>, int, int)> PrepareDataAsync(CommonUser user,
-        ImmutableArray<CommonRecord> records, int page)
+    private static async Task<(ImmutableArray<int>, int, int)> PrepareDataAsync(User user,
+        ImmutableArray<Record> records, int page)
     {
         int i = (page - 1) * 55;
         int count = records.Length;
@@ -34,7 +34,7 @@ public sealed partial class ListService : ListApi.ListApiBase
         await ServiceHelper.PrepareRecordDataAsync(records[i..end]);
 
         int[] counts = new int[15];
-        foreach (CommonRecord record in records)
+        foreach (Record record in records)
         {
             AccumulateRecordStats(record, counts);
         }
@@ -42,79 +42,79 @@ public sealed partial class ListService : ListApi.ListApiBase
         return ([.. counts], i, end);
     }
 
-    private static void AccumulateRecordStats(CommonRecord record, int[] counts)
+    private static void AccumulateRecordStats(Record record, int[] counts)
     {
-        if (record.Rank >= Ranks.SSSPlus)
+        if (record.Rank >= AchievementsRank.SSSPlus)
         {
             counts[0]++;
         }
 
-        if (record.Rank >= Ranks.SSS)
+        if (record.Rank >= AchievementsRank.SSS)
         {
             counts[1]++;
         }
 
-        if (record.Rank >= Ranks.SSPlus)
+        if (record.Rank >= AchievementsRank.SSPlus)
         {
             counts[2]++;
         }
 
-        if (record.Rank >= Ranks.SS)
+        if (record.Rank >= AchievementsRank.SS)
         {
             counts[3]++;
         }
 
-        if (record.Rank >= Ranks.SPlus)
+        if (record.Rank >= AchievementsRank.SPlus)
         {
             counts[4]++;
         }
 
-        if (record.Rank >= Ranks.S)
+        if (record.Rank >= AchievementsRank.S)
         {
             counts[5]++;
         }
 
-        if (record.Rank >= Ranks.A)
+        if (record.Rank >= AchievementsRank.A)
         {
             counts[6]++;
         }
 
-        if (record.ComboFlag.HasFlag(ComboFlags.AllPerfectPlus))
+        if (record.ComboFlag.HasFlag(ComboFlag.AllPerfectPlus))
         {
             counts[7]++;
         }
 
-        if (record.ComboFlag.HasFlag(ComboFlags.AllPerfect))
+        if (record.ComboFlag.HasFlag(ComboFlag.AllPerfect))
         {
             counts[8]++;
         }
 
-        if (record.ComboFlag.HasFlag(ComboFlags.FullComboPlus))
+        if (record.ComboFlag.HasFlag(ComboFlag.FullComboPlus))
         {
             counts[9]++;
         }
 
-        if (record.ComboFlag.HasFlag(ComboFlags.FullCombo))
+        if (record.ComboFlag.HasFlag(ComboFlag.FullCombo))
         {
             counts[10]++;
         }
 
-        if (record.SyncFlag.HasFlag(SyncFlags.FullSyncDXPlus))
+        if (record.SyncFlag.HasFlag(SyncFlag.FullSyncDXPlus))
         {
             counts[11]++;
         }
 
-        if (record.SyncFlag.HasFlag(SyncFlags.FullSyncDX))
+        if (record.SyncFlag.HasFlag(SyncFlag.FullSyncDX))
         {
             counts[12]++;
         }
 
-        if (record.SyncFlag.HasFlag(SyncFlags.FullSyncPlus))
+        if (record.SyncFlag.HasFlag(SyncFlag.FullSyncPlus))
         {
             counts[13]++;
         }
 
-        if (record.SyncFlag.HasFlag(SyncFlags.FullSync))
+        if (record.SyncFlag.HasFlag(SyncFlag.FullSync))
         {
             counts[14]++;
         }

@@ -1,5 +1,4 @@
 using Grpc.Core;
-using Limekuma.Prober.Common;
 using Limekuma.Prober.Lxns.Enums;
 using Limekuma.Prober.Lxns.Models;
 using Limekuma.Render;
@@ -7,6 +6,8 @@ using Limekuma.Utils;
 using SixLabors.ImageSharp;
 using System.Collections.Frozen;
 using System.Collections.Immutable;
+using CommonPlayer = Limekuma.Prober.Common.User;
+using CommonRecord = Limekuma.Prober.Common.Record;
 
 namespace Limekuma.Services;
 
@@ -22,9 +23,9 @@ public partial class ListService
             LxnsGatewayService.GetRecordsAsync(request.PersonalToken);
         await Task.WhenAll(playerTask, sourceRecordsTask);
 
-        CommonUser player = await playerTask;
+        CommonPlayer player = await playerTask;
         ParallelQuery<CommonRecord> sourceRecords = (await sourceRecordsTask).AsParallel()
-            .Where(x => x.Type is not SongTypes.Utage && SongData.Shared.SongsById.ContainsKey(x.Id))
+            .Where(x => x.Type is not ChartType.Utage && SongData.Shared.SongsById.ContainsKey(x.Id))
             .Select(x => (CommonRecord)x);
         (ImmutableArray<CommonRecord> cRecords, bool mayMask) =
             BuildListRecords(requestTags, request.Condition, sourceRecords);

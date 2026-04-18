@@ -24,8 +24,8 @@ internal static class ServiceExecutionHelper
         }
     }
 
-    internal static bool HasMaskedScores(ParallelQuery<CommonRecord> records) =>
-        records.Any(r => r.DXScore is 0 && (r.DXScoreRank > 0 || r.Rank > Ranks.A));
+    internal static bool HasMaskedScores(ParallelQuery<Record> records) =>
+        records.Any(r => r.DXScore is 0 && (r.DXScoreRank > 0 || r.Rank > AchievementsRank.A));
 
     internal static T DeserializeOrThrow<T>(string payload, string message) where T : class =>
         JsonSerializer.Deserialize<T>(payload) ?? throw new RpcException(new(StatusCode.InvalidArgument, message));

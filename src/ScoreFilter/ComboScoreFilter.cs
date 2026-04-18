@@ -5,9 +5,9 @@ namespace Limekuma.ScoreFilter;
 [ScoreFilterTag("combo")]
 public sealed class ComboScoreFilter : IScoreFilter
 {
-    public Func<CommonRecord, bool> GetFilter(string? condition)
+    public Func<Record, bool> GetFilter(string? condition)
     {
-        if (!Enum.TryParse(condition, out ComboFlags comboFlag))
+        if (!Enum.TryParse(condition, out ComboFlag comboFlag))
         {
             return _ => true;
         }

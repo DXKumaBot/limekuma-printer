@@ -4,5 +4,5 @@ namespace Limekuma.ScoreFilter;
 
 public interface IScoreFilter
 {
-    Func<CommonRecord, bool> GetFilter(string? condition);
+    Func<Record, bool> GetFilter(string? condition);
 }

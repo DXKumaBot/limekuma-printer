@@ -5,10 +5,10 @@ namespace Limekuma.Prober.Lxns.Models;
 public record Bests
 {
     [JsonPropertyName("standard_total")]
-    public required int EverTotal { get; set; }
+    public required int EverDXRating { get; set; }
 
     [JsonPropertyName("dx_total")]
-    public required int CurrentTotal { get; set; }
+    public required int CurrentDXRating { get; set; }
 
     [JsonPropertyName("standard")]
     public required List<Record> Ever { get; set; }

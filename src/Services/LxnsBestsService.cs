@@ -1,5 +1,4 @@
 using Grpc.Core;
-using Limekuma.Prober.Common;
 using Limekuma.Prober.Lxns;
 using Limekuma.Prober.Lxns.Enums;
 using Limekuma.Prober.Lxns.Models;
@@ -9,12 +8,20 @@ using SixLabors.ImageSharp;
 using System.Collections.Frozen;
 using System.Collections.Immutable;
 using System.Text.Json.Serialization;
+using CommonAchievementsRankEnum = Limekuma.Prober.Common.AchievementsRank;
+using CommonClassRankEnum = Limekuma.Prober.Common.ClassRank;
+using CommonComboFlagEnum = Limekuma.Prober.Common.ComboFlag;
+using CommonCourseRankEnum = Limekuma.Prober.Common.CourseRank;
+using CommonPlayer = Limekuma.Prober.Common.User;
+using CommonRecord = Limekuma.Prober.Common.Record;
+using CommonSyncFlagEnum = Limekuma.Prober.Common.SyncFlag;
+using CommonTrophyColorEnum = Limekuma.Prober.Common.TrophyColor;
 
 namespace Limekuma.Services;
 
 public partial class BestsService
 {
-    private static async Task<(CommonUser, ParallelQuery<CommonRecord>)> PrepareLxnsRecordsForProcessAsync(
+    private static async Task<(CommonPlayer, ParallelQuery<CommonRecord>)> PrepareLxnsRecordsForProcessAsync(
         string devToken, string personalToken)
     {
         Task<Player> playerTask = LxnsGatewayService.GetPlayerByPersonalTokenAsync(devToken, personalToken);
@@ -24,11 +31,11 @@ public partial class BestsService
         Player player = await playerTask;
         List<Record> records = await recordsTask;
         return (player, records.AsParallel()
-            .Where(x => x.Type is not SongTypes.Utage && SongData.Shared.SongsById.ContainsKey(x.Id))
+            .Where(x => x.Type is not ChartType.Utage && SongData.Shared.SongsById.ContainsKey(x.Id))
             .Select(x => (CommonRecord)x));
     }
 
-    private static async Task<(CommonUser, ImmutableArray<CommonRecord>, ImmutableArray<CommonRecord>, int, int)>
+    private static async Task<(CommonPlayer, ImmutableArray<CommonRecord>, ImmutableArray<CommonRecord>, int, int)>
         PrepareLxnsDataAsync(string devToken, uint? qq, string? personalToken)
     {
         Player player;
@@ -47,7 +54,7 @@ public partial class BestsService
 
         Bests bests = await LxnsGatewayService.GetBestsAsync(player);
 
-        CommonUser user = player;
+        CommonPlayer user = player;
 
         ParallelQuery<CommonRecord>
             bestEver = bests.Ever.AsParallel().Select(x => (CommonRecord)x).SortRecordForBests();
@@ -57,42 +64,43 @@ public partial class BestsService
         await ServiceHelper.PrepareUserDataAsync(user);
         await PrepareDataAsync(bestEver, bestCurrent);
 
-        return (user, [.. bestEver], [.. bestCurrent], bests.EverTotal, bests.CurrentTotal);
+        return (user, [.. bestEver], [.. bestCurrent], bests.EverDXRating, bests.CurrentDXRating);
     }
 
-    private static async Task<(CommonUser, ImmutableArray<CommonRecord>, ImmutableArray<CommonRecord>, int, int)>
+    private static async Task<(CommonPlayer, ImmutableArray<CommonRecord>, ImmutableArray<CommonRecord>, int, int)>
         PrepareRiRenLxnsDataAsync()
     {
         LxnsResourceClient resource = new();
         SongData songData = await resource.GetSongsAsync(includeNotes: true);
         ParallelQuery<CommonRecord> allRecords = songData.Songs.AsParallel().SelectMany(song => song.Charts.Standard
-            .Concat(song.Charts.DX).Where(chart => chart.Notes is not null).Select(chart => (CommonRecord)new Record
-            {
-                Achievements = 101,
-                Difficulty = chart.Difficulty,
-                Id = song.Id,
-                DXScore = chart.Notes!.Total * 3,
-                DXScoreRank = 5,
-                Level = chart.Level,
-                Title = song.Title,
-                Type = chart.Type,
-                ComboFlag = ComboFlags.AllPerfectPlus,
-                DXRating = (int)(chart.LevelValue * 22.512m),
-                Rank = Ranks.SSSPlus,
-                SyncFlag = SyncFlags.FullSyncDXPlus
-            }));
+            .Concat(song.Charts.DX).Where(chart => chart.Notes is not null).Select(chart =>
+                (CommonRecord)new Record
+                {
+                    Achievements = 101,
+                    Difficulty = chart.Difficulty,
+                    Id = song.Id,
+                    DXScore = chart.Notes!.Total * 3,
+                    DXScoreRank = 5,
+                    Level = chart.Level,
+                    Title = song.Title,
+                    Type = chart.Type,
+                    ComboFlag = CommonComboFlagEnum.AllPerfectPlus,
+                    DXRating = (int)(chart.LevelValue * 22.512m),
+                    Rank = CommonAchievementsRankEnum.SSSPlus,
+                    SyncFlag = CommonSyncFlagEnum.FullSyncDXPlus
+                }));
         (ParallelQuery<CommonRecord> bestEver, ParallelQuery<CommonRecord> bestCurrent) =
             allRecords.SortRecordForBests().SplitTopBestsByQuota(35, 15);
         int everTotal = bestEver.Sum(x => x.DXRating);
         int currentTotal = bestCurrent.Sum(x => x.DXRating);
-        CommonUser user = new()
+        CommonPlayer user = new()
         {
             Name = "ＤＸＫｕｍａ",
-            Rating = everTotal + currentTotal,
-            TrophyColor = TrophyColor.Rainbow,
+            DXRating = everTotal + currentTotal,
+            TrophyColor = CommonTrophyColorEnum.Rainbow,
             TrophyText = "でらっくま",
-            CourseRank = CommonCourseRank.Urakaiden,
-            ClassRank = ClassRank.LEGEND,
+            CourseRank = CommonCourseRankEnum.Urakaiden,
+            ClassRank = CommonClassRankEnum.Legend,
             IconId = 101,
             PlateId = 55103,
             FrameId = 109101
@@ -108,18 +116,18 @@ public partial class BestsService
         ServerCallContext context)
     {
         FrozenSet<string> requestTags = request.Tags.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
-        CommonUser user;
-        CommonUser? user2p = null;
+        CommonPlayer player;
+        CommonPlayer? player2 = null;
         ImmutableArray<CommonRecord> bestEver;
         ImmutableArray<CommonRecord> bestCurrent;
         int everTotal;
         int currentTotal;
         if (ScoreProcesserHelper.GetProcesserByTags(requestTags) is not null)
         {
-            (user, ParallelQuery<CommonRecord> records) =
+            (player, ParallelQuery<CommonRecord> records) =
                 await PrepareLxnsRecordsForProcessAsync(request.DevToken, request.PersonalToken);
-            await ServiceHelper.PrepareUserDataAsync(user);
-            (bestEver, bestCurrent, everTotal, currentTotal, user2p) = await ProcessBestsByTagsAsync(requestTags,
+            await ServiceHelper.PrepareUserDataAsync(player);
+            (bestEver, bestCurrent, everTotal, currentTotal, player2) = await ProcessBestsByTagsAsync(requestTags,
                 request.Condition, records,
                 async condition =>
                 {
@@ -142,20 +150,21 @@ public partial class BestsService
         }
         else if (requestTags.Contains("common"))
         {
-            (user, bestEver, bestCurrent, everTotal, currentTotal) =
+            (player, bestEver, bestCurrent, everTotal, currentTotal) =
                 await PrepareLxnsDataAsync(request.DevToken, request.Qq, request.PersonalToken);
         }
         else if (requestTags.Contains("riren"))
         {
-            (user, bestEver, bestCurrent, everTotal, currentTotal) = await PrepareRiRenLxnsDataAsync();
+            (player, bestEver, bestCurrent, everTotal, currentTotal) = await PrepareRiRenLxnsDataAsync();
         }
         else
         {
             throw new RpcException(new(StatusCode.InvalidArgument, "Invalid tags for lxns bests request"));
         }
 
-        using Image bestsImage = await new Drawer().DrawBestsAsync(user, bestEver, bestCurrent, everTotal, currentTotal,
-            request.Condition, "lxns", requestTags, user2p);
+        using Image bestsImage = await new Drawer().DrawBestsAsync(player, bestEver, bestCurrent, everTotal,
+            currentTotal,
+            request.Condition, "lxns", requestTags, player2);
 
         await responseStream.WriteToResponseAsync(bestsImage);
     }

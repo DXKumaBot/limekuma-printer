@@ -13,26 +13,26 @@ public sealed class Drawer
 {
     private static readonly AsyncNCalcEngine ExpressionEngine = CreateExpressionEngine();
 
-    public async Task<Image> DrawBestsAsync(CommonUser user, IReadOnlyList<CommonRecord> ever,
-        IReadOnlyList<CommonRecord> current, int everTotal, int currentTotal, string? condition, string prober,
+    public async Task<Image> DrawBestsAsync(User user, IReadOnlyList<Record> ever,
+        IReadOnlyList<Record> current, int everTotal, int currentTotal, string? condition, string prober,
         IEnumerable<string> tags) => await DrawBestsAsync(user, ever, current, everTotal, currentTotal, condition,
         prober, tags, null, "./Resources/Layouts/bests.xml");
 
-    public async Task<Image> DrawBestsAsync(CommonUser user, IReadOnlyList<CommonRecord> ever,
-        IReadOnlyList<CommonRecord> current, int everTotal, int currentTotal, string? condition, string prober,
-        IEnumerable<string> tags, CommonUser? user2p) => await DrawBestsAsync(user, ever, current, everTotal,
-        currentTotal, condition, prober, tags, user2p, "./Resources/Layouts/bests.xml");
+    public async Task<Image> DrawBestsAsync(User user, IReadOnlyList<Record> ever,
+        IReadOnlyList<Record> current, int everTotal, int currentTotal, string? condition, string prober,
+        IEnumerable<string> tags, User? player2) => await DrawBestsAsync(user, ever, current, everTotal,
+        currentTotal, condition, prober, tags, player2, "./Resources/Layouts/bests.xml");
 
-    public async Task<Image> DrawBestsAsync(CommonUser user, IReadOnlyList<CommonRecord> ever,
-        IReadOnlyList<CommonRecord> current, int everTotal, int currentTotal, string? condition, string prober,
-        IEnumerable<string> tags, CommonUser? user2p, string xmlPath)
+    public async Task<Image> DrawBestsAsync(User user, IReadOnlyList<Record> ever,
+        IReadOnlyList<Record> current, int everTotal, int currentTotal, string? condition, string prober,
+        IEnumerable<string> tags, User? player2, string xmlPath)
     {
         int everMax = ever.Count > 0 ? ever[0].DXRating : 0;
         int everMin = ever.Count > 0 ? ever[^1].DXRating : 0;
         int currentMax = current.Count > 0 ? current[0].DXRating : 0;
         int currentMin = current.Count > 0 ? current[^1].DXRating : 0;
-        bool mayMask = ever.Any(r => r.DXScore is 0 && (r.DXScoreRank > 0 || r.Rank > Ranks.A)) ||
-                       current.Any(r => r.DXScore is 0 && (r.DXScoreRank > 0 || r.Rank > Ranks.A));
+        bool mayMask = ever.Any(r => r.DXScore is 0 && (r.DXScoreRank > 0 || r.Rank > AchievementsRank.A)) ||
+                       current.Any(r => r.DXScore is 0 && (r.DXScoreRank > 0 || r.Rank > AchievementsRank.A));
         Version? version = Assembly.GetExecutingAssembly().GetName().Version;
         StringBuilder sb = new();
         for (int i = 0; i < version?.Build / 26; ++i)
@@ -52,7 +52,7 @@ public sealed class Drawer
             ["proberName"] = prober,
             ["tags"] = tags,
             ["mayMask"] = mayMask,
-            ["2pUserInfo"] = user2p,
+            ["2pUserInfo"] = player2,
             ["everMax"] = everMax,
             ["everMin"] = everMin,
             ["currentMax"] = currentMax,
@@ -63,12 +63,12 @@ public sealed class Drawer
         return await DrawAsync(scope, xmlPath);
     }
 
-    public async Task<Image> DrawListAsync(CommonUser user, IReadOnlyList<CommonRecord> records, int page,
+    public async Task<Image> DrawListAsync(User user, IReadOnlyList<Record> records, int page,
         ImmutableArray<int> counts, int totalCount, int startIndex, string condition, bool mayMask, string prober,
         IEnumerable<string> tags) => await DrawListAsync(user, records, page, counts, totalCount, startIndex, condition,
         mayMask, prober, tags, "./Resources/Layouts/list.xml");
 
-    public async Task<Image> DrawListAsync(CommonUser user, IReadOnlyList<CommonRecord> records, int page,
+    public async Task<Image> DrawListAsync(User user, IReadOnlyList<Record> records, int page,
         ImmutableArray<int> counts, int totalCount, int startIndex, string condition, bool mayMask, string prober,
         IEnumerable<string> tags, string xmlPath)
     {

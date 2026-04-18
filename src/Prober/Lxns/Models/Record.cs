@@ -1,6 +1,11 @@
-using Limekuma.Prober.Common;
 using Limekuma.Prober.Lxns.Enums;
 using System.Text.Json.Serialization;
+using CommonComboFlagEnum = Limekuma.Prober.Common.ComboFlag;
+using CommonDifficultyEnum = Limekuma.Prober.Common.Difficulty;
+using CommonAchievementsRankEnum = Limekuma.Prober.Common.AchievementsRank;
+using CommonRecord = Limekuma.Prober.Common.Record;
+using CommonChartTypeEnum = Limekuma.Prober.Common.ChartType;
+using CommonSyncFlagEnum = Limekuma.Prober.Common.SyncFlag;
 
 namespace Limekuma.Prober.Lxns.Models;
 
@@ -60,7 +65,7 @@ public record Record : SimpleRecord
     }
 
     [JsonPropertyName("rate")]
-    public new Ranks? Rank { get; init; }
+    public new CommonAchievementsRankEnum? Rank { get; init; }
 
     [JsonPropertyName("play_time")]
     public DateTimeOffset? PlayTime { get; init; }
@@ -91,9 +96,9 @@ public record Record : SimpleRecord
         int index = (int)Difficulty;
         return Type switch
         {
-            SongTypes.Standard => Song.Charts.Standard[index],
-            SongTypes.DX => Song.Charts.DX[index],
-            SongTypes.Utage => Song.Charts.Utage![index],
+            ChartType.Standard => Song.Charts.Standard[index],
+            ChartType.DX => Song.Charts.DX[index],
+            ChartType.Utage => Song.Charts.Utage![index],
             _ => throw new ArgumentOutOfRangeException()
         };
     })).Value;
@@ -102,14 +107,14 @@ public record Record : SimpleRecord
 
     public decimal LevelValue => (_levelValue ??= new(() => Chart.LevelValue)).Value;
 
-    private static CommonDifficulties MapDifficulty(Difficulties difficulty) => difficulty switch
+    private static CommonDifficultyEnum MapDifficulty(Difficulty difficulty) => difficulty switch
     {
-        Difficulties.Dummy => CommonDifficulties.Dummy,
-        Difficulties.Basic => CommonDifficulties.Basic,
-        Difficulties.Advanced => CommonDifficulties.Advanced,
-        Difficulties.Expert => CommonDifficulties.Expert,
-        Difficulties.Master => CommonDifficulties.Master,
-        Difficulties.ReMaster => CommonDifficulties.ReMaster,
+        Difficulty.Dummy => CommonDifficultyEnum.Dummy,
+        Difficulty.Basic => CommonDifficultyEnum.Basic,
+        Difficulty.Advanced => CommonDifficultyEnum.Advanced,
+        Difficulty.Expert => CommonDifficultyEnum.Expert,
+        Difficulty.Master => CommonDifficultyEnum.Master,
+        Difficulty.ReMaster => CommonDifficultyEnum.ReMaster,
         _ => throw new ArgumentOutOfRangeException(nameof(difficulty), difficulty, null)
     };
 
@@ -126,7 +131,7 @@ public record Record : SimpleRecord
         bool inCurrentGenre = songData.Versions[^1].VersionNumber == versionGroup;
 
         ArgumentOutOfRangeException.ThrowIfGreaterThan(record.Achievements,
-            record.Type is SongTypes.Utage && ((UtageChart)record.Chart).IsBuddy ? 202 : 101);
+            record.Type is ChartType.Utage && ((UtageChart)record.Chart).IsBuddy ? 202 : 101);
         ArgumentOutOfRangeException.ThrowIfGreaterThan(record.DXScore, record.TotalDXScore);
         return new()
         {
@@ -134,25 +139,25 @@ public record Record : SimpleRecord
             {
                 Song = new()
                 {
-                    Id = record.Type is SongTypes.Standard ? record.Id : record.Id + 10000,
+                    Id = record.Type is ChartType.Standard ? record.Id : record.Id + 10000,
                     Title = record.Title,
-                    Type = (CommonSongTypes)record.Type,
+                    Type = (CommonChartTypeEnum)record.Type,
                     Genre = version.Title,
                     InCurrentGenre = inCurrentGenre,
                     AudioUrl = record.AudioUrl,
                     JacketUrl = record.JacketUrl
                 },
-                Difficulty = record.Type is SongTypes.Utage
-                    ? CommonDifficulties.Utage
+                Difficulty = record.Type is ChartType.Utage
+                    ? CommonDifficultyEnum.Utage
                     : MapDifficulty(record.Difficulty),
                 TotalDXScore = record.TotalDXScore,
                 Level = record.Level,
                 LevelValue = record.LevelValue,
                 Notes = chart.Notes!
             },
-            ComboFlag = record.ComboFlag ?? ComboFlags.None,
-            SyncFlag = record.SyncFlag ?? SyncFlags.None,
-            Rank = record.Rank ?? Ranks.D,
+            ComboFlag = record.ComboFlag ?? CommonComboFlagEnum.None,
+            SyncFlag = record.SyncFlag ?? CommonSyncFlagEnum.None,
+            Rank = record.Rank ?? CommonAchievementsRankEnum.D,
             Achievements = record.Achievements,
             DXRating = (int)(record.DXRating ?? 0),
             DXScoreRank = record.DXScoreRank,

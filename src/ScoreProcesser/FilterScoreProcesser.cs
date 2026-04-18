@@ -6,6 +6,6 @@ namespace Limekuma.ScoreProcesser;
 [ScoreProcesserTag("filter")]
 public sealed class FilterScoreProcesser : IScoreProcesser
 {
-    public (ParallelQuery<CommonRecord>, ParallelQuery<CommonRecord>) Process(ParallelQuery<CommonRecord> records) =>
+    public (ParallelQuery<Record>, ParallelQuery<Record>) Process(ParallelQuery<Record> records) =>
         records.SortRecordForBests().SplitTopBestsByQuota(35, 15);
 }

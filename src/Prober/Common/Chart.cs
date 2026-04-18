@@ -1,10 +1,10 @@
 namespace Limekuma.Prober.Common;
 
-public class CommonChart
+public class Chart
 {
-    public required CommonSong Song { get; init; }
+    public required Song Song { get; init; }
 
-    public required CommonDifficulties Difficulty { get; init; }
+    public required Difficulty Difficulty { get; init; }
 
     public required int TotalDXScore { get; init; }
 

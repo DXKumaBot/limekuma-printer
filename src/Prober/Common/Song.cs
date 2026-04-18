@@ -1,12 +1,12 @@
 namespace Limekuma.Prober.Common;
 
-public class CommonSong
+public class Song
 {
     public required int Id { get; init; }
 
     public required string Title { get; init; }
 
-    public required CommonSongTypes Type { get; init; }
+    public required ChartType Type { get; init; }
 
     public required string Genre { get; init; }
 

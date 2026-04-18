@@ -8,32 +8,32 @@ namespace Limekuma.ScoreProcesser;
 [ScoreProcesserTag("steal", false, true)]
 public sealed class StealScoreProcesser : IScoreProcesser
 {
-    public (ParallelQuery<CommonRecord>, ParallelQuery<CommonRecord>) Process(ParallelQuery<CommonRecord> records1p,
-        ParallelQuery<CommonRecord> records2p)
+    public (ParallelQuery<Record>, ParallelQuery<Record>) Process(ParallelQuery<Record> records1p,
+        ParallelQuery<Record> records2p)
     {
-        (ParallelQuery<CommonRecord> iBaseEver, ParallelQuery<CommonRecord> iBaseCurrent) =
+        (ParallelQuery<Record> iBaseEver, ParallelQuery<Record> iBaseCurrent) =
             records1p.SortRecordForBests().SplitTopBestsByQuota(35, 15);
-        ImmutableArray<CommonRecord> baseEver = [.. iBaseEver];
-        ImmutableArray<CommonRecord> baseCurrent = [.. iBaseCurrent];
+        ImmutableArray<Record> baseEver = [.. iBaseEver];
+        ImmutableArray<Record> baseCurrent = [.. iBaseCurrent];
         int everMin = baseEver.IsDefaultOrEmpty ? 0 : baseEver[^1].DXRating;
         int currentMin = baseCurrent.IsDefaultOrEmpty ? 0 : baseCurrent[^1].DXRating;
 
         bool handleType = records1p.Count() > records2p.Count();
-        ParallelQuery<CommonRecord> processRecords = handleType ? records2p : records1p;
-        ParallelQuery<CommonRecord> controlRecords = handleType ? records1p : records2p;
-        FrozenDictionary<(int SongId, CommonDifficulties Difficulty), CommonRecord> controlLookup =
+        ParallelQuery<Record> processRecords = handleType ? records2p : records1p;
+        ParallelQuery<Record> controlRecords = handleType ? records1p : records2p;
+        FrozenDictionary<(int SongId, Difficulty Difficulty), Record> controlLookup =
             controlRecords.ToFrozenDictionary(x => (x.Chart.Song.Id, x.Chart.Difficulty));
-        ParallelQuery<CommonRecord> selectedRecords = processRecords.Select(processRecord =>
+        ParallelQuery<Record> selectedRecords = processRecords.Select(processRecord =>
         {
             if (!controlLookup.TryGetValue((processRecord.Chart.Song.Id, processRecord.Chart.Difficulty),
-                    out CommonRecord? controlRecord))
+                    out Record? controlRecord))
             {
                 return null;
             }
 
-            CommonRecord record = handleType ? processRecord : controlRecord;
-            CommonRecord anotherRecord = handleType ? controlRecord : processRecord;
-            CommonRecord selected = new()
+            Record record = handleType ? processRecord : controlRecord;
+            Record anotherRecord = handleType ? controlRecord : processRecord;
+            Record selected = new()
             {
                 Achievements = record.Achievements,
                 Chart = record.Chart,
@@ -46,13 +46,13 @@ public sealed class StealScoreProcesser : IScoreProcesser
                 ExtraInfo = anotherRecord.DXRating
             };
             return selected;
-        }).OfType<CommonRecord>();
+        }).OfType<Record>();
 
-        ParallelQuery<CommonRecord> current = selectedRecords.Where(x => x.Chart.Song.InCurrentGenre)
+        ParallelQuery<Record> current = selectedRecords.Where(x => x.Chart.Song.InCurrentGenre)
             .OrderByDescending(x => x.DXRating > currentMin)
             .ThenByDescending(x => x.DXRating - x.ExtraInfo).ThenByDescending(x => x.Chart.LevelValue)
             .ThenByDescending(x => x.Achievements).Take(15);
-        ParallelQuery<CommonRecord> ever = selectedRecords.Where(x => !x.Chart.Song.InCurrentGenre)
+        ParallelQuery<Record> ever = selectedRecords.Where(x => !x.Chart.Song.InCurrentGenre)
             .OrderByDescending(x => x.DXRating > everMin)
             .ThenByDescending(x => x.DXRating - x.ExtraInfo).ThenByDescending(x => x.Chart.LevelValue)
             .ThenByDescending(x => x.Achievements).Take(35);

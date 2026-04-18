@@ -1,6 +1,8 @@
-using Limekuma.Prober.Common;
 using Limekuma.Prober.Lxns.Enums;
 using System.Text.Json.Serialization;
+using CommonComboFlagEnum = Limekuma.Prober.Common.ComboFlag;
+using CommonAchievementsRankEnum = Limekuma.Prober.Common.AchievementsRank;
+using CommonSyncFlagEnum = Limekuma.Prober.Common.SyncFlag;
 
 namespace Limekuma.Prober.Lxns.Models;
 
@@ -24,17 +26,17 @@ public record SimpleRecord
     public required string Level { get; init; }
 
     [JsonPropertyName("level_index")]
-    public required Difficulties Difficulty { get; init; }
+    public required Difficulty Difficulty { get; init; }
 
     [JsonPropertyName("fc")]
-    public ComboFlags? ComboFlag { get; init; }
+    public CommonComboFlagEnum? ComboFlag { get; init; }
 
     [JsonPropertyName("fs")]
-    public SyncFlags? SyncFlag { get; init; }
+    public CommonSyncFlagEnum? SyncFlag { get; init; }
 
     [JsonPropertyName("rate")]
-    public Ranks Rank { get; init; }
+    public CommonAchievementsRankEnum Rank { get; init; }
 
     [JsonPropertyName("type")]
-    public required SongTypes Type { get; init; }
+    public required ChartType Type { get; init; }
 }

@@ -13,16 +13,16 @@ internal static class ServiceHelper
         MaxDegreeOfParallelism = 16
     };
 
-    internal static async Task PrepareUserDataAsync(CommonUser user) => await Task.WhenAll(
+    internal static async Task PrepareUserDataAsync(User user) => await Task.WhenAll(
         PrepareImageAsset("Icon", user.IconId, user.IconUrl),
         PrepareImageAsset("Plate", user.PlateId, user.PlateUrl),
         PrepareImageAsset("Frame", user.FrameId, user.FrameUrl));
 
-    internal static async Task PrepareRecordDataAsync(IEnumerable<CommonRecord> records) =>
+    internal static async Task PrepareRecordDataAsync(IEnumerable<Record> records) =>
         await Parallel.ForEachAsync(records, PrepareRecordParallelOptions,
             async (record, _) => await PrepareRecordDataAsync(record));
 
-    internal static async Task PrepareRecordDataAsync(CommonRecord record) =>
+    internal static async Task PrepareRecordDataAsync(Record record) =>
         await PrepareImageAsset("Jacket", record.Chart.Song.Id % 10000, record.Chart.Song.JacketUrl);
 
     private static async Task PrepareImageAsset(string assetKey, int id, string url)

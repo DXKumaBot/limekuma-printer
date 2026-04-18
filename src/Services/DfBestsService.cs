@@ -1,5 +1,4 @@
 using Grpc.Core;
-using Limekuma.Prober.Common;
 using Limekuma.Prober.DivingFish.Enums;
 using Limekuma.Prober.DivingFish.Models;
 using Limekuma.Render;
@@ -8,33 +7,41 @@ using SixLabors.ImageSharp;
 using System.Collections.Frozen;
 using System.Collections.Immutable;
 using System.Text.Json.Serialization;
+using CommonAchievementsRankEnum = Limekuma.Prober.Common.AchievementsRank;
+using CommonClassRankEnum = Limekuma.Prober.Common.ClassRank;
+using CommonComboFlagEnum = Limekuma.Prober.Common.ComboFlag;
+using CommonCourseRankEnum = Limekuma.Prober.Common.CourseRank;
+using CommonPlayer = Limekuma.Prober.Common.User;
+using CommonRecord = Limekuma.Prober.Common.Record;
+using CommonSyncFlagEnum = Limekuma.Prober.Common.SyncFlag;
+using CommonTrophyColorEnum = Limekuma.Prober.Common.TrophyColor;
 
 namespace Limekuma.Services;
 
 public partial class BestsService
 {
-    private static async Task<(CommonUser, ParallelQuery<CommonRecord>)> PrepareDfRecordsForProcessAsync(string token,
+    private static async Task<(CommonPlayer, ParallelQuery<CommonRecord>)> PrepareDfRecordsForProcessAsync(string token,
         uint? qq, int? frame, int? plate, int? icon)
     {
         ServiceExecutionHelper.EnsureArgument(qq.HasValue && frame.HasValue && plate.HasValue && icon.HasValue);
         PlayerData player = await DfGatewayService.GetPlayerDataAsync(token, qq!.Value);
 
-        CommonUser user = player;
+        CommonPlayer user = player;
         user.FrameId = frame!.Value;
         user.PlateId = plate!.Value;
         user.IconId = icon!.Value;
         return (user, player.Records.AsParallel().Where(x =>
-                x.Difficulty is not Difficulties.Utage && Songs.SharedSongs.SongsById.ContainsKey(x.Id.ToString()))
+                x.Difficulty is not Difficulty.Utage && Songs.SharedSongs.SongsById.ContainsKey(x.Id.ToString()))
             .Select(x => (CommonRecord)x));
     }
 
-    private static async Task<(CommonUser, ImmutableArray<CommonRecord>, ImmutableArray<CommonRecord>, int, int)>
+    private static async Task<(CommonPlayer, ImmutableArray<CommonRecord>, ImmutableArray<CommonRecord>, int, int)>
         PrepareDfDataAsync(uint? qq, int? frame, int? plate, int? icon)
     {
         ServiceExecutionHelper.EnsureArgument(qq.HasValue && frame.HasValue && plate.HasValue && icon.HasValue);
         Player player = await DfGatewayService.GetPlayerAsync(qq!.Value);
 
-        CommonUser user = player;
+        CommonPlayer user = player;
         user.FrameId = frame!.Value;
         user.PlateId = plate!.Value;
         user.IconId = icon!.Value;
@@ -53,7 +60,7 @@ public partial class BestsService
         return (user, [.. bestEver], [.. bestCurrent], everTotal, currentTotal);
     }
 
-    private static async Task<(CommonUser, ImmutableArray<CommonRecord>, ImmutableArray<CommonRecord>, int, int)>
+    private static async Task<(CommonPlayer, ImmutableArray<CommonRecord>, ImmutableArray<CommonRecord>, int, int)>
         PrepareRiRenDfDataAsync()
     {
         ParallelQuery<CommonRecord> allRecords = Songs.Shared.AsParallel().SelectMany(song =>
@@ -67,16 +74,16 @@ public partial class BestsService
             return Enumerable.Range(0, chartCount).AsParallel().Select(i => (CommonRecord)new Record
             {
                 Achievements = 101,
-                ComboFlag = ComboFlags.AllPerfectPlus,
-                Difficulty = (Difficulties)(i + 1),
+                ComboFlag = CommonComboFlagEnum.AllPerfectPlus,
+                Difficulty = (Difficulty)(i + 1),
                 DifficultyIndex = i,
                 DXRating = (int)(song.LevelValues[i] * 22.512m),
                 DXScore = song.Charts[i].Notes.Total * 3,
                 Id = id,
                 Level = song.Levels[i],
                 LevelValue = song.LevelValues[i],
-                Rank = Ranks.SSSPlus,
-                SyncFlag = SyncFlags.FullSyncDXPlus,
+                Rank = CommonAchievementsRankEnum.SSSPlus,
+                SyncFlag = CommonSyncFlagEnum.FullSyncDXPlus,
                 Title = song.Title,
                 Type = song.Type
             });
@@ -85,14 +92,14 @@ public partial class BestsService
             allRecords.SortRecordForBests().SplitTopBestsByQuota(35, 15);
         int everTotal = bestEver.Sum(x => x.DXRating);
         int currentTotal = bestCurrent.Sum(x => x.DXRating);
-        CommonUser user = new()
+        CommonPlayer user = new()
         {
             Name = "ＤＸＫｕｍａ",
-            Rating = everTotal + currentTotal,
-            TrophyColor = TrophyColor.Rainbow,
+            DXRating = everTotal + currentTotal,
+            TrophyColor = CommonTrophyColorEnum.Rainbow,
             TrophyText = "でらっくま",
-            CourseRank = CommonCourseRank.Urakaiden,
-            ClassRank = ClassRank.LEGEND,
+            CourseRank = CommonCourseRankEnum.Urakaiden,
+            ClassRank = CommonClassRankEnum.Legend,
             IconId = 101,
             PlateId = 55103,
             FrameId = 109101
@@ -108,18 +115,18 @@ public partial class BestsService
         IServerStreamWriter<ImageResponse> responseStream, ServerCallContext context)
     {
         FrozenSet<string> requestTags = request.Tags.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
-        CommonUser user;
-        CommonUser? user2p = null;
+        CommonPlayer player;
+        CommonPlayer? player2 = null;
         ImmutableArray<CommonRecord> bestEver;
         ImmutableArray<CommonRecord> bestCurrent;
         int everTotal;
         int currentTotal;
         if (ScoreProcesserHelper.GetProcesserByTags(requestTags) is not null)
         {
-            (user, ParallelQuery<CommonRecord> records) = await PrepareDfRecordsForProcessAsync(request.Token,
+            (player, ParallelQuery<CommonRecord> records) = await PrepareDfRecordsForProcessAsync(request.Token,
                 request.Qq, request.Frame, request.Plate, request.Icon);
-            await ServiceHelper.PrepareUserDataAsync(user);
-            (bestEver, bestCurrent, everTotal, currentTotal, user2p) = await ProcessBestsByTagsAsync(requestTags,
+            await ServiceHelper.PrepareUserDataAsync(player);
+            (bestEver, bestCurrent, everTotal, currentTotal, player2) = await ProcessBestsByTagsAsync(requestTags,
                 request.Condition, records, async condition =>
                 {
                     SecondExtraInfo extraInfo =
@@ -141,20 +148,21 @@ public partial class BestsService
         }
         else if (requestTags.Contains("common"))
         {
-            (user, bestEver, bestCurrent, everTotal, currentTotal) =
+            (player, bestEver, bestCurrent, everTotal, currentTotal) =
                 await PrepareDfDataAsync(request.Qq, request.Frame, request.Plate, request.Icon);
         }
         else if (requestTags.Contains("riren"))
         {
-            (user, bestEver, bestCurrent, everTotal, currentTotal) = await PrepareRiRenDfDataAsync();
+            (player, bestEver, bestCurrent, everTotal, currentTotal) = await PrepareRiRenDfDataAsync();
         }
         else
         {
             throw new RpcException(new(StatusCode.InvalidArgument, "Invalid tags for diving fish bests request"));
         }
 
-        using Image bestsImage = await new Drawer().DrawBestsAsync(user, bestEver, bestCurrent, everTotal, currentTotal,
-            request.Condition, "divingfish", requestTags, user2p);
+        using Image bestsImage = await new Drawer().DrawBestsAsync(player, bestEver, bestCurrent, everTotal,
+            currentTotal,
+            request.Condition, "divingfish", requestTags, player2);
 
         await responseStream.WriteToResponseAsync(bestsImage);
     }

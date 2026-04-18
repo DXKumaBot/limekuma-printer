@@ -7,19 +7,19 @@ namespace Limekuma.ScoreProcesser;
 [ScoreProcesserTag("old", true)]
 public sealed class OldScoreProcesser : IScoreProcesser
 {
-    public (ParallelQuery<CommonRecord>, ParallelQuery<CommonRecord>) Process(ParallelQuery<CommonRecord> records)
+    public (ParallelQuery<Record>, ParallelQuery<Record>) Process(ParallelQuery<Record> records)
     {
-        if (records.Any(r => r.DXScore is 0 && (r.DXScoreRank > 0 || r.Rank > Ranks.A)))
+        if (records.Any(r => r.DXScore is 0 && (r.DXScoreRank > 0 || r.Rank > AchievementsRank.A)))
         {
             throw new RpcException(new(StatusCode.PermissionDenied, "Mask enabled"));
         }
 
-        ParallelQuery<CommonRecord> projectedRecords = records.Select(record =>
+        ParallelQuery<Record> projectedRecords = records.Select(record =>
         {
             (_, _, decimal oldCoefficient) = ConstantMap.ResolveRankAndCoefficient(record.Achievements);
             int rating = (int)(record.Chart.LevelValue * (record.Achievements > 100.5m ? 100.5m : record.Achievements) *
                                oldCoefficient);
-            return new CommonRecord
+            return new Record
             {
                 Achievements = record.Achievements,
                 DXRating = rating,

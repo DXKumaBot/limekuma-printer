@@ -1,6 +1,6 @@
 namespace Limekuma.Prober.Common;
 
-public enum CommonDifficulties
+public enum Difficulty
 {
     Dummy,
     Basic,

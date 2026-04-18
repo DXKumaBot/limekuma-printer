@@ -3,8 +3,8 @@ using System.Text.Json.Serialization;
 namespace Limekuma.Prober.Common;
 
 [Flags]
-[JsonConverter(typeof(JsonStringEnumConverter<ComboFlags>))]
-public enum ComboFlags
+[JsonConverter(typeof(JsonStringEnumConverter<ComboFlag>))]
+public enum ComboFlag
 {
     [JsonIgnore]
     None = 0b0000_0000,

@@ -9,7 +9,7 @@ internal static class ScoreFilterHelper
 {
     private static readonly FrozenDictionary<string, (IScoreFilter, bool)> Filters = BuildFilters();
 
-    internal static (Func<CommonRecord, bool>, bool) GetPredicateByTags(IReadOnlySet<string> tags, string? condition)
+    internal static (Func<Record, bool>, bool) GetPredicateByTags(IReadOnlySet<string> tags, string? condition)
     {
         if (tags is null)
         {
@@ -18,7 +18,7 @@ internal static class ScoreFilterHelper
 
         ParallelQuery<(IScoreFilter, bool)> selectedFilters =
             tags.AsParallel().Select(tag => Filters.GetValueOrDefault(tag)).Where(x => x.Item1 is not null);
-        ParallelQuery<Func<CommonRecord, bool>> predicates = selectedFilters.Select(x => x.Item1.GetFilter(condition));
+        ParallelQuery<Func<Record, bool>> predicates = selectedFilters.Select(x => x.Item1.GetFilter(condition));
         bool maskMutex = selectedFilters.Any(x => x.Item2);
 
         return (record => predicates.All(predicate => predicate(record)), maskMutex);
