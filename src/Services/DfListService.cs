@@ -27,7 +27,7 @@ public partial class ListService
             player.Records.AsParallel().Where(x =>
                     x.Difficulty is not Difficulty.Utage && Songs.SharedSongs.SongsById.ContainsKey(x.Id.ToString()))
                 .Select(x => (CommonRecord)x));
-        player.MayMasked = mayMask;
+        user.MayMasked = mayMask;
 
         (ImmutableArray<int> counts, int startIndex, int endIndex) =
             await PrepareDataAsync(user, records, request.Page);
