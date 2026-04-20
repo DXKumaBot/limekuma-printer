@@ -1,7 +1,5 @@
-using Grpc.Core;
 using Limekuma.Prober.DivingFish.Models;
 using Limekuma.Utils;
-using CommonAchievementsRankEnum = Limekuma.Prober.Common.AchievementsRank;
 using CommonRecord = Limekuma.Prober.Common.Record;
 using DFStatus = Limekuma.Prober.DivingFish.Models.Status;
 

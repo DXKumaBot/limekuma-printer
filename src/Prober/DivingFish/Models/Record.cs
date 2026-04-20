@@ -1,11 +1,11 @@
 using Limekuma.Prober.DivingFish.Enums;
 using Limekuma.Utils;
 using System.Text.Json.Serialization;
+using CommonAchievementsRankEnum = Limekuma.Prober.Common.AchievementsRank;
+using CommonChartTypeEnum = Limekuma.Prober.Common.ChartType;
 using CommonComboFlagEnum = Limekuma.Prober.Common.ComboFlag;
 using CommonDifficultyEnum = Limekuma.Prober.Common.Difficulty;
-using CommonAchievementsRankEnum = Limekuma.Prober.Common.AchievementsRank;
 using CommonRecord = Limekuma.Prober.Common.Record;
-using CommonChartTypeEnum = Limekuma.Prober.Common.ChartType;
 using CommonSyncFlagEnum = Limekuma.Prober.Common.SyncFlag;
 
 namespace Limekuma.Prober.DivingFish.Models;

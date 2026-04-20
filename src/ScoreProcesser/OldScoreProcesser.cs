@@ -1,4 +1,3 @@
-using Grpc.Core;
 using Limekuma.Prober.Common;
 using Limekuma.Utils;
 
