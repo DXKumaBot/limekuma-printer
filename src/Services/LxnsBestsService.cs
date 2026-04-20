@@ -99,7 +99,7 @@ public partial class BestsService
             DXRating = everTotal + currentTotal,
             TrophyColor = CommonTrophyColorEnum.Rainbow,
             TrophyText = "でらっくま",
-            CourseRank = CommonCourseRankEnum.Urakaiden,
+            CourseRank = CommonCourseRankEnum.HiddenKaiden,
             ClassRank = CommonClassRankEnum.Legend,
             IconId = 101,
             PlateId = 55103,

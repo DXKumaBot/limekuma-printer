@@ -23,7 +23,7 @@ public record User
     public DXRatingRank DXRatingRank => DXRating switch
     {
         < 1000 => DXRatingRank.White,
-        < 2000 => DXRatingRank.Cyan,
+        < 2000 => DXRatingRank.Blue,
         < 4000 => DXRatingRank.Green,
         < 7000 => DXRatingRank.Yellow,
         < 10000 => DXRatingRank.Red,

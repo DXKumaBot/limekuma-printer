@@ -3,7 +3,7 @@ namespace Limekuma.Prober.Common;
 public enum DXRatingRank
 {
     White,
-    Cyan,
+    Blue,
     Green,
     Yellow,
     Red,
