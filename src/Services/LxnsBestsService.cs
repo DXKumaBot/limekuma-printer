@@ -139,7 +139,7 @@ public partial class BestsService
                         return await PrepareLxnsRecordsForProcessAsync(request.DevToken, lxnsInfo.PersonalToken);
                     }
 
-                    if (extraInfo.Source is "diving_fish" && extraInfo.UserInfo.Value is DivingFishExtraInfo dfInfo)
+                    if (extraInfo.Source is "diving-fish" && extraInfo.UserInfo.Value is DivingFishExtraInfo dfInfo)
                     {
                         return await PrepareDfRecordsForProcessAsync(dfInfo.Token!, dfInfo.QQ, dfInfo.Frame,
                             dfInfo.Plate, dfInfo.Icon);
