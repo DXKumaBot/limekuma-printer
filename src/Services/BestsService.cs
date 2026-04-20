@@ -15,7 +15,7 @@ public sealed partial class BestsService : BestsApi.BestsApiBase
 
     private static async
         Task<(ImmutableArray<Record> BestEver, ImmutableArray<Record> BestCurrent, int EverTotal, int
-            CurrentTotal, User?)> ProcessBestsByTagsAsync(IReadOnlySet<string> tags, string condition,
+            CurrentTotal, bool, User?)> ProcessBestsByTagsAsync(IReadOnlySet<string> tags, string condition,
             ParallelQuery<Record> records,
             Func<string, Task<(User, ParallelQuery<Record>)>> secondDataProvider)
     {
@@ -33,6 +33,9 @@ public sealed partial class BestsService : BestsApi.BestsApiBase
         if (selectedProcesser.RequireSecondData)
         {
             (player2, ParallelQuery<Record> records2p) = await secondDataProvider(condition);
+            bool mayMask2p = ServiceExecutionHelper.HasMaskedScores(records2p);
+            ServiceExecutionHelper.EnsurePermission(!(mayMask2p && selectedProcesser.MaskMutex), "Mask enabled");
+            player2.MayMasked = mayMask2p;
             (bestEver, bestCurrent) = selectedProcesser.Processer.Process(records, records2p);
         }
         else
@@ -50,12 +53,12 @@ public sealed partial class BestsService : BestsApi.BestsApiBase
 
         await PrepareDataAsync(bestEver, bestCurrent);
 
-        return ([.. bestEver], [.. bestCurrent], everTotal, currentTotal, player2);
+        return ([.. bestEver], [.. bestCurrent], everTotal, currentTotal, mayMask, player2);
     }
 
     public record SecondExtraInfo(
         [property: JsonPropertyName("source")]
-        string Source,
+        ProberType Source,
         [property: JsonPropertyName("user_info")]
         Union<LxnsExtraInfo, DivingFishExtraInfo> UserInfo);
 }

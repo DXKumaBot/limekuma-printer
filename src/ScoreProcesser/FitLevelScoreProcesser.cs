@@ -12,11 +12,6 @@ public sealed class FitLevelScoreProcesser : IScoreProcesser
 {
     public (ParallelQuery<CommonRecord>, ParallelQuery<CommonRecord>) Process(ParallelQuery<CommonRecord> records)
     {
-        if (records.Any(r => r.DXScore is 0 && (r.DXScoreRank > 0 || r.Rank > CommonAchievementsRankEnum.A)))
-        {
-            throw new RpcException(new(StatusCode.PermissionDenied, "Mask enabled"));
-        }
-
         ParallelQuery<CommonRecord> projectedRecords = records.Select(record =>
         {
             decimal fitLevel = record.Chart.LevelValue;

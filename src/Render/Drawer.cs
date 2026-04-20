@@ -14,25 +14,23 @@ public sealed class Drawer
     private static readonly AsyncNCalcEngine ExpressionEngine = CreateExpressionEngine();
 
     public async Task<Image> DrawBestsAsync(User user, IReadOnlyList<Record> ever,
-        IReadOnlyList<Record> current, int everTotal, int currentTotal, string? condition, string prober,
+        IReadOnlyList<Record> current, int everTotal, int currentTotal, string? condition,
         IEnumerable<string> tags) => await DrawBestsAsync(user, ever, current, everTotal, currentTotal, condition,
-        prober, tags, null, "./Resources/Layouts/bests.xml");
+        tags, null, "./Resources/Layouts/bests.xml");
 
     public async Task<Image> DrawBestsAsync(User user, IReadOnlyList<Record> ever,
-        IReadOnlyList<Record> current, int everTotal, int currentTotal, string? condition, string prober,
+        IReadOnlyList<Record> current, int everTotal, int currentTotal, string? condition,
         IEnumerable<string> tags, User? player2) => await DrawBestsAsync(user, ever, current, everTotal,
-        currentTotal, condition, prober, tags, player2, "./Resources/Layouts/bests.xml");
+        currentTotal, condition, tags, player2, "./Resources/Layouts/bests.xml");
 
     public async Task<Image> DrawBestsAsync(User user, IReadOnlyList<Record> ever,
-        IReadOnlyList<Record> current, int everTotal, int currentTotal, string? condition, string prober,
+        IReadOnlyList<Record> current, int everTotal, int currentTotal, string? condition,
         IEnumerable<string> tags, User? player2, string xmlPath)
     {
         int everMax = ever.Count > 0 ? ever[0].DXRating : 0;
         int everMin = ever.Count > 0 ? ever[^1].DXRating : 0;
         int currentMax = current.Count > 0 ? current[0].DXRating : 0;
         int currentMin = current.Count > 0 ? current[^1].DXRating : 0;
-        bool mayMask = ever.Any(r => r.DXScore is 0 && (r.DXScoreRank > 0 || r.Rank > AchievementsRank.A)) ||
-                       current.Any(r => r.DXScore is 0 && (r.DXScoreRank > 0 || r.Rank > AchievementsRank.A));
         Version? version = Assembly.GetExecutingAssembly().GetName().Version;
         StringBuilder sb = new();
         for (int i = 0; i < version?.Build / 26; ++i)
@@ -49,9 +47,7 @@ public sealed class Drawer
             ["everRating"] = everTotal,
             ["currentRating"] = currentTotal,
             ["condition"] = condition,
-            ["proberName"] = prober,
             ["tags"] = tags,
-            ["mayMask"] = mayMask,
             ["2pUserInfo"] = player2,
             ["everMax"] = everMax,
             ["everMin"] = everMin,
@@ -64,12 +60,12 @@ public sealed class Drawer
     }
 
     public async Task<Image> DrawListAsync(User user, IReadOnlyList<Record> records, int page,
-        ImmutableArray<int> counts, int totalCount, int startIndex, string condition, bool mayMask, string prober,
+        ImmutableArray<int> counts, int totalCount, int startIndex, string condition,
         IEnumerable<string> tags) => await DrawListAsync(user, records, page, counts, totalCount, startIndex, condition,
-        mayMask, prober, tags, "./Resources/Layouts/list.xml");
+        tags, "./Resources/Layouts/list.xml");
 
     public async Task<Image> DrawListAsync(User user, IReadOnlyList<Record> records, int page,
-        ImmutableArray<int> counts, int totalCount, int startIndex, string condition, bool mayMask, string prober,
+        ImmutableArray<int> counts, int totalCount, int startIndex, string condition,
         IEnumerable<string> tags, string xmlPath)
     {
         int totalPages = (int)Math.Ceiling(totalCount / 55m);
@@ -92,9 +88,7 @@ public sealed class Drawer
             ["totalCount"] = totalCount,
             ["startIndex"] = startIndex,
             ["condition"] = condition,
-            ["proberName"] = prober,
             ["tags"] = tags,
-            ["mayMask"] = mayMask,
             ["now"] = DateTimeOffset.Now.ToString("yyy/M/d H:mmz"),
             ["version"] = $"Ver.LI{version?.Major ?? 0}.{version?.Minor ?? 0}-{sb}"
         };

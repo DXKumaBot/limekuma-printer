@@ -15,6 +15,7 @@ public sealed class GenreScoreFilter : IScoreFilter
         {
             return _ => true;
         }
+
         GenreExtraInfo? extraInfo = JsonSerializer.Deserialize<GenreExtraInfo>(condition);
         if (extraInfo is null)
         {

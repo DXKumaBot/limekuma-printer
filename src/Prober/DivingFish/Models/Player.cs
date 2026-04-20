@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using CommonClassRankEnum = Limekuma.Prober.Common.ClassRank;
 using CommonCourseRankEnum = Limekuma.Prober.Common.CourseRank;
 using CommonPlayer = Limekuma.Prober.Common.User;
+using CommonProberTypeEnum = Limekuma.Prober.Common.ProberType;
 using CommonTrophyColorEnum = Limekuma.Prober.Common.TrophyColor;
 
 namespace Limekuma.Prober.DivingFish.Models;
@@ -32,6 +33,7 @@ public record Player
     public static implicit operator CommonPlayer(Player player) =>
         new()
         {
+            Prober = CommonProberTypeEnum.DivingFish,
             Name = player.Name,
             DXRating = player.DXRating,
             TrophyColor = CommonTrophyColorEnum.Normal,

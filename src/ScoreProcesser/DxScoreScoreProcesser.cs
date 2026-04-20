@@ -9,11 +9,6 @@ public sealed class DxScoreScoreProcesser : IScoreProcesser
 {
     public (ParallelQuery<Record>, ParallelQuery<Record>) Process(ParallelQuery<Record> records)
     {
-        if (records.Any(r => r.DXScore is 0 && (r.DXScoreRank > 0 || r.Rank > AchievementsRank.A)))
-        {
-            throw new RpcException(new(StatusCode.PermissionDenied, "Mask enabled"));
-        }
-
         ParallelQuery<Record> projectedRecords = records.Select(record =>
         {
             decimal achievements = (decimal)record.DXScore / record.Chart.TotalDXScore * 101;

@@ -9,11 +9,6 @@ public sealed class OldScoreProcesser : IScoreProcesser
 {
     public (ParallelQuery<Record>, ParallelQuery<Record>) Process(ParallelQuery<Record> records)
     {
-        if (records.Any(r => r.DXScore is 0 && (r.DXScoreRank > 0 || r.Rank > AchievementsRank.A)))
-        {
-            throw new RpcException(new(StatusCode.PermissionDenied, "Mask enabled"));
-        }
-
         ParallelQuery<Record> projectedRecords = records.Select(record =>
         {
             (_, _, decimal oldCoefficient) = ConstantMap.ResolveRankAndCoefficient(record.Achievements);

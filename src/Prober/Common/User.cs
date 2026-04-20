@@ -2,6 +2,8 @@ namespace Limekuma.Prober.Common;
 
 public record User
 {
+    public required ProberType Prober { get; set; }
+
     public required string Name { get; set; }
 
     public required int DXRating { get; set; }
@@ -19,6 +21,8 @@ public record User
     public required int PlateId { get; set; }
 
     public required int FrameId { get; set; }
+
+    public bool MayMasked { get; set; } = false;
 
     public DXRatingRank DXRatingRank => DXRating switch
     {

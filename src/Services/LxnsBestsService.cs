@@ -13,6 +13,7 @@ using CommonClassRankEnum = Limekuma.Prober.Common.ClassRank;
 using CommonComboFlagEnum = Limekuma.Prober.Common.ComboFlag;
 using CommonCourseRankEnum = Limekuma.Prober.Common.CourseRank;
 using CommonPlayer = Limekuma.Prober.Common.User;
+using CommonProberTypeEnum = Limekuma.Prober.Common.ProberType;
 using CommonRecord = Limekuma.Prober.Common.Record;
 using CommonSyncFlagEnum = Limekuma.Prober.Common.SyncFlag;
 using CommonTrophyColorEnum = Limekuma.Prober.Common.TrophyColor;
@@ -61,6 +62,7 @@ public partial class BestsService
         ParallelQuery<CommonRecord> bestCurrent =
             bests.Current.AsParallel().Select(x => (CommonRecord)x).SortRecordForBests();
 
+        user.MayMasked = ServiceExecutionHelper.HasMaskedScores(bestEver) || ServiceExecutionHelper.HasMaskedScores(bestCurrent);
         await ServiceHelper.PrepareUserDataAsync(user);
         await PrepareDataAsync(bestEver, bestCurrent);
 
@@ -95,6 +97,7 @@ public partial class BestsService
         int currentTotal = bestCurrent.Sum(x => x.DXRating);
         CommonPlayer user = new()
         {
+            Prober = CommonProberTypeEnum.Lxns,
             Name = "ＤＸＫｕｍａ",
             DXRating = everTotal + currentTotal,
             TrophyColor = CommonTrophyColorEnum.Rainbow,
@@ -122,24 +125,25 @@ public partial class BestsService
         ImmutableArray<CommonRecord> bestCurrent;
         int everTotal;
         int currentTotal;
+        bool mayMask;
         if (ScoreProcesserHelper.GetProcesserByTags(requestTags) is not null)
         {
             (player, ParallelQuery<CommonRecord> records) =
                 await PrepareLxnsRecordsForProcessAsync(request.DevToken, request.PersonalToken);
             await ServiceHelper.PrepareUserDataAsync(player);
-            (bestEver, bestCurrent, everTotal, currentTotal, player2) = await ProcessBestsByTagsAsync(requestTags,
+            (bestEver, bestCurrent, everTotal, currentTotal, mayMask, player2) = await ProcessBestsByTagsAsync(requestTags,
                 request.Condition, records,
                 async condition =>
                 {
                     SecondExtraInfo extraInfo =
                         ServiceExecutionHelper.DeserializeOrThrow<SecondExtraInfo>(condition,
                             "Failed to deserialize extra info for processing bests");
-                    if (extraInfo.Source is "lxns" && extraInfo.UserInfo.Value is LxnsExtraInfo lxnsInfo)
+                    if (extraInfo.Source is CommonProberTypeEnum.Lxns && extraInfo.UserInfo.Value is LxnsExtraInfo lxnsInfo)
                     {
                         return await PrepareLxnsRecordsForProcessAsync(request.DevToken, lxnsInfo.PersonalToken);
                     }
 
-                    if (extraInfo.Source is "diving-fish" && extraInfo.UserInfo.Value is DivingFishExtraInfo dfInfo)
+                    if (extraInfo.Source is CommonProberTypeEnum.DivingFish && extraInfo.UserInfo.Value is DivingFishExtraInfo dfInfo)
                     {
                         return await PrepareDfRecordsForProcessAsync(dfInfo.Token!, dfInfo.QQ, dfInfo.Frame,
                             dfInfo.Plate, dfInfo.Icon);
@@ -147,6 +151,7 @@ public partial class BestsService
 
                     throw new RpcException(new(StatusCode.InvalidArgument, "Invalid extra info for processing bests"));
                 });
+            player.MayMasked = mayMask;
         }
         else if (requestTags.Contains("common"))
         {
@@ -164,7 +169,7 @@ public partial class BestsService
 
         using Image bestsImage = await new Drawer().DrawBestsAsync(player, bestEver, bestCurrent, everTotal,
             currentTotal,
-            request.Condition, "lxns", requestTags, player2);
+            request.Condition, requestTags, player2);
 
         await responseStream.WriteToResponseAsync(bestsImage);
     }

@@ -29,12 +29,13 @@ public partial class ListService
             .Select(x => (CommonRecord)x);
         (ImmutableArray<CommonRecord> cRecords, bool mayMask) =
             BuildListRecords(requestTags, request.Condition, sourceRecords);
+        player.MayMasked = mayMask;
 
         (ImmutableArray<int> counts, int startIndex, int endIndex) =
             await PrepareDataAsync(player, cRecords, request.Page);
 
         using Image listImage = await new Drawer().DrawListAsync(player, cRecords[startIndex..endIndex], request.Page,
-            counts, cRecords.Length, startIndex, request.Condition, mayMask, "lxns", request.Tags);
+            counts, cRecords.Length, startIndex, request.Condition, request.Tags);
 
         await responseStream.WriteToResponseAsync(listImage);
     }
