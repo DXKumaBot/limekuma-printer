@@ -10,12 +10,12 @@ using System.Text.Json.Serialization;
 using CommonAchievementsRankEnum = Limekuma.Prober.Common.AchievementsRank;
 using CommonClassRankEnum = Limekuma.Prober.Common.ClassRank;
 using CommonComboFlagEnum = Limekuma.Prober.Common.ComboFlag;
-using CommonCourseRankEnum = Limekuma.Prober.Common.CourseRank;
+using CommonGradeRankEnum = Limekuma.Prober.Common.GradeRank;
 using CommonPlayer = Limekuma.Prober.Common.User;
 using CommonProberTypeEnum = Limekuma.Prober.Common.ProberType;
 using CommonRecord = Limekuma.Prober.Common.Record;
 using CommonSyncFlagEnum = Limekuma.Prober.Common.SyncFlag;
-using CommonTrophyColorEnum = Limekuma.Prober.Common.TrophyColor;
+using CommonTitleColorEnum = Limekuma.Prober.Common.TitleColor;
 
 namespace Limekuma.Services;
 
@@ -99,9 +99,9 @@ public partial class BestsService
             Prober = CommonProberTypeEnum.DivingFish,
             Name = "ＤＸＫｕｍａ",
             DXRating = everTotal + currentTotal,
-            TrophyColor = CommonTrophyColorEnum.Rainbow,
-            TrophyText = "でらっくま",
-            CourseRank = CommonCourseRankEnum.HiddenKaiden,
+            TitleColor = CommonTitleColorEnum.Rainbow,
+            Title = "でらっくま",
+            GradeRank = CommonGradeRankEnum.HiddenKaiden,
             ClassRank = CommonClassRankEnum.Legend,
             IconId = 101,
             PlateId = 55103,

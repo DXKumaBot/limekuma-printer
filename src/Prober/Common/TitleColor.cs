@@ -2,8 +2,8 @@ using System.Text.Json.Serialization;
 
 namespace Limekuma.Prober.Common;
 
-[JsonConverter(typeof(JsonStringEnumConverter<TrophyColor>))]
-public enum TrophyColor
+[JsonConverter(typeof(JsonStringEnumConverter<TitleColor>))]
+public enum TitleColor
 {
     Normal,
     Bronze,

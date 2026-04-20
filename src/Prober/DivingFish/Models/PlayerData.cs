@@ -1,15 +1,15 @@
 using System.Text.Json.Serialization;
 using CommonClassRankEnum = Limekuma.Prober.Common.ClassRank;
-using CommonCourseRankEnum = Limekuma.Prober.Common.CourseRank;
+using CommonGradeRankEnum = Limekuma.Prober.Common.GradeRank;
 using CommonPlayer = Limekuma.Prober.Common.User;
-using CommonTrophyColorEnum = Limekuma.Prober.Common.TrophyColor;
+using CommonTitleColorEnum = Limekuma.Prober.Common.TitleColor;
 
 namespace Limekuma.Prober.DivingFish.Models;
 
 public record PlayerData
 {
     [JsonPropertyName("additional_rating")]
-    public required CommonCourseRankEnum CourseRank { get; set; }
+    public required CommonGradeRankEnum GradeRank { get; set; }
 
     [JsonPropertyName("nickname")]
     public required string Name { get; set; }
@@ -31,10 +31,10 @@ public record PlayerData
         {
             Name = player.Name,
             DXRating = player.DXRating,
-            TrophyColor = CommonTrophyColorEnum.Normal,
-            TrophyText = "なかよしmai友～！",
+            TitleColor = CommonTitleColorEnum.Normal,
+            Title = "なかよしmai友～！",
             ClassRank = CommonClassRankEnum.B5,
-            CourseRank = player.CourseRank,
+            GradeRank = player.GradeRank,
             IconId = 458001,
             FrameId = 558001,
             PlateId = 458001

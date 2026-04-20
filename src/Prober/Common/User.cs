@@ -8,11 +8,11 @@ public record User
 
     public required int DXRating { get; set; }
 
-    public required TrophyColor TrophyColor { get; set; }
+    public required TitleColor TitleColor { get; set; }
 
-    public required string TrophyText { get; set; }
+    public required string Title { get; set; }
 
-    public required CourseRank CourseRank { get; set; }
+    public required GradeRank GradeRank { get; set; }
 
     public required ClassRank ClassRank { get; set; }
 

@@ -1,10 +1,10 @@
 using Limekuma.Prober.Lxns.Enums;
 using System.Text.Json.Serialization;
 using CommonClassRankEnum = Limekuma.Prober.Common.ClassRank;
-using CommonCourseRankEnum = Limekuma.Prober.Common.CourseRank;
+using CommonGradeRankEnum = Limekuma.Prober.Common.GradeRank;
 using CommonPlayer = Limekuma.Prober.Common.User;
 using CommonProberTypeEnum = Limekuma.Prober.Common.ProberType;
-using CommonTrophyColorEnum = Limekuma.Prober.Common.TrophyColor;
+using CommonTitleColorEnum = Limekuma.Prober.Common.TitleColor;
 
 namespace Limekuma.Prober.Lxns.Models;
 
@@ -23,7 +23,7 @@ public record Player
     public required long FriendCode { get; set; }
 
     [JsonPropertyName("course_rank")]
-    public required CourseRank CourseRank { get; set; }
+    public required GradeRank GradeRank { get; set; }
 
     [JsonPropertyName("class_rank")]
     public required CommonClassRankEnum ClassRank { get; set; }
@@ -32,7 +32,7 @@ public record Player
     public required int Star { get; set; }
 
     [JsonPropertyName("trophy")]
-    public Trophy? Trophy { get; set; }
+    public Title? Title { get; set; }
 
     [JsonPropertyName("icon")]
     public Icon? Icon { get; set; }
@@ -46,32 +46,32 @@ public record Player
     [JsonPropertyName("upload_time")]
     public DateTimeOffset? UploadTime { get; set; }
 
-    private static CommonCourseRankEnum MapCourseRank(CourseRank courseRank) => courseRank switch
+    private static CommonGradeRankEnum MapGradeRank(GradeRank gradeRank) => gradeRank switch
     {
-        CourseRank.Beginner => CommonCourseRankEnum.Beginner,
-        CourseRank.FirstDan => CommonCourseRankEnum.FirstDan,
-        CourseRank.SecondDan => CommonCourseRankEnum.SecondDan,
-        CourseRank.ThirdDan => CommonCourseRankEnum.ThirdDan,
-        CourseRank.FourthDan => CommonCourseRankEnum.FourthDan,
-        CourseRank.FifthDan => CommonCourseRankEnum.FifthDan,
-        CourseRank.SixthDan => CommonCourseRankEnum.SixthDan,
-        CourseRank.SeventhDan => CommonCourseRankEnum.SeventhDan,
-        CourseRank.EighthDan => CommonCourseRankEnum.EighthDan,
-        CourseRank.NinthDan => CommonCourseRankEnum.NinthDan,
-        CourseRank.TenthDan => CommonCourseRankEnum.TenthDan,
-        CourseRank.TrueFirstDan => CommonCourseRankEnum.TrueFirstDan,
-        CourseRank.TrueSecondDan => CommonCourseRankEnum.TrueSecondDan,
-        CourseRank.TrueThirdDan => CommonCourseRankEnum.TrueThirdDan,
-        CourseRank.TrueFourthDan => CommonCourseRankEnum.TrueFourthDan,
-        CourseRank.TrueFifthDan => CommonCourseRankEnum.TrueFifthDan,
-        CourseRank.TrueSixthDan => CommonCourseRankEnum.TrueSixthDan,
-        CourseRank.TrueSeventhDan => CommonCourseRankEnum.TrueSeventhDan,
-        CourseRank.TrueEighthDan => CommonCourseRankEnum.TrueEighthDan,
-        CourseRank.TrueNinthDan => CommonCourseRankEnum.TrueNinthDan,
-        CourseRank.TrueTenthDan => CommonCourseRankEnum.TrueTenthDan,
-        CourseRank.TrueKaiden => CommonCourseRankEnum.TrueKaiden,
-        CourseRank.HiddenKaiden => CommonCourseRankEnum.HiddenKaiden,
-        _ => (CommonCourseRankEnum)courseRank
+        GradeRank.Beginner => CommonGradeRankEnum.Beginner,
+        GradeRank.FirstDan => CommonGradeRankEnum.FirstDan,
+        GradeRank.SecondDan => CommonGradeRankEnum.SecondDan,
+        GradeRank.ThirdDan => CommonGradeRankEnum.ThirdDan,
+        GradeRank.FourthDan => CommonGradeRankEnum.FourthDan,
+        GradeRank.FifthDan => CommonGradeRankEnum.FifthDan,
+        GradeRank.SixthDan => CommonGradeRankEnum.SixthDan,
+        GradeRank.SeventhDan => CommonGradeRankEnum.SeventhDan,
+        GradeRank.EighthDan => CommonGradeRankEnum.EighthDan,
+        GradeRank.NinthDan => CommonGradeRankEnum.NinthDan,
+        GradeRank.TenthDan => CommonGradeRankEnum.TenthDan,
+        GradeRank.TrueFirstDan => CommonGradeRankEnum.TrueFirstDan,
+        GradeRank.TrueSecondDan => CommonGradeRankEnum.TrueSecondDan,
+        GradeRank.TrueThirdDan => CommonGradeRankEnum.TrueThirdDan,
+        GradeRank.TrueFourthDan => CommonGradeRankEnum.TrueFourthDan,
+        GradeRank.TrueFifthDan => CommonGradeRankEnum.TrueFifthDan,
+        GradeRank.TrueSixthDan => CommonGradeRankEnum.TrueSixthDan,
+        GradeRank.TrueSeventhDan => CommonGradeRankEnum.TrueSeventhDan,
+        GradeRank.TrueEighthDan => CommonGradeRankEnum.TrueEighthDan,
+        GradeRank.TrueNinthDan => CommonGradeRankEnum.TrueNinthDan,
+        GradeRank.TrueTenthDan => CommonGradeRankEnum.TrueTenthDan,
+        GradeRank.TrueKaiden => CommonGradeRankEnum.TrueKaiden,
+        GradeRank.HiddenKaiden => CommonGradeRankEnum.HiddenKaiden,
+        _ => (CommonGradeRankEnum)gradeRank
     };
 
     public static implicit operator CommonPlayer(Player player) =>
@@ -80,10 +80,10 @@ public record Player
             Prober = CommonProberTypeEnum.Lxns,
             Name = player.Name,
             DXRating = player.DXRating,
-            TrophyColor = player.Trophy?.Color ?? CommonTrophyColorEnum.Normal,
-            TrophyText = player.Trophy?.Name ?? "なかよしmai友～！",
+            TitleColor = player.Title?.Color ?? CommonTitleColorEnum.Normal,
+            Title = player.Title?.Name ?? "なかよしmai友～！",
             ClassRank = player.ClassRank,
-            CourseRank = MapCourseRank(player.CourseRank),
+            GradeRank = MapGradeRank(player.GradeRank),
             IconId = player.Icon?.Id ?? 458001,
             FrameId = player.Frame?.Id ?? 558001,
             PlateId = player.NamePlate?.Id ?? 458001

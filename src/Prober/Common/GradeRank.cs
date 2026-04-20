@@ -1,6 +1,6 @@
-namespace Limekuma.Prober.Lxns.Enums;
+namespace Limekuma.Prober.Common;
 
-public enum CourseRank
+public enum GradeRank
 {
     Beginner,
     FirstDan,
@@ -13,7 +13,7 @@ public enum CourseRank
     EighthDan,
     NinthDan,
     TenthDan,
-    TrueFirstDan = 12,
+    TrueFirstDan,
     TrueSecondDan,
     TrueThirdDan,
     TrueFourthDan,
