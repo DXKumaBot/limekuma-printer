@@ -77,7 +77,7 @@ public partial class BestsService
             {
                 Achievements = 101,
                 ComboFlag = CommonComboFlagEnum.AllPerfectPlus,
-                Difficulty = (Difficulty)(i + 1),
+                Difficulty = (Difficulty)i,
                 DifficultyIndex = i,
                 DXRating = (int)(song.LevelValues[i] * 22.512m),
                 DXScore = song.Charts[i].Notes.Total * 3,

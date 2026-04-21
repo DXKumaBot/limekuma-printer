@@ -109,7 +109,6 @@ public record Record : SimpleRecord
 
     private static CommonDifficultyEnum MapDifficulty(Difficulty difficulty) => difficulty switch
     {
-        Difficulty.Dummy => CommonDifficultyEnum.Dummy,
         Difficulty.Basic => CommonDifficultyEnum.Basic,
         Difficulty.Advanced => CommonDifficultyEnum.Advanced,
         Difficulty.Expert => CommonDifficultyEnum.Expert,

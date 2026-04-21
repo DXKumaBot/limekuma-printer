@@ -13,7 +13,7 @@ public sealed class FitLevelScoreProcesser : IScoreProcesser
         ParallelQuery<CommonRecord> projectedRecords = records.Select(record =>
         {
             decimal fitLevel = record.Chart.LevelValue;
-            if (DFStatus.Shared.TryGetChartState(record.Chart.Song.Id, (int)record.Chart.Difficulty - 1,
+            if (DFStatus.Shared.TryGetChartState(record.Chart.Song.Id, (int)record.Chart.Difficulty,
                     out ChartState chartState))
             {
                 fitLevel = chartState.FitLevel;

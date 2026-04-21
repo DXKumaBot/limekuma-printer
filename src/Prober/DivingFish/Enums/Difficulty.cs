@@ -5,7 +5,6 @@ namespace Limekuma.Prober.DivingFish.Enums;
 [JsonConverter(typeof(JsonStringEnumConverter<Difficulty>))]
 public enum Difficulty
 {
-    Dummy,
     Basic,
     Advanced,
     Expert,

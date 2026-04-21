@@ -13,7 +13,7 @@ public sealed class StdDevScoreProcesser : IScoreProcesser
             {
                 decimal stdDev = 0;
                 decimal fitLevel = record.Chart.LevelValue;
-                if (Status.Shared.TryGetChartState(record.Chart.Song.Id, (int)record.Chart.Difficulty - 1,
+                if (Status.Shared.TryGetChartState(record.Chart.Song.Id, (int)record.Chart.Difficulty,
                         out ChartState chartState))
                 {
                     stdDev = chartState.StandardDeviation;

@@ -152,7 +152,6 @@ public class Record
 
     private static CommonDifficultyEnum MapDifficulty(Difficulty difficulty) => difficulty switch
     {
-        Difficulty.Dummy => CommonDifficultyEnum.Dummy,
         Difficulty.Basic => CommonDifficultyEnum.Basic,
         Difficulty.Advanced => CommonDifficultyEnum.Advanced,
         Difficulty.Expert => CommonDifficultyEnum.Expert,
@@ -169,9 +168,9 @@ public class Record
         BasicInfo basicInfo = song.BasicInfo;
 
         ArgumentOutOfRangeException.ThrowIfGreaterThan(record.Achievements,
-            (record.Difficulty is Difficulty.Utage && record.Song.Charts.Count > 1) ? 202 : 101);
+            (record.Difficulty is Difficulty.Utage && song.ChartIds.Count > 1) ? 202 : 101);
         // ArgumentOutOfRangeException.ThrowIfGreaterThan(record.DXScore, record.TotalDXScore);
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(record.DifficultyIndex, record.Song.Charts.Count);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(record.DifficultyIndex, song.ChartIds.Count);
         return new()
         {
             Chart = new()
