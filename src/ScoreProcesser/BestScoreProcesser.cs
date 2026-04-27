@@ -19,7 +19,7 @@ public sealed class BestScoreProcesser : IScoreProcesser
                     return acc;
                 }
 
-                (record.Chart.Song.InCurrentGenre switch
+                (record.Chart.Song.InCurrentVersion switch
                 {
                     true => acc.Current.Count < 15 ? acc.Current : acc.Ever,
                     false => acc.Ever.Count < 35 ? acc.Ever : acc.Current
@@ -30,4 +30,6 @@ public sealed class BestScoreProcesser : IScoreProcesser
         ImmutableArray<Record>.Builder current = rankedState.Current;
         return (ever.ToImmutable().AsParallel(), current.ToImmutable().AsParallel());
     }
+
+    public (ParallelQuery<Record>, ParallelQuery<Record>) Process(ParallelQuery<Record> records1p, ParallelQuery<Record> records2p) => throw new NotSupportedException();
 }

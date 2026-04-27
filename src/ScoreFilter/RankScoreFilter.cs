@@ -6,6 +6,8 @@ namespace Limekuma.ScoreFilter;
 [ScoreFilterTag("rank")]
 public sealed class RankScoreFilter : IScoreFilter
 {
+    public Func<Chart, bool> GetCounter(string? condition) => _ => true;
+
     public Func<Record, bool> GetFilter(string? condition)
     {
         if (condition is null)

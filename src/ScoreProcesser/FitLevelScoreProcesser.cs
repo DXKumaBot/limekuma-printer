@@ -45,4 +45,6 @@ public sealed class FitLevelScoreProcesser : IScoreProcesser
         });
         return projectedRecords.SortRecordForBests().SplitTopBestsByQuota(35, 15);
     }
+
+    public (ParallelQuery<CommonRecord>, ParallelQuery<CommonRecord>) Process(ParallelQuery<CommonRecord> records1p, ParallelQuery<CommonRecord> records2p) => throw new NotSupportedException();
 }

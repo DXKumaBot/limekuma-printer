@@ -27,4 +27,6 @@ public sealed class OldScoreProcesser : IScoreProcesser
         });
         return projectedRecords.SortRecordForBests().SplitTopBestsByQuota(25, 15);
     }
+
+    public (ParallelQuery<Record>, ParallelQuery<Record>) Process(ParallelQuery<Record> records1p, ParallelQuery<Record> records2p) => throw new NotSupportedException();
 }

@@ -9,19 +9,20 @@ internal static class ScoreFilterHelper
 {
     private static readonly FrozenDictionary<string, (IScoreFilter, bool)> Filters = BuildFilters();
 
-    internal static (Func<Record, bool>, bool) GetPredicateByTags(IReadOnlySet<string> tags, string? condition)
+    internal static (Func<Record, bool>, Func<Chart, bool>, bool) GetPredicateByTags(IReadOnlySet<string> tags, string? condition)
     {
         if (tags is null)
         {
-            return (_ => true, false);
+            return (_ => true, _ => true, false);
         }
 
         ParallelQuery<(IScoreFilter, bool)> selectedFilters =
             tags.AsParallel().Select(tag => Filters.GetValueOrDefault(tag)).Where(x => x.Item1 is not null);
         ParallelQuery<Func<Record, bool>> predicates = selectedFilters.Select(x => x.Item1.GetFilter(condition));
+        ParallelQuery<Func<Chart, bool>> counters = selectedFilters.Select(x => x.Item1.GetCounter(condition));
         bool maskMutex = selectedFilters.Any(x => x.Item2);
 
-        return (record => predicates.All(predicate => predicate(record)), maskMutex);
+        return (record => predicates.All(predicate => predicate(record)), chart => counters.All(counter => counter(chart)), maskMutex);
     }
 
     private static FrozenDictionary<string, (IScoreFilter, bool)> BuildFilters() => typeof(IScoreFilter).Assembly

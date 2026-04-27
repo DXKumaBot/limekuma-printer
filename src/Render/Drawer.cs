@@ -23,7 +23,7 @@ public sealed class Drawer
         IEnumerable<string> tags, User? player2) => await DrawBestsAsync(user, ever, current, everTotal,
         currentTotal, condition, tags, player2, "./Resources/Layouts/bests.xml");
 
-    public async Task<Image> DrawBestsAsync(User user, IReadOnlyList<Record> ever,
+    public async Task<Image> DrawBestsAsync(User player1, IReadOnlyList<Record> ever,
         IReadOnlyList<Record> current, int everTotal, int currentTotal, string? condition,
         IEnumerable<string> tags, User? player2, string xmlPath)
     {
@@ -41,7 +41,7 @@ public sealed class Drawer
         sb.Append(Convert.ToChar('A' + (version?.Build % 26)));
         Dictionary<string, object?> scope = new(StringComparer.OrdinalIgnoreCase)
         {
-            ["userInfo"] = user,
+            ["userInfo"] = player1,
             ["everRecords"] = ever,
             ["currentRecords"] = current,
             ["everRating"] = everTotal,

@@ -13,10 +13,11 @@ internal static class DfGatewayService
     {
         DfDeveloperClient client = new(token);
         return ServiceExecutionHelper.ExecuteWithHttpMappingAsync(() => client.GetPlayerDataAsync(qq),
-            (HttpStatusCode.BadRequest, StatusCode.NotFound), (HttpStatusCode.Forbidden, StatusCode.PermissionDenied));
+            (HttpStatusCode.BadRequest, StatusCode.NotFound), (HttpStatusCode.NotFound, StatusCode.NotFound),
+            (HttpStatusCode.Forbidden, StatusCode.PermissionDenied));
     }
 
     internal static Task<Player> GetPlayerAsync(uint qq) => ServiceExecutionHelper.ExecuteWithHttpMappingAsync(() =>
             ResourceClient.GetPlayerAsync(qq), (HttpStatusCode.BadRequest, StatusCode.NotFound),
-        (HttpStatusCode.Forbidden, StatusCode.PermissionDenied));
+        (HttpStatusCode.NotFound, StatusCode.NotFound), (HttpStatusCode.Forbidden, StatusCode.PermissionDenied));
 }

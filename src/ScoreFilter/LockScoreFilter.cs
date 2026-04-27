@@ -6,6 +6,8 @@ namespace Limekuma.ScoreFilter;
 [ScoreFilterTag("lock", true)]
 public sealed class LockScoreFilter : IScoreFilter
 {
+    public Func<Chart, bool> GetCounter(string? condition) => _ => true;
+
     public Func<Record, bool> GetFilter(string? condition) => x =>
     {
         decimal sumScore = (x.Chart.Notes.Tap + x.Chart.Notes.Touch + (x.Chart.Notes.Hold * 2) +

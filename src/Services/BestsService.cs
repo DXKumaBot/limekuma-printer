@@ -40,7 +40,7 @@ public sealed partial class BestsService : BestsApi.BestsApiBase
         }
         else
         {
-            (Func<Record, bool> predicate, bool maskMutex) =
+            (Func<Record, bool> predicate, _, bool maskMutex) =
                 ScoreFilterHelper.GetPredicateByTags(tags, condition);
             ServiceExecutionHelper.EnsurePermission(!(mayMask && maskMutex), "Mask enabled");
 

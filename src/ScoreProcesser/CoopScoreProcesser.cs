@@ -21,4 +21,6 @@ public sealed class CoopScoreProcesser : IScoreProcesser
 
         return records.SortRecordForBests().SplitTopBestsByQuota(35, 15);
     }
+
+    public (ParallelQuery<Record>, ParallelQuery<Record>) Process(ParallelQuery<Record> records) => throw new NotSupportedException();
 }

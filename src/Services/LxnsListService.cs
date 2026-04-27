@@ -27,15 +27,15 @@ public partial class ListService
         ParallelQuery<CommonRecord> sourceRecords = (await sourceRecordsTask).AsParallel()
             .Where(x => x.Type is not ChartType.Utage && SongData.Shared.SongsById.ContainsKey(x.Id))
             .Select(x => (CommonRecord)x);
-        (ImmutableArray<CommonRecord> cRecords, bool mayMask) =
-            BuildListRecords(requestTags, request.Condition, sourceRecords);
+        (ImmutableArray<CommonRecord> cRecords, int totalCount, bool mayMask) =
+            BuildListRecords(requestTags, request.Condition, sourceRecords, SongData.Shared.Charts.AsParallel());
         player.MayMasked = mayMask;
 
         (ImmutableArray<int> counts, int startIndex, int endIndex) =
             await PrepareDataAsync(player, cRecords, request.Page);
 
         using Image listImage = await new Drawer().DrawListAsync(player, cRecords[startIndex..endIndex], request.Page,
-            counts, cRecords.Length, startIndex, request.Condition, request.Tags);
+            counts, totalCount, startIndex, request.Condition, request.Tags);
 
         await responseStream.WriteToResponseAsync(listImage);
     }

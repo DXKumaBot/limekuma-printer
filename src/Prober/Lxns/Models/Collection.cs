@@ -26,7 +26,7 @@ public record Title : Collection
 
 public record Icon : Collection
 {
-    public string Url => $"https://assets2.lxns.net/maimai/icon/{Id}.png";
+    public string Url => field ??= $"https://assets2.lxns.net/maimai/icon/{Id}.png";
 
     [JsonPropertyName("genre")]
     public required string Genre { get; init; }
@@ -34,7 +34,7 @@ public record Icon : Collection
 
 public record NamePlate : Collection
 {
-    public string Url => $"https://assets2.lxns.net/maimai/plate/{Id}.png";
+    public string Url => field ??= $"https://assets2.lxns.net/maimai/plate/{Id}.png";
 
     [JsonPropertyName("genre")]
     public required string Genre { get; init; }
@@ -42,7 +42,7 @@ public record NamePlate : Collection
 
 public record Frame : Collection
 {
-    public string Url => $"https://assets2.lxns.net/maimai/frame/{Id}.png";
+    public string Url => field ??= $"https://assets2.lxns.net/maimai/frame/{Id}.png";
 
     [JsonPropertyName("genre")]
     public required string Genre { get; init; }

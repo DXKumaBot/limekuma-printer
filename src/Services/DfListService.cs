@@ -6,6 +6,7 @@ using Limekuma.Utils;
 using SixLabors.ImageSharp;
 using System.Collections.Frozen;
 using System.Collections.Immutable;
+using CommonChart = Limekuma.Prober.Common.Chart;
 using CommonPlayer = Limekuma.Prober.Common.User;
 using CommonRecord = Limekuma.Prober.Common.Record;
 
@@ -23,17 +24,17 @@ public partial class ListService
         user.PlateId = request.Plate;
         user.IconId = request.Icon;
 
-        (ImmutableArray<CommonRecord> records, bool mayMask) = BuildListRecords(requestTags, request.Condition,
+        (ImmutableArray<CommonRecord> records, int totalCount, bool mayMask) = BuildListRecords(requestTags, request.Condition,
             player.Records.AsParallel().Where(x =>
-                    x.Difficulty is not Difficulty.Utage && Songs.SharedSongs.SongsById.ContainsKey(x.Id.ToString()))
-                .Select(x => (CommonRecord)x));
+                    x.Difficulty is not Difficulty.Utage && Songs.SharedSongs.SongsById.ContainsKey(x.Id))
+                .Select(x => (CommonRecord)x), Songs.SharedSongs.Charts.AsParallel());
         user.MayMasked = mayMask;
 
         (ImmutableArray<int> counts, int startIndex, int endIndex) =
             await PrepareDataAsync(user, records, request.Page);
 
         using Image listImage = await new Drawer().DrawListAsync(user, records[startIndex..endIndex], request.Page,
-            counts, records.Length, startIndex, request.Condition, request.Tags);
+            counts, totalCount, startIndex, request.Condition, request.Tags);
 
         await responseStream.WriteToResponseAsync(listImage);
     }

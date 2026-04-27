@@ -27,4 +27,6 @@ public sealed class StdDevScoreProcesser : IScoreProcesser
             .ThenByDescending(x => x.Record.Achievements).Select(x => x.Record);
         return rankedRecords.SplitTopBestsByQuota(35, 15);
     }
+
+    public (ParallelQuery<CommonRecord>, ParallelQuery<CommonRecord>) Process(ParallelQuery<CommonRecord> records1p, ParallelQuery<CommonRecord> records2p) => throw new NotSupportedException();
 }

@@ -25,7 +25,7 @@ public static class ConstantMap
             [(AchievementsRank)14] = 100.5m
         }.ToFrozenDictionary();
 
-    public static readonly FrozenDictionary<string, FrozenSet<string>> GenreMap =
+    public static readonly FrozenDictionary<string, FrozenSet<string>> VersionMap =
         new Dictionary<string, FrozenSet<string>>
         {
             ["真"] = ["maimai", "maimai PLUS"],

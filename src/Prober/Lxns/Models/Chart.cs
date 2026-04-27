@@ -6,6 +6,8 @@ namespace Limekuma.Prober.Lxns.Models;
 
 public record Chart
 {
+    private Lazy<int>? _totalDXScore;
+
     [JsonPropertyName("type")]
     public required ChartType Type { get; init; }
 
@@ -19,11 +21,14 @@ public record Chart
     public required decimal LevelValue { get; init; }
 
     [JsonPropertyName("note_designer")]
-    public required string CharterName { get; init; }
+    public required string Charter { get; init; }
 
     [JsonPropertyName("version")]
-    public required int Version { get; init; }
+    public required int VersionNumber { get; init; }
 
     [JsonPropertyName("notes")]
     public CommonNotes? Notes { get; init; }
+
+    [JsonIgnore]
+    public int TotalDXScore => (_totalDXScore ??= new(() => Notes!.Total * 3)).Value;
 }

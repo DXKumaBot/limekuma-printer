@@ -8,9 +8,9 @@ public class Song
 
     public required ChartType Type { get; init; }
 
-    public required string Genre { get; init; }
+    public required string VersionTitle { get; init; }
 
-    public required bool InCurrentGenre { get; init; }
+    public required bool InCurrentVersion { get; init; }
 
     public required string AudioUrl { get; init; }
 

@@ -32,7 +32,7 @@ public partial class BestsService
         user.PlateId = plate!.Value;
         user.IconId = icon!.Value;
         return (user, player.Records.AsParallel().Where(x =>
-                x.Difficulty is not Difficulty.Utage && Songs.SharedSongs.SongsById.ContainsKey(x.Id.ToString()))
+                x.Difficulty is not Difficulty.Utage && Songs.SharedSongs.SongsById.ContainsKey(x.Id))
             .Select(x => (CommonRecord)x));
     }
 
@@ -67,11 +67,6 @@ public partial class BestsService
     {
         ParallelQuery<CommonRecord> allRecords = Songs.Shared.AsParallel().SelectMany(song =>
         {
-            if (!int.TryParse(song.Id, out int id))
-            {
-                return [];
-            }
-
             int chartCount = Math.Min(song.Charts.Count, Math.Min(song.LevelValues.Count, song.Levels.Count));
             return Enumerable.Range(0, chartCount).AsParallel().Select(i => (CommonRecord)new Record
             {
@@ -81,7 +76,7 @@ public partial class BestsService
                 DifficultyIndex = i,
                 DXRating = (int)(song.LevelValues[i] * 22.512m),
                 DXScore = song.Charts[i].Notes.Total * 3,
-                Id = id,
+                Id = song.Id,
                 Level = song.Levels[i],
                 LevelValue = song.LevelValues[i],
                 Rank = CommonAchievementsRankEnum.SSSPlus,
@@ -118,7 +113,7 @@ public partial class BestsService
         IServerStreamWriter<ImageResponse> responseStream, ServerCallContext context)
     {
         FrozenSet<string> requestTags = request.Tags.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
-        CommonPlayer player;
+        CommonPlayer player1;
         CommonPlayer? player2 = null;
         ImmutableArray<CommonRecord> bestEver;
         ImmutableArray<CommonRecord> bestCurrent;
@@ -127,9 +122,9 @@ public partial class BestsService
         bool mayMask;
         if (ScoreProcesserHelper.GetProcesserByTags(requestTags) is not null)
         {
-            (player, ParallelQuery<CommonRecord> records) = await PrepareDfRecordsForProcessAsync(request.Token,
+            (player1, ParallelQuery<CommonRecord> records) = await PrepareDfRecordsForProcessAsync(request.Token,
                 request.Qq, request.Frame, request.Plate, request.Icon);
-            await ServiceHelper.PrepareUserDataAsync(player);
+            await ServiceHelper.PrepareUserDataAsync(player1);
             (bestEver, bestCurrent, everTotal, currentTotal, mayMask, player2) = await ProcessBestsByTagsAsync(requestTags,
                 request.Condition, records, async condition =>
                 {
@@ -149,23 +144,23 @@ public partial class BestsService
 
                     throw new RpcException(new(StatusCode.InvalidArgument, "Invalid extra info for processing bests"));
                 });
-            player.MayMasked = mayMask;
+            player1.MayMasked = mayMask;
         }
         else if (requestTags.Contains("common"))
         {
-            (player, bestEver, bestCurrent, everTotal, currentTotal) =
+            (player1, bestEver, bestCurrent, everTotal, currentTotal) =
                 await PrepareDfDataAsync(request.Qq, request.Frame, request.Plate, request.Icon);
         }
         else if (requestTags.Contains("riren"))
         {
-            (player, bestEver, bestCurrent, everTotal, currentTotal) = await PrepareRiRenDfDataAsync();
+            (player1, bestEver, bestCurrent, everTotal, currentTotal) = await PrepareRiRenDfDataAsync();
         }
         else
         {
             throw new RpcException(new(StatusCode.InvalidArgument, "Invalid tags for diving fish bests request"));
         }
 
-        using Image bestsImage = await new Drawer().DrawBestsAsync(player, bestEver, bestCurrent, everTotal,
+        using Image bestsImage = await new Drawer().DrawBestsAsync(player1, bestEver, bestCurrent, everTotal,
             currentTotal,
             request.Condition, requestTags, player2);
 

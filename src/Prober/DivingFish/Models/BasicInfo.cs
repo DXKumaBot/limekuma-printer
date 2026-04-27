@@ -17,10 +17,11 @@ public record BasicInfo
     public required int Bpm { get; set; }
 
     [JsonPropertyName("release_date")]
-    public required string ReleaseDate { get; set; }
+    [Obsolete("This field is always empty.")]
+    public string? ReleaseDate { get; set; }
 
     [JsonPropertyName("from")]
-    public required string From { get; set; }
+    public required string Version { get; set; }
 
     [JsonPropertyName("is_new")]
     public required bool InCurrentVersion { get; set; }

@@ -1,14 +1,21 @@
 using Limekuma.Prober.DivingFish.Enums;
-using System.Collections.Frozen;
 using System.Collections.Immutable;
 using System.Text.Json.Serialization;
+using CommonChart = Limekuma.Prober.Common.Chart;
+using CommonChartTypeEnum = Limekuma.Prober.Common.ChartType;
+using CommonDifficultyEnum = Limekuma.Prober.Common.Difficulty;
+using CommonSong = Limekuma.Prober.Common.Song;
 
 namespace Limekuma.Prober.DivingFish.Models;
 
 public record Song
 {
+    private Lazy<ImmutableArray<CommonChart>>? _commonCharts;
+
+    private Lazy<int>? _id;
+
     [JsonPropertyName("id")]
-    public required string Id { get; init; }
+    public required string IdString { get; init; }
 
     [JsonPropertyName("title")]
     public required string Title { get; init; }
@@ -30,34 +37,54 @@ public record Song
 
     [JsonPropertyName("basic_info")]
     public required BasicInfo BasicInfo { get; init; }
-}
 
-internal class Songs(IEnumerable<Song> songs)
-{
-    private readonly DateTimeOffset _pullTime = DateTimeOffset.Now;
-    private readonly ImmutableArray<Song> _songs = [.. songs];
-
-    public FrozenDictionary<string, Song> SongsById => field ??= Shared.ToFrozenDictionary(x => x.Id);
-
-    public static Songs SharedSongs
+    [JsonIgnore]
+    public int Id => (_id ??= new(() =>
     {
-        get
+        if (!int.TryParse(IdString, out int id))
         {
-            if (field is not null && DateTimeOffset.Now.AddHours(10).Date == field._pullTime.AddHours(10).Date)
-            {
-                return field;
-            }
-
-            DfResourceClient resource = new();
-            field = (Songs)resource.GetSongsAsync().Result;
-
-            return field;
+            throw new InvalidDataException();
         }
-    }
 
-    public static ImmutableArray<Song> Shared => SharedSongs;
+        return id;
+    })).Value;
 
-    public static explicit operator Songs(List<Song> songs) => new(songs);
+    [JsonIgnore]
+    public string AudioUrl => field ??=
+        $"https://assets2.lxns.net/maimai/music/{(Id is > 10000 and < 100000 ? Id % 10000 : Id)}.mp3";
 
-    public static implicit operator ImmutableArray<Song>(Songs a) => a._songs;
+    [JsonIgnore]
+    public string JacketUrl => field ??= $"https://maimai.diving-fish.com/covers/{Id}.png";
+
+    [JsonIgnore]
+    public ImmutableArray<CommonChart> CommonCharts => (_commonCharts ??= new(() => [.. Charts.AsParallel().Select((x, i) => new CommonChart
+    {
+        Song = this,
+        Difficulty = Id >= 100000 ? CommonDifficultyEnum.Utage : MapDifficulty(i),
+        TotalDXScore = x.TotalDXScore,
+        Level = Levels[i],
+        LevelValue = LevelValues[i],
+        Notes = x.Notes
+    })])).Value;
+
+    private static CommonDifficultyEnum MapDifficulty(int index) => index switch
+    {
+        0 => CommonDifficultyEnum.Basic,
+        1 => CommonDifficultyEnum.Advanced,
+        2 => CommonDifficultyEnum.Expert,
+        3 => CommonDifficultyEnum.Master,
+        4 => CommonDifficultyEnum.ReMaster,
+        _ => throw new ArgumentOutOfRangeException(nameof(index), index, null)
+    };
+
+    public static implicit operator CommonSong(Song song) => new()
+    {
+        Id = song.Id,
+        Title = song.Title,
+        Type = song.Id >= 100000 ? CommonChartTypeEnum.Utage : (CommonChartTypeEnum)song.Type,
+        VersionTitle = song.BasicInfo.Version,
+        InCurrentVersion = song.BasicInfo.InCurrentVersion,
+        AudioUrl = song.AudioUrl,
+        JacketUrl = song.JacketUrl
+    };
 }

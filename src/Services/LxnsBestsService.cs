@@ -119,7 +119,7 @@ public partial class BestsService
         ServerCallContext context)
     {
         FrozenSet<string> requestTags = request.Tags.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
-        CommonPlayer player;
+        CommonPlayer player1;
         CommonPlayer? player2 = null;
         ImmutableArray<CommonRecord> bestEver;
         ImmutableArray<CommonRecord> bestCurrent;
@@ -128,9 +128,9 @@ public partial class BestsService
         bool mayMask;
         if (ScoreProcesserHelper.GetProcesserByTags(requestTags) is not null)
         {
-            (player, ParallelQuery<CommonRecord> records) =
+            (player1, ParallelQuery<CommonRecord> records) =
                 await PrepareLxnsRecordsForProcessAsync(request.DevToken, request.PersonalToken);
-            await ServiceHelper.PrepareUserDataAsync(player);
+            await ServiceHelper.PrepareUserDataAsync(player1);
             (bestEver, bestCurrent, everTotal, currentTotal, mayMask, player2) = await ProcessBestsByTagsAsync(requestTags,
                 request.Condition, records,
                 async condition =>
@@ -151,23 +151,23 @@ public partial class BestsService
 
                     throw new RpcException(new(StatusCode.InvalidArgument, "Invalid extra info for processing bests"));
                 });
-            player.MayMasked = mayMask;
+            player1.MayMasked = mayMask;
         }
         else if (requestTags.Contains("common"))
         {
-            (player, bestEver, bestCurrent, everTotal, currentTotal) =
+            (player1, bestEver, bestCurrent, everTotal, currentTotal) =
                 await PrepareLxnsDataAsync(request.DevToken, request.Qq, request.PersonalToken);
         }
         else if (requestTags.Contains("riren"))
         {
-            (player, bestEver, bestCurrent, everTotal, currentTotal) = await PrepareRiRenLxnsDataAsync();
+            (player1, bestEver, bestCurrent, everTotal, currentTotal) = await PrepareRiRenLxnsDataAsync();
         }
         else
         {
             throw new RpcException(new(StatusCode.InvalidArgument, "Invalid tags for lxns bests request"));
         }
 
-        using Image bestsImage = await new Drawer().DrawBestsAsync(player, bestEver, bestCurrent, everTotal,
+        using Image bestsImage = await new Drawer().DrawBestsAsync(player1, bestEver, bestCurrent, everTotal,
             currentTotal,
             request.Condition, requestTags, player2);
 

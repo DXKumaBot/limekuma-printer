@@ -16,10 +16,10 @@ internal static class SortExtensions
         internal (ParallelQuery<Record> Ever, ParallelQuery<Record> Current) SplitTopBestsByQuota(
             int everQuota, int currentQuota)
         {
-            ParallelQuery<Record> ever = records.Where(record => !record.Chart.Song.InCurrentGenre)
+            ParallelQuery<Record> ever = records.Where(record => !record.Chart.Song.InCurrentVersion)
                 .Take(everQuota);
             ParallelQuery<Record> current =
-                records.Where(record => record.Chart.Song.InCurrentGenre).Take(currentQuota);
+                records.Where(record => record.Chart.Song.InCurrentVersion).Take(currentQuota);
             return (ever, current);
         }
     }

@@ -48,15 +48,17 @@ public sealed class StealScoreProcesser : IScoreProcesser
             return selected;
         }).OfType<Record>();
 
-        ParallelQuery<Record> current = selectedRecords.Where(x => x.Chart.Song.InCurrentGenre)
+        ParallelQuery<Record> current = selectedRecords.Where(x => x.Chart.Song.InCurrentVersion)
             .OrderByDescending(x => x.DXRating > currentMin)
             .ThenByDescending(x => x.DXRating - x.ExtraInfo).ThenByDescending(x => x.Chart.LevelValue)
             .ThenByDescending(x => x.Achievements).Take(15);
-        ParallelQuery<Record> ever = selectedRecords.Where(x => !x.Chart.Song.InCurrentGenre)
+        ParallelQuery<Record> ever = selectedRecords.Where(x => !x.Chart.Song.InCurrentVersion)
             .OrderByDescending(x => x.DXRating > everMin)
             .ThenByDescending(x => x.DXRating - x.ExtraInfo).ThenByDescending(x => x.Chart.LevelValue)
             .ThenByDescending(x => x.Achievements).Take(35);
 
         return (ever, current);
     }
+
+    public (ParallelQuery<Record>, ParallelQuery<Record>) Process(ParallelQuery<Record> records) => throw new NotSupportedException();
 }

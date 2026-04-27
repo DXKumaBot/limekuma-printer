@@ -24,6 +24,8 @@ public record User
 
     public bool MayMasked { get; set; } = false;
 
+    public decimal? ExtraInfo { get; internal set; }
+
     public DXRatingRank DXRatingRank => DXRating switch
     {
         < 1000 => DXRatingRank.White,

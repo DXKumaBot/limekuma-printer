@@ -28,7 +28,8 @@ public record Player
     public required Bests Bests { get; set; }
 
     [JsonPropertyName("user_general_data")]
-    public required object? UserGeneralData { get; set; }
+    [Obsolete("This field is always empty.")]
+    public object? UserGeneralData { get; set; }
 
     public static implicit operator CommonPlayer(Player player) =>
         new()

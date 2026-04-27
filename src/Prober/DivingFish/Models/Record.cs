@@ -2,9 +2,7 @@ using Limekuma.Prober.DivingFish.Enums;
 using Limekuma.Utils;
 using System.Text.Json.Serialization;
 using CommonAchievementsRankEnum = Limekuma.Prober.Common.AchievementsRank;
-using CommonChartTypeEnum = Limekuma.Prober.Common.ChartType;
 using CommonComboFlagEnum = Limekuma.Prober.Common.ComboFlag;
-using CommonDifficultyEnum = Limekuma.Prober.Common.Difficulty;
 using CommonRecord = Limekuma.Prober.Common.Record;
 using CommonSyncFlagEnum = Limekuma.Prober.Common.SyncFlag;
 
@@ -12,13 +10,7 @@ namespace Limekuma.Prober.DivingFish.Models;
 
 public class Record
 {
-    private Lazy<Chart>? _chart;
-
     private Lazy<int>? _dxScoreRank;
-
-    private Lazy<Song>? _song;
-
-    private Lazy<int>? _totalDXScore;
 
     [JsonPropertyName("achievements")]
     public required decimal Achievements
@@ -119,27 +111,24 @@ public class Record
     [JsonPropertyName("type")]
     public required ChartType Type { get; init; }
 
-    public string AudioUrl =>
-        $"https://assets2.lxns.net/maimai/music/{(Id is > 10000 and < 100000 ? Id % 10000 : Id)}.mp3";
-
-    public string JacketUrl => $"https://maimai.diving-fish.com/covers/{Id}.png";
-
-    public Song Song => (_song ??= new(() =>
+    public Song Song
     {
-        Songs songData = Songs.SharedSongs;
-        if (!songData.SongsById.TryGetValue(Id.ToString(), out Song? song))
+        get
         {
-            throw new KeyNotFoundException($"Song with ID {Id} not found");
+            if (field is not null)
+            {
+                return field;
+            }
+
+            Songs songData = Songs.SharedSongs;
+            field = songData.SongsById[Id];
+            return field;
         }
+    }
 
-        return song;
-    })).Value;
+    public Chart Chart => field ??= Song.Charts[DifficultyIndex];
 
-    public Chart Chart => (_chart ??= new(() => Song.Charts[DifficultyIndex])).Value;
-
-    public int TotalDXScore => (_totalDXScore ??= new(() => Song.Charts[DifficultyIndex].Notes.Total * 3)).Value;
-
-    public int DXScoreRank => (_dxScoreRank ??= new(() => ((decimal)DXScore / TotalDXScore) switch
+    public int DXScoreRank => (_dxScoreRank ??= new(() => ((decimal)DXScore / Chart.TotalDXScore) switch
     {
         < 0.85m => 0,
         < 0.9m => 1,
@@ -150,22 +139,9 @@ public class Record
         _ => 0
     })).Value;
 
-    private static CommonDifficultyEnum MapDifficulty(Difficulty difficulty) => difficulty switch
-    {
-        Difficulty.Basic => CommonDifficultyEnum.Basic,
-        Difficulty.Advanced => CommonDifficultyEnum.Advanced,
-        Difficulty.Expert => CommonDifficultyEnum.Expert,
-        Difficulty.Master => CommonDifficultyEnum.Master,
-        Difficulty.ReMaster => CommonDifficultyEnum.ReMaster,
-        Difficulty.Utage => CommonDifficultyEnum.Utage,
-        _ => throw new ArgumentOutOfRangeException(nameof(difficulty), difficulty, null)
-    };
-
     public static implicit operator CommonRecord(Record record)
     {
         Song song = record.Song;
-        Chart chart = record.Chart;
-        BasicInfo basicInfo = song.BasicInfo;
 
         ArgumentOutOfRangeException.ThrowIfGreaterThan(record.Achievements,
             (record.Difficulty is Difficulty.Utage && song.ChartIds.Count > 1) ? 202 : 101);
@@ -173,26 +149,7 @@ public class Record
         ArgumentOutOfRangeException.ThrowIfGreaterThan(record.DifficultyIndex, song.ChartIds.Count);
         return new()
         {
-            Chart = new()
-            {
-                Song = new()
-                {
-                    Id = record.Id,
-                    Title = record.Title,
-                    Type = record.Difficulty is Difficulty.Utage
-                        ? CommonChartTypeEnum.Utage
-                        : (CommonChartTypeEnum)record.Type,
-                    Genre = basicInfo.Genre,
-                    InCurrentGenre = basicInfo.InCurrentVersion,
-                    AudioUrl = record.AudioUrl,
-                    JacketUrl = record.JacketUrl
-                },
-                Difficulty = MapDifficulty(record.Difficulty),
-                TotalDXScore = record.TotalDXScore,
-                Level = record.Level,
-                LevelValue = record.LevelValue,
-                Notes = chart.Notes
-            },
+            Chart = song.CommonCharts[record.DifficultyIndex],
             ComboFlag = record.ComboFlag,
             SyncFlag = record.SyncFlag,
             Rank = record.Rank,

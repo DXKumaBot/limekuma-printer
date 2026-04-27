@@ -1,10 +1,13 @@
 using System.Collections.Frozen;
+using System.Collections.Immutable;
 using System.Text.Json.Serialization;
+using CommonChart = Limekuma.Prober.Common.Chart;
 
 namespace Limekuma.Prober.Lxns.Models;
 
 public record SongData
 {
+    private Lazy<ImmutableArray<CommonChart>>? _charts;
     private readonly DateTimeOffset _pullTime = DateTimeOffset.Now;
 
     [JsonPropertyName("songs")]
@@ -36,4 +39,6 @@ public record SongData
             return field;
         }
     }
+
+    public ImmutableArray<CommonChart> Charts => (_charts ??= new(() => Songs.AsParallel().SelectMany(x => x.CommonCharts).ToImmutableArray())).Value;
 }

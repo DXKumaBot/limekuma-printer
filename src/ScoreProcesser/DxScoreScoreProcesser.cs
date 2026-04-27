@@ -28,4 +28,6 @@ public sealed class DxScoreScoreProcesser : IScoreProcesser
         });
         return projectedRecords.SortRecordForBests().SplitTopBestsByQuota(35, 15);
     }
+
+    public (ParallelQuery<Record>, ParallelQuery<Record>) Process(ParallelQuery<Record> records1p, ParallelQuery<Record> records2p) => throw new NotSupportedException();
 }

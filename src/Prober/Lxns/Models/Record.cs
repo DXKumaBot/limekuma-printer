@@ -11,14 +11,6 @@ namespace Limekuma.Prober.Lxns.Models;
 
 public record Record : SimpleRecord
 {
-    private Lazy<Chart>? _chart;
-
-    private Lazy<decimal>? _levelValue;
-
-    private Lazy<Song>? _song;
-
-    private Lazy<int>? _totalDXScore;
-
     [JsonPropertyName("achievements")]
     public required decimal Achievements
     {
@@ -76,36 +68,42 @@ public record Record : SimpleRecord
     [JsonPropertyName("last_played_time")]
     public DateTimeOffset? LastPlayedTime { get; init; }
 
-    public string AudioUrl => $"https://assets2.lxns.net/maimai/music/{Id}.mp3";
-
-    public string JacketUrl => $"https://assets2.lxns.net/maimai/jacket/{Id}.png";
-
-    public Song Song => (_song ??= new(() =>
+    public Song Song
     {
-        SongData songData = SongData.Shared;
-        if (!songData.SongsById.TryGetValue(Id, out Song? song))
+        get
         {
-            throw new KeyNotFoundException($"Song with ID {Id} not found");
+            if (field is not null)
+            {
+                return field;
+            }
+
+            SongData songData = SongData.Shared;
+            field = songData.SongsById[Id];
+            return field;
         }
+    }
 
-        return song;
-    })).Value;
-
-    public Chart Chart => (_chart ??= new(() =>
+    public Chart Chart
     {
-        int index = (int)Difficulty;
-        return Type switch
+        get
         {
-            ChartType.Standard => Song.Charts.Standard[index],
-            ChartType.DX => Song.Charts.DX[index],
-            ChartType.Utage => Song.Charts.Utage![index],
-            _ => throw new ArgumentOutOfRangeException()
-        };
-    })).Value;
+            if (field is not null)
+            {
+                return field;
+            }
 
-    public int TotalDXScore => (_totalDXScore ??= new(() => Chart.Notes!.Total * 3)).Value;
+            int index = (int)Difficulty;
+            field = Type switch
+            {
+                ChartType.Standard => Song.Charts.Standard[index],
+                ChartType.DX => Song.Charts.DX[index],
+                ChartType.Utage => Song.Charts.Utage![index],
+                _ => throw new ArgumentOutOfRangeException()
+            };
 
-    public decimal LevelValue => (_levelValue ??= new(() => Chart.LevelValue)).Value;
+            return field;
+        }
+    }
 
     private static CommonDifficultyEnum MapDifficulty(Difficulty difficulty) => difficulty switch
     {
@@ -119,19 +117,20 @@ public record Record : SimpleRecord
 
     public static implicit operator CommonRecord(Record record)
     {
+        Song song = record.Song;
         Chart chart = record.Chart;
         SongData songData = SongData.Shared;
-        int versionGroup = chart.Version - (chart.Version % 500);
+        int versionGroup = chart.VersionNumber - (chart.VersionNumber % 500);
         if (!songData.VersionsByGroup.TryGetValue(versionGroup, out Version? version))
         {
             throw new KeyNotFoundException($"Version group {versionGroup} not found");
         }
 
-        bool inCurrentGenre = songData.Versions[^1].VersionNumber == versionGroup;
+        bool inCurrentVersion = songData.Versions[^1].VersionNumber == versionGroup;
 
         ArgumentOutOfRangeException.ThrowIfGreaterThan(record.Achievements,
             record.Type is ChartType.Utage && ((UtageChart)record.Chart).IsBuddy ? 202 : 101);
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(record.DXScore, record.TotalDXScore);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(record.DXScore, chart.TotalDXScore);
         return new()
         {
             Chart = new()
@@ -141,17 +140,17 @@ public record Record : SimpleRecord
                     Id = record.Type is ChartType.Standard ? record.Id : record.Id + 10000,
                     Title = record.Title,
                     Type = (CommonChartTypeEnum)record.Type,
-                    Genre = version.Title,
-                    InCurrentGenre = inCurrentGenre,
-                    AudioUrl = record.AudioUrl,
-                    JacketUrl = record.JacketUrl
+                    VersionTitle = version.Title,
+                    InCurrentVersion = inCurrentVersion,
+                    AudioUrl = song.AudioUrl,
+                    JacketUrl = song.JacketUrl
                 },
                 Difficulty = record.Type is ChartType.Utage
                     ? CommonDifficultyEnum.Utage
                     : MapDifficulty(record.Difficulty),
-                TotalDXScore = record.TotalDXScore,
+                TotalDXScore = chart.TotalDXScore,
                 Level = record.Level,
-                LevelValue = record.LevelValue,
+                LevelValue = chart.LevelValue,
                 Notes = chart.Notes!
             },
             ComboFlag = record.ComboFlag ?? CommonComboFlagEnum.None,

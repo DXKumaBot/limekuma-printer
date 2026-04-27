@@ -8,4 +8,5 @@ public sealed class FilterScoreProcesser : IScoreProcesser
 {
     public (ParallelQuery<Record>, ParallelQuery<Record>) Process(ParallelQuery<Record> records) =>
         records.SortRecordForBests().SplitTopBestsByQuota(35, 15);
+    public (ParallelQuery<Record>, ParallelQuery<Record>) Process(ParallelQuery<Record> records1p, ParallelQuery<Record> records2p) => throw new NotSupportedException();
 }
