@@ -17,7 +17,7 @@ internal static class ScoreFilterHelper
         }
 
         ParallelQuery<(IScoreFilter, bool)> selectedFilters =
-            tags.AsParallel().Select(tag => Filters.GetValueOrDefault(tag)).Where(x => x.Item1 is not null);
+            tags.AsParallel().Select(Filters.GetValueOrDefault).Where(x => x.Item1 is not null);
         ParallelQuery<Func<Record, bool>> predicates = selectedFilters.Select(x => x.Item1.GetFilter(condition));
         ParallelQuery<Func<Chart, bool>> counters = selectedFilters.Select(x => x.Item1.GetCounter(condition));
         bool maskMutex = selectedFilters.Any(x => x.Item2);
