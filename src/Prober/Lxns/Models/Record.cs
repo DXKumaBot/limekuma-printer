@@ -123,12 +123,8 @@ public record Record : SimpleRecord
         Chart chart = record.Chart;
         SongData songData = SongData.Shared;
         int versionGroup = chart.VersionNumber - (chart.VersionNumber % 500);
-        if (!songData.VersionsByGroup.TryGetValue(versionGroup, out Version? version))
-        {
-            throw new KeyNotFoundException($"Version group {versionGroup} not found");
-        }
-
-        bool inCurrentVersion = songData.Versions[^1].VersionNumber == versionGroup;
+        Version version = songData.VersionsByGroup[versionGroup];
+        bool inCurrentVersion = songData.Versions[^1].VersionNumber == version.VersionNumber;
 
         ArgumentOutOfRangeException.ThrowIfGreaterThan(record.Achievements,
             record.Type is ChartType.Utage && ((UtageChart)record.Chart).IsBuddy ? 202 : 101);
