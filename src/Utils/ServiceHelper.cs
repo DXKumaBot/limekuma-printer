@@ -13,18 +13,18 @@ internal static class ServiceHelper
     };
 
     internal static async Task PrepareUserDataAsync(User user) => await Task.WhenAll(
-        PrepareImageAsset("Icon", user.IconId, user.IconUrl),
-        PrepareImageAsset("Plate", user.PlateId, user.PlateUrl),
-        PrepareImageAsset("Frame", user.FrameId, user.FrameUrl));
+        PrepareImageAssetAsync("Icon", user.IconId, user.IconUrl),
+        PrepareImageAssetAsync("Plate", user.PlateId, user.PlateUrl),
+        PrepareImageAssetAsync("Frame", user.FrameId, user.FrameUrl));
 
     internal static async Task PrepareRecordDataAsync(IEnumerable<Record> records) =>
         await Parallel.ForEachAsync(records, PrepareRecordParallelOptions,
             async (record, _) => await PrepareRecordDataAsync(record));
 
     internal static async Task PrepareRecordDataAsync(Record record) =>
-        await PrepareImageAsset("Jacket", record.Chart.Song.Id % 10000, record.Chart.Song.JacketUrl);
+        await PrepareImageAssetAsync("Jacket", record.Chart.Song.Id % 10000, record.Chart.Song.JacketUrl);
 
-    private static async Task PrepareImageAsset(string assetKey, int id, string url)
+    private static async Task PrepareImageAssetAsync(string assetKey, int id, string url)
     {
         string? basePath = AssetProvider.Shared.GetPath(assetKey);
         if (string.IsNullOrEmpty(basePath))
