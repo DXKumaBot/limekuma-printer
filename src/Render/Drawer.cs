@@ -4,7 +4,6 @@ using Limekuma.Render.Nodes;
 using SixLabors.ImageSharp;
 using System.Collections;
 using System.Collections.Immutable;
-using System.Reflection;
 using System.Text;
 
 namespace Limekuma.Render;
@@ -31,7 +30,7 @@ public sealed class Drawer
         int everMin = ever.Count > 0 ? ever[^1].DXRating : 0;
         int currentMax = current.Count > 0 ? current[0].DXRating : 0;
         int currentMin = current.Count > 0 ? current[^1].DXRating : 0;
-        Version? version = Assembly.GetExecutingAssembly().GetName().Version;
+        Version? version = typeof(Drawer).Assembly.GetName().Version;
         StringBuilder sb = new();
         for (int i = 0; i < version?.Build / 26; ++i)
         {
@@ -69,7 +68,7 @@ public sealed class Drawer
         IEnumerable<string> tags, string xmlPath)
     {
         int totalPages = (int)Math.Ceiling(totalCount / 55m);
-        Version? version = Assembly.GetExecutingAssembly().GetName().Version;
+        Version? version = typeof(Drawer).Assembly.GetName().Version;
         StringBuilder sb = new();
         for (int i = 0; i < version?.Build / 26; ++i)
         {

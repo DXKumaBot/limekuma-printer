@@ -1,6 +1,5 @@
 using Limekuma.Prober.Common;
 using Limekuma.Render;
-using System.Reflection;
 
 namespace Limekuma.Utils;
 
@@ -50,7 +49,7 @@ internal static class ServiceHelper
     {
         HttpClient http = new();
         http.DefaultRequestHeaders.UserAgent.Add(new("limekuma",
-            Assembly.GetExecutingAssembly().GetName().Version?.ToString()));
+            typeof(ServiceHelper).Assembly.GetName().Version?.ToString()));
         return http;
     }
 }

@@ -1,4 +1,3 @@
-using System.Reflection;
 using System.Text.Json;
 
 namespace Limekuma.Prober.Lxns;
@@ -12,7 +11,7 @@ public abstract class LxnsClient
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
-    private static readonly string? UserAgentVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
+    private static readonly string? UserAgentVersion = typeof(LxnsClient).Assembly.GetName().Version?.ToString();
 
     protected HttpClient _httpClient;
     protected JsonSerializerOptions _jsonOptions;

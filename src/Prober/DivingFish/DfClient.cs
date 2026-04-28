@@ -1,6 +1,5 @@
 using Limekuma.Prober.DivingFish.Enums;
 using Limekuma.Utils;
-using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -18,7 +17,7 @@ public abstract class DfClient
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
-    private static readonly string? UserAgentVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
+    private static readonly string? UserAgentVersion = typeof(DfClient).Assembly.GetName().Version?.ToString();
 
     protected HttpClient _httpClient;
     protected JsonSerializerOptions _jsonOptions;
