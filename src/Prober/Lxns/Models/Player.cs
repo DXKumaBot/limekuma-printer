@@ -14,37 +14,37 @@ public record Player
     public LxnsDeveloperClient? Client { get; internal set; }
 
     [JsonPropertyName("name")]
-    public required string Name { get; set; }
+    public required string Name { get; init; }
 
     [JsonPropertyName("rating")]
-    public required int DXRating { get; set; }
+    public required int DXRating { get; init; }
 
     [JsonPropertyName("friend_code")]
-    public required long FriendCode { get; set; }
+    public required long FriendCode { get; init; }
 
     [JsonPropertyName("course_rank")]
-    public required GradeRank GradeRank { get; set; }
+    public required GradeRank GradeRank { get; init; }
 
     [JsonPropertyName("class_rank")]
-    public required CommonClassRankEnum ClassRank { get; set; }
+    public required CommonClassRankEnum ClassRank { get; init; }
 
     [JsonPropertyName("star")]
-    public required int Star { get; set; }
+    public required int Star { get; init; }
 
     [JsonPropertyName("trophy")]
-    public Title? Title { get; set; }
+    public Title? Title { get; init; }
 
     [JsonPropertyName("icon")]
-    public Icon? Icon { get; set; }
+    public Icon? Icon { get; init; }
 
     [JsonPropertyName("name_plate")]
-    public NamePlate? NamePlate { get; set; }
+    public NamePlate? NamePlate { get; init; }
 
     [JsonPropertyName("frame")]
-    public Frame? Frame { get; set; }
+    public Frame? Frame { get; init; }
 
     [JsonPropertyName("upload_time")]
-    public DateTimeOffset? UploadTime { get; set; }
+    public DateTimeOffset? UploadTime { get; init; }
 
     private static CommonGradeRankEnum MapGradeRank(GradeRank gradeRank) => gradeRank switch
     {

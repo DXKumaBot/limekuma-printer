@@ -14,9 +14,11 @@ public record Status
     [JsonPropertyName("diff_data")]
     public required Dictionary<string, LevelState> LevelStatus { get; init; }
 
+    [JsonIgnore]
     public FrozenDictionary<string, ImmutableArray<ChartState>> FrozenChartStatus => field ??=
         ChartStatus.ToFrozenDictionary(pair => pair.Key, pair => pair.Value.ToImmutableArray(), StringComparer.Ordinal);
 
+    [JsonIgnore]
     public FrozenDictionary<string, LevelState> FrozenLevelStatus =>
         field ??= LevelStatus.ToFrozenDictionary(StringComparer.Ordinal);
 

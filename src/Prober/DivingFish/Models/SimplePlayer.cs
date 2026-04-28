@@ -5,8 +5,8 @@ namespace Limekuma.Prober.DivingFish.Models;
 public class SimplePlayer
 {
     [JsonPropertyName("ra")]
-    public required int DXRating { get; set; }
+    public required int DXRating { get; init; }
 
     [JsonPropertyName("username")]
-    public required string AccountName { get; set; }
+    public required string AccountName { get; init; }
 }

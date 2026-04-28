@@ -11,18 +11,23 @@ public record SongData
     private readonly DateTimeOffset _pullTime = DateTimeOffset.Now;
 
     [JsonPropertyName("songs")]
-    public required List<Song> Songs { get; set; }
+    public required List<Song> Songs { get; init; }
 
     [JsonPropertyName("genres")]
-    public required List<Genre> Genres { get; set; }
+    public required List<Genre> Genres { get; init; }
 
     [JsonPropertyName("versions")]
-    public required List<Version> Versions { get; set; }
+    public required List<Version> Versions { get; init; }
 
+    [JsonIgnore]
     public FrozenDictionary<int, Song> SongsById => field ??= Songs.ToFrozenDictionary(x => x.Id);
 
+    [JsonIgnore]
     public FrozenDictionary<int, Version> VersionsByGroup => field ??=
-        Versions.GroupBy(x => x.VersionNumber).ToFrozenDictionary(x => x.Key, x => x.First());
+        Versions.AsParallel().GroupBy(x => x.VersionNumber).ToFrozenDictionary(x => x.Key, x => x.First());
+
+    [JsonIgnore]
+    public ImmutableArray<CommonChart> Charts => (_charts ??= new(() => Songs.AsParallel().SelectMany(x => x.CommonCharts).ToImmutableArray())).Value;
 
     public static SongData Shared
     {
@@ -39,6 +44,4 @@ public record SongData
             return field;
         }
     }
-
-    public ImmutableArray<CommonChart> Charts => (_charts ??= new(() => Songs.AsParallel().SelectMany(x => x.CommonCharts).ToImmutableArray())).Value;
 }

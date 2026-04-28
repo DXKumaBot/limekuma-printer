@@ -47,6 +47,7 @@ public record Song
     [JsonPropertyName("difficulties")]
     public required Charts Charts { get; init; }
 
+    [JsonIgnore]
     public Version Version
     {
         get
@@ -62,10 +63,13 @@ public record Song
         }
     }
 
+    [JsonIgnore]
     public bool InCurrentVersion => (_inCurrentVersion ??= new(() => SongData.Shared.Versions[^1].VersionNumber == Version.VersionNumber)).Value;
 
+    [JsonIgnore]
     public string AudioUrl => field ??= $"https://assets2.lxns.net/maimai/music/{Id}.mp3";
 
+    [JsonIgnore]
     public string JacketUrl => field ??= $"https://assets2.lxns.net/maimai/jacket/{Id}.png";
 
     [JsonIgnore]

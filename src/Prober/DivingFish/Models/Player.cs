@@ -10,26 +10,26 @@ namespace Limekuma.Prober.DivingFish.Models;
 public record Player
 {
     [JsonPropertyName("username")]
-    public required string AccountName { get; set; }
+    public required string AccountName { get; init; }
 
     [JsonPropertyName("rating")]
-    public required int DXRating { get; set; }
+    public required int DXRating { get; init; }
 
     [JsonPropertyName("additional_rating")]
-    public required CommonGradeRankEnum GradeRank { get; set; }
+    public required CommonGradeRankEnum GradeRank { get; init; }
 
     [JsonPropertyName("nickname")]
-    public required string Name { get; set; }
+    public required string Name { get; init; }
 
     [JsonPropertyName("plate")]
-    public required string PlateName { get; set; }
+    public required string PlateName { get; init; }
 
     [JsonPropertyName("charts")]
-    public required Bests Bests { get; set; }
+    public required Bests Bests { get; init; }
 
     [JsonPropertyName("user_general_data")]
     [Obsolete("This field is always empty.")]
-    public object? UserGeneralData { get; set; }
+    public object? UserGeneralData { get; init; }
 
     public static implicit operator CommonPlayer(Player player) =>
         new()

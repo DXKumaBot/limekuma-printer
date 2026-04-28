@@ -68,6 +68,7 @@ public record Record : SimpleRecord
     [JsonPropertyName("last_played_time")]
     public DateTimeOffset? LastPlayedTime { get; init; }
 
+    [JsonIgnore]
     public Song Song
     {
         get
@@ -83,6 +84,7 @@ public record Record : SimpleRecord
         }
     }
 
+    [JsonIgnore]
     public Chart Chart
     {
         get

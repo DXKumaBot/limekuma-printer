@@ -26,6 +26,7 @@ public record Title : Collection
 
 public record Icon : Collection
 {
+    [JsonIgnore]
     public string Url => field ??= $"https://assets2.lxns.net/maimai/icon/{Id}.png";
 
     [JsonPropertyName("genre")]
@@ -34,6 +35,7 @@ public record Icon : Collection
 
 public record NamePlate : Collection
 {
+    [JsonIgnore]
     public string Url => field ??= $"https://assets2.lxns.net/maimai/plate/{Id}.png";
 
     [JsonPropertyName("genre")]
@@ -42,6 +44,7 @@ public record NamePlate : Collection
 
 public record Frame : Collection
 {
+    [JsonIgnore]
     public string Url => field ??= $"https://assets2.lxns.net/maimai/frame/{Id}.png";
 
     [JsonPropertyName("genre")]

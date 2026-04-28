@@ -111,6 +111,7 @@ public class Record
     [JsonPropertyName("type")]
     public required ChartType Type { get; init; }
 
+    [JsonIgnore]
     public Song Song
     {
         get
@@ -126,8 +127,10 @@ public class Record
         }
     }
 
+    [JsonIgnore]
     public Chart Chart => field ??= Song.Charts[DifficultyIndex];
 
+    [JsonIgnore]
     public int DXScoreRank => (_dxScoreRank ??= new(() => ((decimal)DXScore / Chart.TotalDXScore) switch
     {
         < 0.85m => 0,

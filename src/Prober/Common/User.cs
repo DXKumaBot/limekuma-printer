@@ -2,17 +2,17 @@ namespace Limekuma.Prober.Common;
 
 public record User
 {
-    public required ProberType Prober { get; set; }
+    public required ProberType Prober { get; init; }
 
-    public required string Name { get; set; }
+    public required string Name { get; init; }
 
-    public required int DXRating { get; set; }
+    public required int DXRating { get; init; }
 
     public required TitleColor TitleColor { get; set; }
 
     public required string Title { get; set; }
 
-    public required GradeRank GradeRank { get; set; }
+    public required GradeRank GradeRank { get; init; }
 
     public required ClassRank ClassRank { get; set; }
 
@@ -22,7 +22,7 @@ public record User
 
     public required int FrameId { get; set; }
 
-    public bool MayMasked { get; set; } = false;
+    public bool MayMasked { get; internal set; } = false;
 
     public decimal? ExtraInfo { get; internal set; }
 

@@ -8,10 +8,10 @@ public record Chart
     private Lazy<int>? _totalDXScore;
 
     [JsonPropertyName("notes")]
-    public required List<int> NotesNumber { get; set; }
+    public required List<int> NotesNumber { get; init; }
 
     [JsonPropertyName("charter")]
-    public required string Charter { get; set; }
+    public required string Charter { get; init; }
 
     [JsonIgnore]
     public CommonNotes Notes => field ??= new()
@@ -24,5 +24,6 @@ public record Chart
         Break = NotesNumber.Count < 5 ? NotesNumber[3] : NotesNumber[4]
     };
 
+    [JsonIgnore]
     public int TotalDXScore => (_totalDXScore ??= new(() => Notes.Total * 3)).Value;
 }
