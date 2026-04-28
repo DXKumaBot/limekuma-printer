@@ -32,12 +32,8 @@
 ## ✨ 核心特性
 
 - 🚀 **高性能渲染**：基于ImageSharp，无需依赖本地系统GDI或libgdiplus，跨平台支持好。
-- 📊 **多数据源支持**:
-  - 原生支持[落雪咖啡屋 (Lxns)](https://maimai.lxns.net)查分器API
-  - 原生支持[水鱼 (Diving-Fish)](https://www.diving-fish.com/maimaidx/prober/)查分器API
-- 🖼️ **丰富的图像生成接口**:
-  - **BestsApi**：生成玩家B50成绩图，支持段位、等级、头像细分及动图组合。
-  - **ListApi**：生成玩家特定等级谱面的成绩列表图。
+- 📊 **多数据源支持**: 原生支持[落雪咖啡屋 (Lxns)](https://maimai.lxns.net)与[水鱼 (Diving-Fish)](https://www.diving-fish.com/maimaidx/prober/)查分器API。
+- 🖼️ **丰富的图像生成接口**: 支持生成玩家B50成绩图、成绩列表图、成绩记录图、谱面信息图、达成率信息图等。
 - 🔧 **自定义布局引擎**：渲染逻辑与布局分离，基于XML节点定义的灵活布局系统。
 - 📡 **流式gRPC通信**：基于Protobuf定义，提供流式的图片字节序列返回，降低大图片传输的内存占用。
 
@@ -81,18 +77,9 @@ dotnet run --project src/Limekuma.csproj
 
 API接口均定义在[`src/Protos/kumabot.proto`](src/Protos/kumabot.proto)文件中。
 
-### 支持的RPC方法
-
-- **BestsApi**
-  - `GetFromLxns` / `GetFromDivingFish`：获取常规B50图片。
-  - `GetAnimeFromLxns` / `GetAnimeFromDivingFish`：获取包含动画版B50图片。
-  - `GetFromLxnsWithLevelSeg` / `GetFromDivingFishWithLevelSeg`：获取带等级建议的B50图片。
-- **ListApi**
-  - `GetFromLxns` / `GetFromDivingFish`：获取指定等级或页码的玩家成绩列表图片。
-
 ## 📄 开源协议
 
-本项目基于**GNU Affero General Public License v3.0（AGPL-3.0）**协议开源。详细信息请参阅[LICENSE](LICENSE)文件。
+本项目基于**GNU Affero General Public License v3.0**协议开源。详细信息请参阅[LICENSE](LICENSE)文件。
 
 ## 🐛 问题反馈
 
