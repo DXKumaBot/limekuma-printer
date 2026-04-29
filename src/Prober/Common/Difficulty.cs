@@ -5,8 +5,6 @@ namespace Limekuma.Prober.Common;
 [JsonConverter(typeof(JsonStringEnumConverter<Difficulty>))]
 public enum Difficulty
 {
-    Dummy,
-
     [JsonStringEnumMemberName("绿")]
     Basic,
 
