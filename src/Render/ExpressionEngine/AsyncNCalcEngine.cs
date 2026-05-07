@@ -1,4 +1,5 @@
 using NCalc;
+using Fractions;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Globalization;
@@ -84,7 +85,43 @@ public sealed class AsyncNCalcEngine
     {
         foreach ((string key, object? value) in flattened)
         {
-            expression.Parameters[key] = value is Enum e ? Convert.ToInt32(e, CultureInfo.InvariantCulture) : value;
+            expression.Parameters[key] = NormalizeForExpression(value);
+        }
+    }
+
+    private static object? NormalizeForExpression(object? value)
+    {
+        if (value is null)
+        {
+            return null;
+        }
+
+        if (value is Enum enumValue)
+        {
+            return Convert.ToInt32(enumValue, CultureInfo.InvariantCulture);
+        }
+
+        if (value is Fraction fractionValue)
+        {
+            return TryConvertFractionToDecimal(fractionValue, out decimal decimalValue)
+                ? decimalValue
+                : (decimal)fractionValue.Numerator / (decimal)fractionValue.Denominator;
+        }
+
+        return value;
+    }
+
+    private static bool TryConvertFractionToDecimal(Fraction value, out decimal decimalValue)
+    {
+        try
+        {
+            decimalValue = value.ToDecimal();
+            return true;
+        }
+        catch (OverflowException)
+        {
+            decimalValue = default;
+            return false;
         }
     }
 

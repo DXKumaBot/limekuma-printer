@@ -1,3 +1,5 @@
+using Fractions;
+
 namespace Limekuma.Prober.Common;
 
 public record User
@@ -24,7 +26,7 @@ public record User
 
     public bool MayMasked { get; internal set; } = false;
 
-    public decimal? ExtraInfo { get; internal set; }
+    public Fraction? ExtraInfo { get; internal set; }
 
     public DXRatingRank DXRatingRank => DXRating switch
     {

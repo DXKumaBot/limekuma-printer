@@ -1,3 +1,4 @@
+using Limekuma.Utils;
 using System.Text.Json;
 
 namespace Limekuma.Prober.Lxns;
@@ -8,7 +9,8 @@ public abstract class LxnsClient
 
     private static readonly JsonSerializerOptions SharedJsonOptions = new()
     {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        Converters = { new FractionJsonConverter() }
     };
 
     private static readonly string? UserAgentVersion = typeof(LxnsClient).Assembly.GetName().Version?.ToString();

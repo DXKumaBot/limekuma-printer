@@ -1,3 +1,4 @@
+using Fractions;
 using Limekuma.Prober.DivingFish.Enums;
 using Limekuma.Utils;
 using System.Text.Json.Serialization;
@@ -13,12 +14,16 @@ public class Record
     private Lazy<int>? _dxScoreRank;
 
     [JsonPropertyName("achievements")]
-    public required decimal Achievements
+    public required Fraction Achievements
     {
         get;
         init
         {
-            ArgumentOutOfRangeException.ThrowIfNegative(value);
+            if (value < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(value), value, "Achievements cannot be negative.");
+            }
+
             field = value;
         }
     }
@@ -35,13 +40,16 @@ public class Record
     }
 
     [JsonPropertyName("ds")]
-    public required decimal LevelValue
+    public required Fraction LevelValue
     {
         get;
         init
         {
-            ArgumentOutOfRangeException.ThrowIfNegative(value);
-            ArgumentOutOfRangeException.ThrowIfGreaterThan(value, 15);
+            if (value < 0 || value > 15)
+            {
+                throw new ArgumentOutOfRangeException(nameof(value), value, "LevelValue out of range.");
+            }
+
             field = value;
         }
     }
@@ -131,15 +139,15 @@ public class Record
     public Chart Chart => field ??= Song.Charts[DifficultyIndex];
 
     [JsonIgnore]
-    public int DXScoreRank => (_dxScoreRank ??= new(() => ((decimal)DXScore / Chart.TotalDXScore) switch
+    public int DXScoreRank => (_dxScoreRank ??= new(() =>
     {
-        < 0.85m => 0,
-        < 0.9m => 1,
-        < 0.93m => 2,
-        < 0.95m => 3,
-        < 0.97m => 4,
-        <= 1 => 5,
-        _ => 0
+        Fraction ratio = DXScore / Chart.TotalDXScore;
+        if (ratio < new Fraction(17, 20)) return 0;
+        if (ratio < new Fraction(9, 10)) return 1;
+        if (ratio < new Fraction(93, 100)) return 2;
+        if (ratio < new Fraction(19, 20)) return 3;
+        if (ratio < new Fraction(97, 100)) return 4;
+        return ratio <= 1 ? 5 : 0;
     })).Value;
 
     public static implicit operator CommonRecord(Record record)

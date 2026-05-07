@@ -1,3 +1,4 @@
+using Fractions;
 using Limekuma.Prober.DivingFish.Models;
 using System.Text.Json.Serialization;
 
@@ -40,8 +41,8 @@ public class DfResourceClient : DfClient
         return response.VerList;
     }
 
-    public async Task<Dictionary<int, decimal>> GetHotSongsAsync(CancellationToken cancellationToken = default) =>
-        await GetAsync<Dictionary<int, decimal>>("/api/maimaidxprober/hot_music", cancellationToken);
+    public async Task<Dictionary<int, Fraction>> GetHotSongsAsync(CancellationToken cancellationToken = default) =>
+        await GetAsync<Dictionary<int, Fraction>>("/api/maimaidxprober/hot_music", cancellationToken);
 
     public async Task<Dictionary<int, VoteResult>> GetVoteResultAsync(CancellationToken cancellationToken = default) =>
         await GetAsync<Dictionary<int, VoteResult>>("/api/maimaidxprober/vote_result", cancellationToken);

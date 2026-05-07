@@ -1,4 +1,6 @@
+using Fractions;
 using Limekuma.Prober.Lxns.Enums;
+using Limekuma.Utils;
 using System.Text.Json.Serialization;
 using CommonAchievementsRankEnum = Limekuma.Prober.Common.AchievementsRank;
 using CommonChartTypeEnum = Limekuma.Prober.Common.ChartType;
@@ -12,12 +14,16 @@ namespace Limekuma.Prober.Lxns.Models;
 public record Record : SimpleRecord
 {
     [JsonPropertyName("achievements")]
-    public required decimal Achievements
+    public required Fraction Achievements
     {
         get;
         init
         {
-            ArgumentOutOfRangeException.ThrowIfNegative(value);
+            if (value < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(value), value, "Achievements cannot be negative.");
+            }
+
             field = value;
         }
     }
@@ -46,12 +52,17 @@ public record Record : SimpleRecord
     }
 
     [JsonPropertyName("dx_rating")]
-    public decimal? DXRating
+    public Fraction? DXRating
     {
         get;
         init
         {
-            ArgumentOutOfRangeException.ThrowIfNegative(value ?? throw new ArgumentNullException(nameof(value)));
+            Fraction ratingValue = value ?? throw new ArgumentNullException(nameof(value));
+            if (ratingValue < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(value), value, "DXRating cannot be negative.");
+            }
+
             field = value;
         }
     }
@@ -155,7 +166,7 @@ public record Record : SimpleRecord
             SyncFlag = record.SyncFlag ?? CommonSyncFlagEnum.None,
             Rank = record.Rank ?? CommonAchievementsRankEnum.D,
             Achievements = record.Achievements,
-            DXRating = (int)(record.DXRating ?? 0),
+            DXRating = (record.DXRating ?? Fraction.Zero).ToInt32Truncated(),
             DXScoreRank = record.DXScoreRank,
             DXScore = record.DXScore
         };

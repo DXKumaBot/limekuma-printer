@@ -1,3 +1,4 @@
+using Fractions;
 using Limekuma.Prober.DivingFish.Enums;
 using Limekuma.Utils;
 using System.Text.Json.Serialization;
@@ -9,7 +10,7 @@ namespace Limekuma.Prober.DivingFish.Models;
 public class SimpleRecord
 {
     [JsonPropertyName("achievements")]
-    public required decimal Achievements { get; init; }
+    public required Fraction Achievements { get; init; }
 
     [JsonPropertyName("fc")]
     public required Union<CommonComboFlagEnum, string> ComboFlag { get; init; }

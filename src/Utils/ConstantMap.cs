@@ -1,3 +1,4 @@
+using Fractions;
 using Limekuma.Prober.Common;
 using System.Collections.Frozen;
 
@@ -5,8 +6,8 @@ namespace Limekuma.Utils;
 
 public static class ConstantMap
 {
-    private static readonly FrozenDictionary<AchievementsRank, decimal> RatingFactors =
-        new Dictionary<AchievementsRank, decimal>
+    private static readonly FrozenDictionary<AchievementsRank, Fraction> RatingFactors =
+        new Dictionary<AchievementsRank, Fraction>
         {
             [AchievementsRank.D] = 0,
             [AchievementsRank.C] = 50,
@@ -19,10 +20,10 @@ public static class ConstantMap
             [AchievementsRank.S] = 97,
             [AchievementsRank.SPlus] = 98,
             [AchievementsRank.SS] = 99,
-            [AchievementsRank.SSPlus] = 99.5m,
+            [AchievementsRank.SSPlus] = new(199, 2),
             [AchievementsRank.SSS] = 100,
-            [AchievementsRank.SSSPlus] = 100.5m,
-            [(AchievementsRank)14] = 100.5m
+            [AchievementsRank.SSSPlus] = new(201, 2),
+            [(AchievementsRank)14] = new(201, 2)
         }.ToFrozenDictionary();
 
     public static readonly FrozenDictionary<string, FrozenSet<string>> VersionMap =
@@ -108,37 +109,42 @@ public static class ConstantMap
             ]
         }.ToFrozenDictionary();
 
-    public static decimal GetRatingMinAchievement(AchievementsRank rank) => RatingFactors[rank];
+    public static Fraction GetRatingMinAchievement(AchievementsRank rank) => RatingFactors[rank];
 
-    public static (AchievementsRank, decimal, decimal) ResolveRankAndCoefficient(decimal achievements) =>
-        achievements switch
+    public static (AchievementsRank, Fraction, Fraction)
+        ResolveRankAndCoefficient(Fraction achievements)
+    {
+        if (achievements > 101)
         {
-            > 101 => throw new ArgumentOutOfRangeException(nameof(achievements), achievements,
-                "Achievements cannot exceed 101%"),
-            >= 100.5m => (AchievementsRank.SSSPlus, 0.224m, 0.15m),
-            >= 100.4999m => (AchievementsRank.SSS, 0.222m, 0.14m),
-            >= 100 => (AchievementsRank.SSS, 0.216m, 0.14m),
-            >= 99.9999m => (AchievementsRank.SSPlus, 0.214m, 0.135m),
-            >= 99.5m => (AchievementsRank.SSPlus, 0.211m, 0.13m),
-            >= 99 => (AchievementsRank.SS, 0.208m, 0.12m),
-            >= 98.9999m => (AchievementsRank.SPlus, 0.206m, 0.11m),
-            >= 98 => (AchievementsRank.SPlus, 0.203m, 0.11m),
-            >= 97 => (AchievementsRank.S, 0.2m, 0.1m),
-            >= 96.9999m => (AchievementsRank.AAA, 0.176m, 0.094m),
-            >= 94 => (AchievementsRank.AAA, 0.168m, 0.094m),
-            >= 90 => (AchievementsRank.AA, 0.152m, 0.09m),
-            >= 80 => (AchievementsRank.A, 0.136m, 0.08m),
-            >= 79.9999m => (AchievementsRank.BBB, 0.128m, 0.08m),
-            >= 75 => (AchievementsRank.BBB, 0.12m, 0.075m),
-            >= 70 => (AchievementsRank.BB, 0.112m, 0.07m),
-            >= 60 => (AchievementsRank.B, 0.096m, 0.06m),
-            >= 50 => (AchievementsRank.C, 0.08m, 0.05m),
-            >= 40 => (AchievementsRank.D, 0.064m, 0.04m),
-            >= 30 => (AchievementsRank.D, 0.048m, 0.03m),
-            >= 20 => (AchievementsRank.D, 0.032m, 0.02m),
-            >= 10 => (AchievementsRank.D, 0.016m, 0.01m),
-            >= 0 => (AchievementsRank.D, 0, 0),
-            _ => throw new ArgumentOutOfRangeException(nameof(achievements), achievements,
-                "Achievements must be a non-negative value")
-        };
+            throw new ArgumentOutOfRangeException(nameof(achievements), achievements,
+                "Achievements cannot exceed 101%");
+        }
+
+        if (achievements >= new Fraction(201, 2)) return (AchievementsRank.SSSPlus, new(28, 125), new(3, 20));
+        if (achievements >= new Fraction(1004999, 10000)) return (AchievementsRank.SSS, new(111, 500), new(7, 50));
+        if (achievements >= 100) return (AchievementsRank.SSS, new(27, 125), new(7, 50));
+        if (achievements >= new Fraction(999999, 10000)) return (AchievementsRank.SSPlus, new(107, 500), new(27, 200));
+        if (achievements >= new Fraction(199, 2)) return (AchievementsRank.SSPlus, new(211, 1000), new(13, 100));
+        if (achievements >= 99) return (AchievementsRank.SS, new(26, 125), new(3, 25));
+        if (achievements >= new Fraction(989999, 10000)) return (AchievementsRank.SPlus, new(103, 500), new(11, 100));
+        if (achievements >= 98) return (AchievementsRank.SPlus, new(203, 1000), new(11, 100));
+        if (achievements >= 97) return (AchievementsRank.S, new(1, 5), new(1, 10));
+        if (achievements >= new Fraction(969999, 10000)) return (AchievementsRank.AAA, new(22, 125), new(47, 500));
+        if (achievements >= 94) return (AchievementsRank.AAA, new(21, 125), new(47, 500));
+        if (achievements >= 90) return (AchievementsRank.AA, new(19, 125), new(9, 100));
+        if (achievements >= 80) return (AchievementsRank.A, new(17, 125), new(2, 25));
+        if (achievements >= new Fraction(799999, 10000)) return (AchievementsRank.BBB, new(16, 125), new(2, 25));
+        if (achievements >= 75) return (AchievementsRank.BBB, new(3, 25), new(3, 40));
+        if (achievements >= 70) return (AchievementsRank.BB, new(14, 125), new(7, 100));
+        if (achievements >= 60) return (AchievementsRank.B, new(12, 125), new(3, 50));
+        if (achievements >= 50) return (AchievementsRank.C, new(2, 25), new(1, 20));
+        if (achievements >= 40) return (AchievementsRank.D, new(8, 125), new(1, 25));
+        if (achievements >= 30) return (AchievementsRank.D, new(6, 125), new(3, 100));
+        if (achievements >= 20) return (AchievementsRank.D, new(4, 125), new(1, 50));
+        if (achievements >= 10) return (AchievementsRank.D, new(2, 125), new(1, 100));
+        if (achievements >= 0) return (AchievementsRank.D, Fraction.Zero, Fraction.Zero);
+
+        throw new ArgumentOutOfRangeException(nameof(achievements), achievements,
+            "Achievements must be a non-negative value");
+    }
 }

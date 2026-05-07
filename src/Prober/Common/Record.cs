@@ -1,3 +1,5 @@
+using Fractions;
+
 namespace Limekuma.Prober.Common;
 
 public record Record
@@ -10,7 +12,7 @@ public record Record
 
     public required AchievementsRank Rank { get; init; }
 
-    public required decimal Achievements { get; init; }
+    public required Fraction Achievements { get; init; }
 
     public required int DXScore { get; init; }
 
@@ -18,5 +20,5 @@ public record Record
 
     public required int DXRating { get; init; }
 
-    public decimal? ExtraInfo { get; internal set; }
+    public Fraction? ExtraInfo { get; internal set; }
 }

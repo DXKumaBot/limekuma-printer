@@ -1,3 +1,4 @@
+using Fractions;
 using Grpc.Core;
 using Limekuma.Prober.Lxns;
 using Limekuma.Prober.Lxns.Enums;
@@ -87,7 +88,7 @@ public partial class BestsService
                     Title = song.Title,
                     Type = chart.Type,
                     ComboFlag = CommonComboFlagEnum.AllPerfectPlus,
-                    DXRating = (int)(chart.LevelValue * 22.512m),
+                    DXRating = (chart.LevelValue * new Fraction(2814, 125)).ToInt32Truncated(),
                     Rank = CommonAchievementsRankEnum.SSSPlus,
                     SyncFlag = CommonSyncFlagEnum.FullSyncDXPlus
                 }));

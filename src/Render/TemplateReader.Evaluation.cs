@@ -1,7 +1,10 @@
 using Limekuma.Render.ExpressionEngine;
 using Limekuma.Render.Types;
+using Fractions;
 using SixLabors.ImageSharp;
+using System.Collections;
 using System.Globalization;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
@@ -120,7 +123,8 @@ public sealed partial class TemplateReader
         string safeTemplate = safeTemplateBuilder.ToString();
 
         IDictionary<string, object?> values = ScopeFlattener.Flatten(scope);
-        string formatted = Formatter.Format(safeTemplate, values);
+        Dictionary<string, object?> normalizedValues = NormalizeTemplateValues(values);
+        string formatted = Formatter.Format(safeTemplate, normalizedValues);
         if (expressionTexts.Count is 0)
         {
             return formatted;
@@ -252,6 +256,123 @@ public sealed partial class TemplateReader
 
         converted = null;
         return false;
+    }
+
+    private static Dictionary<string, object?> NormalizeTemplateValues(IDictionary<string, object?> values)
+    {
+        Dictionary<string, object?> normalized = new(values.Count, StringComparer.OrdinalIgnoreCase);
+        Dictionary<object, object?> objectCache = new(ReferenceEqualityComparer.Instance);
+        foreach ((string key, object? value) in values)
+        {
+            normalized[key] = NormalizeTemplateValue(value, key, 0, objectCache);
+        }
+
+        return normalized;
+    }
+
+    private static object? NormalizeTemplateValue(object? value, string? key, int depth,
+        IDictionary<object, object?> objectCache)
+    {
+        if (value is null)
+        {
+            return null;
+        }
+
+        if (value is Fraction fraction)
+        {
+            return TryConvertFractionToDecimal(fraction, out decimal decimalValue)
+                ? decimalValue
+                : (decimal)fraction.Numerator / (decimal)fraction.Denominator;
+        }
+
+        if (depth > 6 || IsLeafType(value.GetType()))
+        {
+            return value;
+        }
+
+        bool shouldExpandObject = string.IsNullOrEmpty(key) || !key.Contains('.', StringComparison.Ordinal);
+        if (!shouldExpandObject)
+        {
+            return value;
+        }
+
+        if (objectCache.TryGetValue(value, out object? cachedValue))
+        {
+            return cachedValue;
+        }
+
+        if (value is IDictionary dictionary)
+        {
+            Dictionary<string, object?> normalizedDictionary = new(StringComparer.OrdinalIgnoreCase);
+            objectCache[value] = normalizedDictionary;
+            foreach (DictionaryEntry entry in dictionary)
+            {
+                string entryKey = Convert.ToString(entry.Key, CultureInfo.InvariantCulture) ?? string.Empty;
+                normalizedDictionary[entryKey] =
+                    NormalizeTemplateValue(entry.Value, string.Empty, depth + 1, objectCache);
+            }
+
+            return normalizedDictionary;
+        }
+
+        if (value is IEnumerable enumerable and not string)
+        {
+            List<object?> normalizedList = [];
+            objectCache[value] = normalizedList;
+            foreach (object? item in enumerable)
+            {
+                normalizedList.Add(NormalizeTemplateValue(item, string.Empty, depth + 1, objectCache));
+            }
+
+            return normalizedList;
+        }
+
+        Dictionary<string, object?> normalizedObject = new(StringComparer.OrdinalIgnoreCase);
+        objectCache[value] = normalizedObject;
+        PropertyInfo[] properties = value.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
+        foreach (PropertyInfo property in properties)
+        {
+            if (!property.CanRead || property.GetIndexParameters().Length is not 0)
+            {
+                continue;
+            }
+
+            object? propertyValue = property.GetValue(value);
+            normalizedObject[property.Name] =
+                NormalizeTemplateValue(propertyValue, string.Empty, depth + 1, objectCache);
+        }
+
+        return normalizedObject;
+    }
+
+    private static bool IsLeafType(Type type)
+    {
+        return type.IsPrimitive || type.IsEnum || type == typeof(string) || type == typeof(decimal) ||
+               type == typeof(DateTime) || type == typeof(DateTimeOffset) || type == typeof(TimeSpan) ||
+               type == typeof(Guid);
+    }
+
+    private sealed class ReferenceEqualityComparer : IEqualityComparer<object>
+    {
+        public static readonly ReferenceEqualityComparer Instance = new();
+
+        public new bool Equals(object? x, object? y) => ReferenceEquals(x, y);
+
+        public int GetHashCode(object obj) => System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(obj);
+    }
+
+    private static bool TryConvertFractionToDecimal(Fraction value, out decimal decimalValue)
+    {
+        try
+        {
+            decimalValue = value.ToDecimal();
+            return true;
+        }
+        catch (OverflowException)
+        {
+            decimalValue = default;
+            return false;
+        }
     }
 
     [GeneratedRegex("__EXPR_TOKEN_(\\d+)__")]

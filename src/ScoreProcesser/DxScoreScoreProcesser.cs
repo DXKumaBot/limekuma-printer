@@ -1,3 +1,4 @@
+using Fractions;
 using Limekuma.Prober.Common;
 using Limekuma.Utils;
 
@@ -10,13 +11,14 @@ public sealed class DxScoreScoreProcesser : IScoreProcesser
     {
         ParallelQuery<Record> projectedRecords = records.Select(record =>
         {
-            decimal achievements = (decimal)record.DXScore / record.Chart.TotalDXScore * 101;
-            (AchievementsRank rank, decimal coefficient, _) = ConstantMap.ResolveRankAndCoefficient(achievements);
+            Fraction achievementsValue = new Fraction(record.DXScore, record.Chart.TotalDXScore) * 101;
+            (AchievementsRank rank, Fraction coefficient, _) = ConstantMap.ResolveRankAndCoefficient(achievementsValue);
 
-            int rating = (int)(record.Chart.LevelValue * achievements * coefficient);
+            Fraction ratingValue = record.Chart.LevelValue * achievementsValue * coefficient;
+            int rating = ratingValue.ToInt32Truncated();
             return new Record
             {
-                Achievements = achievements,
+                Achievements = achievementsValue,
                 DXRating = rating,
                 Chart = record.Chart,
                 ComboFlag = record.ComboFlag,

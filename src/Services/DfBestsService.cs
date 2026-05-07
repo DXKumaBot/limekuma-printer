@@ -1,3 +1,4 @@
+using Fractions;
 using Grpc.Core;
 using Limekuma.Prober.DivingFish.Enums;
 using Limekuma.Prober.DivingFish.Models;
@@ -74,7 +75,7 @@ public partial class BestsService
                 ComboFlag = CommonComboFlagEnum.AllPerfectPlus,
                 Difficulty = (Difficulty)i,
                 DifficultyIndex = i,
-                DXRating = (int)(song.LevelValues[i] * 22.512m),
+                DXRating = (song.LevelValues[i] * new Fraction(2814, 125)).ToInt32Truncated(),
                 DXScore = song.Charts[i].Notes.Total * 3,
                 Id = song.Id,
                 Level = song.Levels[i],

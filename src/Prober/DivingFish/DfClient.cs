@@ -14,7 +14,8 @@ public abstract class DfClient
 
     private static readonly JsonSerializerOptions SharedJsonOptions = new()
     {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        Converters = { new FractionJsonConverter() }
     };
 
     private static readonly string? UserAgentVersion = typeof(DfClient).Assembly.GetName().Version?.ToString();

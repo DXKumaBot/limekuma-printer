@@ -1,3 +1,4 @@
+using Fractions;
 using Limekuma.Prober.DivingFish.Enums;
 using System.Collections.Immutable;
 using System.Text.Json.Serialization;
@@ -24,7 +25,7 @@ public record Song
     public required ChartType Type { get; init; }
 
     [JsonPropertyName("ds")]
-    public required List<decimal> LevelValues { get; init; }
+    public required List<Fraction> LevelValues { get; init; }
 
     [JsonPropertyName("level")]
     public required List<string> Levels { get; init; }

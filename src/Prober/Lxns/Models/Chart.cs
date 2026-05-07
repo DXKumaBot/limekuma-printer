@@ -1,3 +1,4 @@
+using Fractions;
 using Limekuma.Prober.Lxns.Enums;
 using System.Text.Json.Serialization;
 using CommonNotes = Limekuma.Prober.Common.Notes;
@@ -18,7 +19,7 @@ public record Chart
     public required string Level { get; init; }
 
     [JsonPropertyName("level_value")]
-    public required decimal LevelValue { get; init; }
+    public required Fraction LevelValue { get; init; }
 
     [JsonPropertyName("note_designer")]
     public required string Charter { get; init; }

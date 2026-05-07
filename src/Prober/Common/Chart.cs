@@ -1,3 +1,5 @@
+using Fractions;
+
 namespace Limekuma.Prober.Common;
 
 public class Chart
@@ -10,7 +12,7 @@ public class Chart
 
     public required string Level { get; init; }
 
-    public required decimal LevelValue { get; init; }
+    public required Fraction LevelValue { get; init; }
 
     public required Notes Notes { get; init; }
 }

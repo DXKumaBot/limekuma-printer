@@ -1,3 +1,4 @@
+using Fractions;
 using System.Text.Json.Serialization;
 
 namespace Limekuma.Prober.DivingFish.Models;
@@ -5,26 +6,26 @@ namespace Limekuma.Prober.DivingFish.Models;
 public record ChartState
 {
     [JsonPropertyName("cnt")]
-    public decimal SampleSize { get; init; }
+    public Fraction SampleSize { get; init; }
 
     [JsonPropertyName("diff")]
     public string? Level { get; init; }
 
     [JsonPropertyName("fit_diff")]
-    public decimal FitLevel { get; init; }
+    public Fraction FitLevel { get; init; }
 
     [JsonPropertyName("avg")]
-    public decimal AverageAchievements { get; init; }
+    public Fraction AverageAchievements { get; init; }
 
     [JsonPropertyName("avg_dx")]
-    public decimal AverageDXScore { get; init; }
+    public Fraction AverageDXScore { get; init; }
 
     [JsonPropertyName("std_dev")]
-    public decimal StandardDeviation { get; init; }
+    public Fraction StandardDeviation { get; init; }
 
     [JsonPropertyName("dist")]
     public List<int>? RankDistribution { get; init; }
 
     [JsonPropertyName("fc_dist")]
-    public List<decimal>? ComboDistribution { get; init; }
+    public List<Fraction>? ComboDistribution { get; init; }
 }
