@@ -309,11 +309,11 @@ public static partial class NodeRenderer
         {
             Color strokeColor = ApplyOpacity(sc, inheritedOpacity);
             canvas.Mutate(ctx =>
-                ctx.DrawText(options, drawText, Brushes.Solid(fillColor), Pens.Solid(strokeColor, sw)));
+                ctx.Paint(canvas => canvas.DrawText(options, drawText, Brushes.Solid(fillColor), Pens.Solid(strokeColor, sw))));
             return;
         }
 
-        canvas.Mutate(ctx => ctx.DrawText(options, drawText, fillColor));
+        canvas.Mutate(ctx => ctx.Paint(canvas => canvas.DrawText(options, drawText, Brushes.Solid(fillColor), null)));
     }
 
     private static Color ApplyOpacity(Color color, float opacity)

@@ -17,7 +17,7 @@ public static partial class NodeRenderer
         ConcurrentDictionary<Node, Size> measurementCache = new(ReferenceEqualityComparer.Instance);
         if (root.Background is { } bg)
         {
-            canvas.Mutate(ctx => ctx.Fill(bg));
+            canvas.Mutate(ctx => ctx.Paint(canvas => canvas.Fill(Brushes.Solid(bg))));
         }
 
         RenderChildren(canvas, root.Children, assets, measurer, new(0, 0), 1, null, 1, ResamplerType.Lanczos3,
