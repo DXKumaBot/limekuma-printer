@@ -15,7 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="codeessentials.AspNetCore.Diagnostics.Demystifier" Version="1.1.66" />
     <PackageReference Include="Fractions" Version="8.3.2" />
+    <PackageReference Include="Google.Protobuf" Version="3.34.1" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.80.0" />
     <PackageReference Include="Hocon.Extensions.Configuration" Version="2.0.4" />
     <PackageReference Include="NCalcAsync" Version="5.12.0" />

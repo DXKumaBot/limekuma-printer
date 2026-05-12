@@ -12,4 +12,6 @@ await using WebApplication app = builder.Build();
 app.MapGrpcService<BestsService>();
 app.MapGrpcService<ListService>();
 
+app.UseExceptionDemystifier();
+
 await app.RunAsync();
