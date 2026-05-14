@@ -66,7 +66,7 @@ public partial class BestsService
     private static async Task<(CommonPlayer, ImmutableArray<CommonRecord>, ImmutableArray<CommonRecord>, int, int)>
         PrepareRiRenDfDataAsync()
     {
-        ParallelQuery<CommonRecord> allRecords = Songs.Shared.AsParallel().SelectMany(song =>
+        ParallelQuery<CommonRecord> allRecords = Songs.Shared.AsParallel().Where(x => x.Id < 100000).SelectMany(song =>
         {
             int chartCount = Math.Min(song.Charts.Count, Math.Min(song.LevelValues.Count, song.Levels.Count));
             return Enumerable.Range(0, chartCount).AsParallel().Select(i => (CommonRecord)new Record
