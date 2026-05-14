@@ -47,7 +47,7 @@ message DivingFishBestsRequest {
 message LxnsListRequest {
   string devToken = 1;
   string personalToken = 2;
-  string condition = 3;
+  google.protobuf.StringValue condition = 3;
   sint32 page = 4;
   repeated string tags = 5;
 }
@@ -55,7 +55,7 @@ message LxnsListRequest {
 message DivingFishListRequest {
   string token = 1;
   uint32 qq = 2;
-  string condition = 3;
+  google.protobuf.StringValue condition = 3;
   sint32 page = 4;
   sint32 plate = 5;
   sint32 icon = 6;

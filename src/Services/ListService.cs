@@ -8,7 +8,7 @@ namespace Limekuma.Services;
 public sealed partial class ListService : ListApi.ListApiBase
 {
     private static (ImmutableArray<Record>, int, bool) BuildListRecords(IReadOnlySet<string> tags,
-        string condition, ParallelQuery<Record> records, ParallelQuery<Chart> charts)
+        string? condition, ParallelQuery<Record> records, ParallelQuery<Chart> charts)
     {
         (Func<Record, bool> predicate, Func<Chart, bool> counter, bool maskMutex) = ScoreFilterHelper.GetPredicateByTags(tags, condition);
         bool mayMask = ServiceExecutionHelper.HasMaskedScores(records);
