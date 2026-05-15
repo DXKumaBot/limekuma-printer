@@ -7,7 +7,7 @@
     <InvariantGlobalization>true</InvariantGlobalization>
     <LangVersion>preview</LangVersion>
     <PublishSingleFile>true</PublishSingleFile>
-    <AssemblyVersion>26.19.0</AssemblyVersion>
+    <AssemblyVersion>26.20.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,10 +21,7 @@
     <PackageReference Include="Grpc.AspNetCore" Version="2.80.0" />
     <PackageReference Include="Hocon.Extensions.Configuration" Version="2.0.4" />
     <PackageReference Include="NCalcAsync" Version="5.12.0" />
-    <PackageReference Include="SixLabors.Fonts" Version="3.0.0-alpha.0.48" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="4.0.0-alpha.0.107" />
-    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="3.0.0-alpha.0.20" />
-    <PackageReference Include="SixLabors.PolygonClipper" Version="1.0.0-alpha.0.58" />
+    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="3.0.0" />
     <PackageReference Include="SmartFormat" Version="3.6.1" />
   </ItemGroup>
 

@@ -10,7 +10,7 @@
 
 </div>
 
-![Static Badge](https://img.shields.io/badge/Ver-LI26.14--A-blue)
+![Static Badge](https://img.shields.io/badge/Ver-LI26.20--A-blue)
 ![Static Badge](https://img.shields.io/badge/License-AGPLv3-orange)
 [![CodeFactor](https://www.codefactor.io/repository/github/derakkumadev/limekuma-printer/badge)](https://www.codefactor.io/repository/github/derakkumadev/limekuma-printer)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/34a3bb83aa2a4182ac748954c18aac89)](https://app.codacy.com/gh/DerakkumaDev/limekuma-printer/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
