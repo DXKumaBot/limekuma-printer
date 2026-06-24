@@ -1,5 +1,6 @@
-using NCalc;
 using Fractions;
+using NCalc;
+using NCalc.Extensions;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Globalization;
@@ -46,11 +47,12 @@ public sealed class AsyncNCalcEngine
 
     public async Task<object?> EvalAsync(string expr, object? scope)
     {
-        AsyncExpression expression = new(expr);
+        ExpressionContext context = ExpressionOptions.IgnoreCaseAtBuiltInFunctions;
+        Expression expression = new(expr, context);
         Dictionary<string, object?> flattened = ScopeFlattener.Flatten(scope);
         AddScopeParameters(expression, flattened);
 
-        expression.EvaluateFunctionAsync += async (name, args) =>
+        expression.EvaluateAsyncFunction += async (name, args) =>
         {
             if (!_functions.TryGetValue(name, out Delegate? func))
             {
@@ -59,7 +61,7 @@ public sealed class AsyncNCalcEngine
 
             ParameterInfo[] parameters = _functionParameters.GetOrAdd(name, _ => func.Method.GetParameters());
             object?[] evaluatedArgs =
-                await Task.WhenAll(args.Parameters.Select(parameter => parameter.EvaluateAsync().AsTask()));
+                await Task.WhenAll(args.Parameters.Select(parameter => parameter.EvaluateAsync(context)));
             IEnumerable<object?> funcArgs = evaluatedArgs.Select((paramValue, index) =>
                 CoerceValue(paramValue, index < parameters.Length ? parameters[index].ParameterType : typeof(object)));
 
@@ -81,7 +83,7 @@ public sealed class AsyncNCalcEngine
         return value;
     }
 
-    private static void AddScopeParameters(AsyncExpression expression, Dictionary<string, object?> flattened)
+    private static void AddScopeParameters(Expression expression, Dictionary<string, object?> flattened)
     {
         foreach ((string key, object? value) in flattened)
         {
