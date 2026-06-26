@@ -57,8 +57,7 @@ public record Song
                 return field;
             }
 
-            int versionGroup = VersionNumber - (VersionNumber % 500);
-            field = SongData.Shared.VersionsByGroup[versionGroup];
+            field = SongData.Shared.GetVersionFloor(VersionNumber);
             return field;
         }
     }

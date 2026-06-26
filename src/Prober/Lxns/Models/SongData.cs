@@ -23,11 +23,27 @@ public record SongData
     public FrozenDictionary<int, Song> SongsById => field ??= Songs.ToFrozenDictionary(x => x.Id);
 
     [JsonIgnore]
-    public FrozenDictionary<int, Version> VersionsByGroup => field ??=
-        Versions.AsParallel().GroupBy(x => x.VersionNumber).ToFrozenDictionary(x => x.Key, x => x.First());
-
-    [JsonIgnore]
     public ImmutableArray<CommonChart> Charts => (_charts ??= new(() => Songs.AsParallel().SelectMany(x => x.CommonCharts).ToImmutableArray())).Value;
+
+    public Version GetVersionFloor(int versionNumber)
+    {
+        List<Version> versions = Versions;
+        int lo = 0, hi = versions.Count - 1, result = 0;
+        while (lo <= hi)
+        {
+            int mid = (lo + hi) >> 1;
+            if (versions[mid].VersionNumber < versionNumber)
+            {
+                result = mid;
+                lo = mid + 1;
+            }
+            else
+            {
+                hi = mid - 1;
+            }
+        }
+        return versions[result];
+    }
 
     public static SongData Shared
     {

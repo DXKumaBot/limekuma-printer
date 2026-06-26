@@ -132,10 +132,6 @@ public record Record : SimpleRecord
     {
         Song song = record.Song;
         Chart chart = record.Chart;
-        SongData songData = SongData.Shared;
-        int versionGroup = chart.VersionNumber - (chart.VersionNumber % 500);
-        Version version = songData.VersionsByGroup[versionGroup];
-        bool inCurrentVersion = songData.Versions[^1].VersionNumber == version.VersionNumber;
 
         ArgumentOutOfRangeException.ThrowIfGreaterThan(record.Achievements,
             record.Type is ChartType.Utage && ((UtageChart)record.Chart).IsBuddy ? 202 : 101);
@@ -149,8 +145,8 @@ public record Record : SimpleRecord
                     Id = record.Type is ChartType.Standard ? record.Id : record.Id + 10000,
                     Title = record.Title,
                     Type = (CommonChartTypeEnum)record.Type,
-                    VersionTitle = version.Title,
-                    InCurrentVersion = inCurrentVersion,
+                    VersionTitle = song.Version.Title,
+                    InCurrentVersion = song.InCurrentVersion,
                     AudioUrl = song.AudioUrl,
                     JacketUrl = song.JacketUrl
                 },
