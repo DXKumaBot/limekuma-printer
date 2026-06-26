@@ -55,7 +55,7 @@ public record Song
         $"https://assets2.lxns.net/maimai/music/{(Id is > 10000 and < 100000 ? Id % 10000 : Id)}.mp3";
 
     [JsonIgnore]
-    public string JacketUrl => field ??= $"https://maimai.diving-fish.com/covers/{(Id is > 10000 and <= 11000 ? Id % 10000 : Id)}.png";
+    public string JacketUrl => field ??= $"https://maimai.diving-fish.com/covers/{(Id is > 10000 and <= 11000 ? Id % 10000 : Id):D5}.png";
 
     [JsonIgnore]
     public ImmutableArray<CommonChart> CommonCharts => (_commonCharts ??= new(() => [.. Charts.AsParallel().Select((x, i) => new CommonChart
